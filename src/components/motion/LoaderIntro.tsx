@@ -53,7 +53,7 @@ export function LoaderIntro() {
         }}
         exit={{ y: '-100%' }}
         transition={{ duration: 0.75, ease: EASE_QUART }}
-        className="grain fixed inset-0 z-[70] flex flex-col items-center justify-center gap-10 bg-night-900 text-cream-100"
+        className="grain fixed inset-0 z-[70] flex flex-col items-center justify-center gap-6 bg-night-900 text-cream-100 sm:gap-10"
       >
         <motion.div
           initial={reducedMotion ? false : { opacity: 0, y: 28, scale: 0.92 }}
@@ -64,7 +64,7 @@ export function LoaderIntro() {
             animate={reducedMotion ? undefined : { y: [0, -9, 0] }}
             transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
           >
-            <MaskEmblem className="h-44 w-auto drop-shadow-[0_20px_32px_rgba(0,0,0,0.45)] lg:h-52" />
+            <MaskEmblem className="h-32 w-auto drop-shadow-[0_20px_32px_rgba(0,0,0,0.45)] sm:h-44 lg:h-52" />
           </motion.div>
         </motion.div>
 

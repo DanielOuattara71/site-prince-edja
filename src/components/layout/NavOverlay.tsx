@@ -67,7 +67,7 @@ export function NavOverlay({ open, onClose }: NavOverlayProps) {
             className="absolute inset-x-0 top-full h-[10vh]"
             style={{ borderRadius: '0 0 100% 100%', background: '#14100B' }}
           />
-          <Container className="flex h-full flex-col pt-24 pb-12 lg:pt-32">
+          <Container className="flex h-full flex-col overflow-y-auto pt-24 pb-12 lg:pt-32">
             <p className="label-caps mb-8 text-gold-400">Navigation</p>
             <motion.nav
               aria-label="Menu principal"

@@ -40,7 +40,7 @@ function Panel({ episode, index }: { episode: Episode; index: number }) {
       <div
         className={cn(
           'relative z-10 flex h-full max-w-2xl flex-col justify-center gap-5 px-5 sm:px-8 lg:px-16 xl:px-20',
-          alignRight && 'ml-auto text-right',
+          alignRight && 'lg:ml-auto lg:text-right',
         )}
       >
         <p className="label-caps text-gold-400">
@@ -50,7 +50,7 @@ function Panel({ episode, index }: { episode: Episode; index: number }) {
           {episode.titre}
         </h3>
         <p className="text-body-lg text-cream-100/80">{episode.pitch}</p>
-        <div className={cn('pt-2', alignRight && 'flex justify-end')}>
+        <div className={cn('pt-2', alignRight && 'lg:flex lg:justify-end')}>
           <Button to={`/xplore/${episode.slug}`} variant="ghost-light">
             Voir l’épisode
           </Button>
