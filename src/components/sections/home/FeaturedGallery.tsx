@@ -68,8 +68,8 @@ export function FeaturedGallery() {
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <LazyImage
-                    src="/images/placeholder-carre.svg"
-                    alt=""
+                    src={GALLERY_QUOTE.avatar}
+                    alt={`Logo ou visuel ${GALLERY_QUOTE.source}`}
                     className="size-12 shrink-0 rounded-full"
                   />
                   <div>

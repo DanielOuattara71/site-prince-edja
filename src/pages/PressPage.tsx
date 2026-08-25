@@ -70,16 +70,27 @@ export default function PressPage() {
           </Stagger>
         </div>
 
-        <Reveal className="mt-16 flex flex-col items-start justify-between gap-6 rounded-2xl bg-sand-100 p-10 sm:flex-row sm:items-center">
-          <div>
-            <p className="label-caps text-clay-600">Presse & programmation</p>
-            <h2 className="mt-2 font-display uppercase text-heading-md text-ink-900">
-              Interviews, festivals et interventions.
-            </h2>
+        <Reveal className="mt-16">
+          <div className="grain flex flex-col items-start justify-between gap-8 rounded-2xl bg-night-800 p-10 text-cream-100 sm:flex-row sm:items-center lg:p-12">
+            <div className="max-w-xl space-y-3">
+              <p className="label-caps text-gold-400">Presse & programmation</p>
+              <h2 className="font-display uppercase text-heading-md">
+                Interviews, festivals et interventions
+                <span aria-hidden className="text-clay-500">.</span>
+              </h2>
+              <p className="text-body text-cream-100/70">
+                Plateaux, portraits, accréditations et demande d’images : l’équipe revient vers
+                vous rapidement.
+              </p>
+            </div>
+            <Button
+              href="mailto:contact@ohenetour.com?subject=Demande%20m%C3%A9dia%20-%20Prince%20Edja"
+              variant="primary"
+              className="shrink-0"
+            >
+              Contacter l’équipe
+            </Button>
           </div>
-          <Button href="mailto:contact@ohenetour.com?subject=Demande%20m%C3%A9dia%20-%20Prince%20Edja" variant="dark">
-            Contacter l’équipe
-          </Button>
         </Reveal>
       </Container>
     </Section>

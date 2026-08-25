@@ -6,6 +6,7 @@ import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { StatItem } from '@/components/ui/StatItem'
+import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 
@@ -28,15 +29,26 @@ export default function AboutPage() {
                 <span aria-hidden className="text-clay-500">.</span>
               </h1>
               <p className="max-w-xl text-body-lg text-ink-500">{SITE.role}</p>
+              <Reveal delay={0.12}>
+                <blockquote className="max-w-xl border-l-2 border-gold-400 pl-6 font-quote italic leading-snug text-heading-sm text-ink-900">
+                  {SITE.mission}
+                </blockquote>
+              </Reveal>
               <Button to="/contact" variant="dark">
                 Travailler ensemble
               </Button>
             </div>
 
-            <Reveal className="lg:col-span-5" delay={0.15}>
-              <blockquote className="border-l-2 border-gold-400 pl-6 font-quote italic leading-snug text-heading-sm text-ink-900 sm:text-heading-md">
-                {SITE.mission}
-              </blockquote>
+            <Reveal delay={0.15} className="lg:col-span-5">
+              <ParallaxImage
+                src="/images/a-propos/portrait-edja.jpg"
+                alt="Prince Edja, storyteller et producteur audiovisuel"
+                ratio="4/5"
+                range={4}
+                zoomOnHover
+                className="rounded-t-[9rem] rounded-b-2xl"
+              />
+              <p className="label-caps mt-4 text-center text-ink-300">{SITE.localisation}</p>
             </Reveal>
           </div>
 
@@ -96,10 +108,13 @@ export default function AboutPage() {
             </ol>
           </div>
 
-          <Reveal className="mt-24 border-t border-sand-200 pt-14">
-            <blockquote className="mx-auto max-w-3xl text-center font-quote italic text-body-lg text-ink-700 sm:text-heading-sm">
-              « Faire voyager les regards. Faire vivre les cultures. Faire grandir la mémoire. »
-            </blockquote>
+          <Reveal className="mt-24">
+            <div className="grain rounded-2xl bg-night-900 px-8 py-14 text-center text-cream-100 sm:px-12">
+              <p className="label-caps text-gold-400">La devise</p>
+              <blockquote className="mx-auto mt-5 max-w-3xl font-quote italic leading-snug text-body-lg sm:text-heading-sm">
+                « Faire voyager les regards. Faire vivre les cultures. Faire grandir la mémoire. »
+              </blockquote>
+            </div>
           </Reveal>
         </Container>
       </Section>

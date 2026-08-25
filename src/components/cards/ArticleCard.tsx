@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/Badge'
-import { LazyImage } from '@/components/media/LazyImage'
+import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { Tag } from '@/components/ui/Tag'
 import type { Article } from '@/types'
 
@@ -13,14 +13,16 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
     <article
       className={
         featured
-          ? 'grid gap-8 lg:grid-cols-2 lg:items-center'
+          ? 'group grid gap-8 lg:grid-cols-2 lg:items-center'
           : 'group flex h-full flex-col'
       }
     >
-      <LazyImage
+      <ParallaxImage
         src={article.image}
         alt=""
         ratio={featured ? '16/9' : '16/10'}
+        range={featured ? 6 : 4}
+        zoomOnHover
         className="rounded-md"
       />
       <div className={featured ? 'space-y-4' : 'mt-5 flex flex-1 flex-col space-y-3'}>
@@ -31,8 +33,8 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
         <h3
           className={
             featured
-              ? 'font-display uppercase text-heading-md text-ink-900'
-              : 'font-display uppercase text-heading-sm text-ink-900'
+              ? 'font-display uppercase text-heading-md text-ink-900 transition-colors duration-(--d-base) group-hover:text-clay-600'
+              : 'font-display uppercase text-heading-sm text-ink-900 transition-colors duration-(--d-base) group-hover:text-clay-600'
           }
         >
           {article.titre}

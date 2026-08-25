@@ -16,8 +16,8 @@ export function FeaturedFilm() {
           <Reveal className="lg:col-span-7">
             <div className="relative overflow-hidden rounded-md">
               <ParallaxImage
-                src="/images/placeholder-paysage.svg"
-                alt="Affiche du film Le Dernier"
+                src={featured.image}
+                alt={`Affiche du film ${featured.titre}`}
                 ratio="16/9"
                 range={3}
               />

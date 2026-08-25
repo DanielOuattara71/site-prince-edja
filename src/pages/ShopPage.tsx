@@ -4,6 +4,7 @@ import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
+import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { BijouCard } from '@/components/cards/BijouCard'
@@ -21,20 +22,35 @@ export default function ShopPage() {
     <>
       <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
         <Container>
-          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-            <div className="space-y-6 lg:col-span-7">
+          <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+            <div className="space-y-6 lg:col-span-6">
               <Eyebrow num="04">Marketplace culturelle · Édition 2026</Eyebrow>
               <h1 className="font-display uppercase text-display-lg">
                 Chaque bijou est une histoire
                 <span aria-hidden className="text-clay-500">.</span>
               </h1>
+              <Reveal delay={0.12}>
+                <p className="max-w-xl text-body-lg text-ink-500">
+                  Un passeport culturel façonné à la main par des artisans ivoiriens. Bronze,
+                  laiton et argent deviennent un langage contemporain inspiré des héritages
+                  touareg, akan, dan, yoruba, sénoufo et des royaumes africains.
+                </p>
+              </Reveal>
             </div>
-            <Reveal delay={0.12} className="self-end lg:col-span-5">
-              <p className="text-body-lg text-ink-500">
-                Un passeport culturel façonné à la main par des artisans ivoiriens. Bronze, laiton
-                et argent deviennent un langage contemporain inspiré des héritages touareg, akan,
-                dan, yoruba, sénoufo et des royaumes africains.
-              </p>
+            <Reveal delay={0.15} className="lg:col-span-5 lg:col-start-8">
+              <div className="relative">
+                <ParallaxImage
+                  src="/images/boutique/hero-tribe.jpg"
+                  alt="Pièce TRIBE façonnée à la main par des artisans ivoiriens"
+                  ratio="4/5"
+                  range={5}
+                  zoomOnHover
+                  className="rounded-t-[9rem] rounded-b-2xl"
+                />
+                <span className="label-caps absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-night-900/85 px-4 py-2 text-cream-100 backdrop-blur-sm">
+                  TRIBE · Pièces limitées
+                </span>
+              </div>
             </Reveal>
           </div>
         </Container>
