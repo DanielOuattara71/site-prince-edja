@@ -31,7 +31,7 @@ export default function EpisodeDetailPage() {
   }
 
   return (
-    <Section tone="dark" className="pt-36 lg:pt-48">
+    <Section tone="dark" padded={false} className="pt-36 pb-20 lg:pt-48 lg:pb-28">
       <Container className="max-w-3xl space-y-6">
         <Eyebrow num={episode.numero} tone="dark">
           Film · {episode.lieu}

@@ -8,7 +8,7 @@ import { Container } from '@/components/layout/Container'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { EASE_QUART } from '@/lib/motion'
 
-interface MobileMenuProps {
+interface NavOverlayProps {
   open: boolean
   onClose: () => void
 }
@@ -18,24 +18,29 @@ const lineUp = {
   visible: { y: '0%', transition: { duration: 0.6, ease: EASE_QUART } },
 }
 
-export function MobileMenu({ open, onClose }: MobileMenuProps) {
+export function NavOverlay({ open, onClose }: NavOverlayProps) {
   const firstLinkRef = useRef<HTMLAnchorElement>(null)
+  const onCloseRef = useRef(onClose)
   const { pathname } = useLocation()
+
+  useEffect(() => {
+    onCloseRef.current = onClose
+  })
 
   useLockBodyScroll(open)
 
   useEffect(() => {
     if (!open) return
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape') onCloseRef.current()
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose])
+  }, [open])
 
   useEffect(() => {
-    onClose()
-  }, [pathname, onClose])
+    onCloseRef.current()
+  }, [pathname])
 
   useEffect(() => {
     if (open) firstLinkRef.current?.focus()
@@ -47,7 +52,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
     <AnimatePresence>
       {open && (
         <motion.div
-          id="menu-mobile"
+          id="menu-overlay"
           role="dialog"
           aria-modal="true"
           aria-label="Menu de navigation"
@@ -55,12 +60,17 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           animate={{ y: 0 }}
           exit={{ y: '-100%' }}
           transition={{ duration: 0.65, ease: EASE_QUART }}
-          className="grain fixed inset-0 z-40 bg-night-900 text-cream-100 lg:hidden"
+          className="grain fixed inset-0 z-40 bg-night-900 text-cream-100"
         >
-          <Container className="flex h-full flex-col pt-24 pb-12">
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-full h-[10vh]"
+            style={{ borderRadius: '0 0 100% 100%', background: '#14100B' }}
+          />
+          <Container className="flex h-full flex-col pt-24 pb-12 lg:pt-32">
             <p className="label-caps mb-8 text-gold-400">Navigation</p>
             <motion.nav
-              aria-label="Menu mobile"
+              aria-label="Menu principal"
               initial="hidden"
               animate="visible"
               variants={{
@@ -68,9 +78,9 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 visible: { transition: { staggerChildren: 0.06, delayChildren: 0.25 } },
               }}
             >
-              <ul className="space-y-1">
+              <ul className="space-y-1 lg:columns-2 lg:gap-16">
                 {allItems.map((item, index) => (
-                  <li key={item.to} className="overflow-hidden">
+                  <li key={item.to} className="overflow-hidden break-inside-avoid">
                     <motion.div variants={lineUp}>
                       <NavLink
                         ref={index === 0 ? firstLinkRef : undefined}

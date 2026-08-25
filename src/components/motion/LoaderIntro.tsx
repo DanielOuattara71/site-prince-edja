@@ -7,6 +7,7 @@ import {
   markIntroDone,
 } from '@/lib/motion'
 import { SITE } from '@/data/site'
+import { MaskEmblem } from '@/components/motion/MaskEmblem'
 
 const WORD_MS = 520
 const BRAND_MS = 750
@@ -52,9 +53,22 @@ export function LoaderIntro() {
         }}
         exit={{ y: '-100%' }}
         transition={{ duration: 0.75, ease: EASE_QUART }}
-        className="grain fixed inset-0 z-[70] flex flex-col items-center justify-center bg-night-900 text-cream-100"
+        className="grain fixed inset-0 z-[70] flex flex-col items-center justify-center gap-10 bg-night-900 text-cream-100"
       >
-        <div className="relative flex h-28 items-center overflow-hidden">
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, y: 28, scale: 0.92 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, ease: EASE_EXPO }}
+        >
+          <motion.div
+            animate={reducedMotion ? undefined : { y: [0, -9, 0] }}
+            transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
+          >
+            <MaskEmblem className="h-44 w-auto drop-shadow-[0_20px_32px_rgba(0,0,0,0.45)] lg:h-52" />
+          </motion.div>
+        </motion.div>
+
+        <div aria-live="polite" className="flex h-14 items-center overflow-hidden">
           <AnimatePresence mode="wait">
             {phase === 'words' ? (
               <motion.p
@@ -63,10 +77,10 @@ export function LoaderIntro() {
                 animate={{ y: '0%', opacity: 1 }}
                 exit={{ y: '-70%', opacity: 0 }}
                 transition={{ duration: WORD_MS / 1000 - 0.06, ease: EASE_QUART }}
-                className="font-display uppercase text-display-lg"
+                className="font-quote italic text-body-lg text-cream-100/85"
               >
                 {SITE.tagline[index]}
-                <span aria-hidden className="text-gold-400">.</span>
+                <span aria-hidden className="text-gold-400"> …</span>
               </motion.p>
             ) : (
               <motion.h2
@@ -86,9 +100,7 @@ export function LoaderIntro() {
         <div
           aria-hidden
           className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-gold-400"
-          style={{
-            animation: `pe-progress ${TOTAL_MS}ms linear forwards`,
-          }}
+          style={{ animation: `pe-progress ${TOTAL_MS}ms linear forwards` }}
         />
 
         <motion.div

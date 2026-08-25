@@ -19,7 +19,7 @@ export default function ShopPage() {
 
   return (
     <>
-      <Section tone="light" className="pt-32 lg:pt-44">
+      <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="space-y-6 lg:col-span-7">
@@ -40,7 +40,7 @@ export default function ShopPage() {
         </Container>
       </Section>
 
-      <Section tone="light" className="pt-0">
+      <Section tone="light" padded={false} className="pb-24 lg:pb-32">
         <Container>
           <Stagger className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {BIJOUX.map((bijou) => (

@@ -7,6 +7,8 @@ import { UniversStack } from '@/components/sections/home/UniversStack'
 import { ManifesteHorizontal } from '@/components/sections/home/ManifesteHorizontal'
 import { PressMarquee } from '@/components/sections/home/PressMarquee'
 import { JournalTeaser } from '@/components/sections/home/JournalTeaser'
+import { NameBanner } from '@/components/sections/home/NameBanner'
+import { FeaturedGallery } from '@/components/sections/home/FeaturedGallery'
 
 export default function HomePage() {
   useSeo({
@@ -18,7 +20,9 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <NameBanner />
       <IntroBio />
+      <FeaturedGallery />
       <FilmsList />
       <UniversStack />
       <ManifesteHorizontal />

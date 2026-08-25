@@ -16,7 +16,7 @@ export function UniversStack() {
       <Container>
         <SectionHeading
           eyebrow="L’écosystème OHENE"
-          num="03"
+          num="04"
           title={
             <>
               Produire. Transmettre.

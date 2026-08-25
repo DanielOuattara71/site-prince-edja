@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#201812"/>
+  <path d="M0 560c200-60 380 40 560 0s360-90 540-30 340 70 500 30v340H0z" fill="#C96F2E" opacity="0.35"/>
+  <path d="M0 640c220-50 400 30 580-5s350-70 530-20 330 55 490 20v265H0z" fill="#C96F2E" opacity="0.55"/>
+  <path d="M0 720c240-40 420 25 600-5s340-55 520-15 320 40 480 10v190H0z" fill="#D9A441" opacity="0.8"/>
+  <circle cx="380" cy="220" r="70" fill="#F2ECDF" opacity="0.9"/>
+  <text x="80" y="120" font-family="Arial, sans-serif" font-size="34" letter-spacing="10" fill="#E4DAC6" opacity="0.55">IMAGE À VENIR — BANDAMA</text>
+</svg>

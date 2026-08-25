@@ -16,7 +16,7 @@ export default function XplorePage() {
 
   return (
     <>
-      <Section tone="dark" className="pt-36 lg:pt-48">
+      <Section tone="dark" padded={false} className="pt-36 pb-20 lg:pt-48 lg:pb-28">
         <Container>
           <div className="max-w-4xl space-y-6">
             <Eyebrow num="02" tone="dark">

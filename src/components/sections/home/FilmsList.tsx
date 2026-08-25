@@ -17,7 +17,7 @@ export function FilmsList() {
         <div className="mb-12 flex flex-col justify-between gap-8 sm:items-end lg:flex-row lg:items-end">
           <SectionHeading
             eyebrow="OHENE Prod"
-            num="02"
+            num="03"
             tone="dark"
             title={
               <>

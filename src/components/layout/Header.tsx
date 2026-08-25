@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -6,22 +6,17 @@ import { isDarkTop, NAV_ITEMS, SITE } from '@/data/site'
 import { Container } from '@/components/layout/Container'
 import { MagneticButton } from '@/components/motion/MagneticButton'
 import { Button } from '@/components/ui/Button'
-import { MobileMenu } from '@/components/layout/MobileMenu'
+import { NavOverlay } from '@/components/layout/NavOverlay'
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
-  const [hidden, setHidden] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const closeMenu = useCallback(() => setMenuOpen(false), [])
   const { pathname } = useLocation()
 
   useEffect(() => {
-    let lastY = window.scrollY
-    const onScroll = () => {
-      const y = window.scrollY
-      setScrolled(y > 32)
-      setHidden(y > 140 && y > lastY)
-      lastY = y
-    }
+    const onScroll = () => setScrolled(window.scrollY > 32)
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -33,8 +28,7 @@ export function Header() {
     <>
       <header
         className={cn(
-          'fixed inset-x-0 top-0 z-50 transition-[transform,background-color,color,box-shadow] duration-(--d-base)',
-          hidden && !menuOpen && '-translate-y-full',
+          'fixed inset-x-0 top-0 z-50 transition-[background-color,color,box-shadow] duration-(--d-base)',
           scrolled && !menuOpen
             ? 'bg-sand-50/90 text-ink-900 shadow-[0_1px_0_var(--color-sand-200)] backdrop-blur-md'
             : 'bg-transparent',
@@ -84,10 +78,10 @@ export function Header() {
                 type="button"
                 onClick={() => setMenuOpen((open) => !open)}
                 aria-expanded={menuOpen}
-                aria-controls="menu-mobile"
+                aria-controls="menu-overlay"
                 aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
                 className={cn(
-                  'flex size-11 cursor-pointer items-center justify-center rounded-full border transition-colors duration-(--d-fast) lg:hidden',
+                  'flex size-11 cursor-pointer items-center justify-center rounded-full border transition-colors duration-(--d-fast)',
                   lightText || menuOpen
                     ? 'border-cream-100/40 hover:bg-cream-100 hover:text-ink-900'
                     : 'border-ink-900/30 hover:bg-ink-900 hover:text-cream-100',
@@ -100,7 +94,7 @@ export function Header() {
         </Container>
       </header>
 
-      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <NavOverlay open={menuOpen} onClose={closeMenu} />
     </>
   )
 }

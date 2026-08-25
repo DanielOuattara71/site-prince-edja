@@ -19,7 +19,7 @@ export default function JournalPage() {
 
   return (
     <>
-      <Section tone="light" className="pt-32 lg:pt-44">
+      <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
         <Container>
           <div className="max-w-4xl space-y-6">
             <Eyebrow num="05">Le journal</Eyebrow>

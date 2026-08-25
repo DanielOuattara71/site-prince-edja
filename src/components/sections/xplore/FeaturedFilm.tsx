@@ -2,7 +2,7 @@ import { EPISODES } from '@/data/content'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
-import { LazyImage } from '@/components/media/LazyImage'
+import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 
@@ -15,7 +15,12 @@ export function FeaturedFilm() {
         <div className="grid items-center gap-10 lg:grid-cols-12">
           <Reveal className="lg:col-span-7">
             <div className="relative overflow-hidden rounded-md">
-              <LazyImage src="/images/placeholder-paysage.svg" alt="Affiche du film Le Dernier" ratio="16/9" />
+              <ParallaxImage
+                src="/images/placeholder-paysage.svg"
+                alt="Affiche du film Le Dernier"
+                ratio="16/9"
+                range={3}
+              />
               <span
                 aria-hidden
                 className="absolute inset-0 flex items-center justify-center"

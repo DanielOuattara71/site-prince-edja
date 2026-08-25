@@ -112,6 +112,8 @@ export const TRAVEL_CITIES: TravelCity[] = [
 
 export const TRAVEL_PARTNERS = ['Noom Hotels', 'Air Côte d’Ivoire']
 
+export const TRAVEL_PROGRAMME = ['Hospitalité', 'Cuisine', 'Culture urbaine', 'Rencontres']
+
 export const BIJOUX: Bijou[] = [
   {
     slug: 'agadez',

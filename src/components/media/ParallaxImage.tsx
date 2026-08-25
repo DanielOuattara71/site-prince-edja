@@ -7,6 +7,8 @@ interface ParallaxImageProps {
   alt: string
   priority?: boolean
   range?: number
+  ratio?: string
+  zoomOnHover?: boolean
   className?: string
   imgClassName?: string
 }
@@ -16,6 +18,8 @@ export function ParallaxImage({
   alt,
   priority = false,
   range = 6,
+  ratio,
+  zoomOnHover = false,
   className,
   imgClassName,
 }: ParallaxImageProps) {
@@ -25,19 +29,27 @@ export function ParallaxImage({
   const y = useTransform(scrollYProgress, [0, 1], [`-${range}%`, `${range}%`])
 
   return (
-    <div ref={ref} className={cn('relative overflow-hidden', className)}>
-      <motion.img
-        src={src}
-        alt={alt}
-        loading={priority ? 'eager' : 'lazy'}
-        decoding={priority ? 'sync' : 'async'}
-        fetchPriority={priority ? 'high' : 'auto'}
-        style={reducedMotion ? undefined : { y }}
+    <div
+      ref={ref}
+      className={cn('relative overflow-hidden', className)}
+      style={ratio ? { aspectRatio: ratio } : undefined}
+    >
+      <div
         className={cn(
-          'h-full w-full scale-[1.15] object-cover',
-          imgClassName,
+          'h-full w-full transition-transform duration-(--d-reveal) ease-expo',
+          zoomOnHover && 'group-hover:scale-[1.06]',
         )}
-      />
+      >
+        <motion.img
+          src={src}
+          alt={alt}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding={priority ? 'sync' : 'async'}
+          fetchPriority={priority ? 'high' : 'auto'}
+          style={reducedMotion ? undefined : { y }}
+          className={cn('h-full w-full scale-[1.15] object-cover', imgClassName)}
+        />
+      </div>
     </div>
   )
 }

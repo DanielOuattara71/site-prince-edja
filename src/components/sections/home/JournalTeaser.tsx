@@ -13,7 +13,7 @@ export function JournalTeaser() {
         <div className="mb-14 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
           <SectionHeading
             eyebrow="Le journal"
-            num="05"
+            num="06"
             title={
               <>
                 Idées & récits<span aria-hidden className="text-clay-500">.</span>

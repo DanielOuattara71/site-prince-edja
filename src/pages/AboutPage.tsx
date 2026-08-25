@@ -18,7 +18,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <Section tone="light" className="pt-32 lg:pt-44">
+      <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="space-y-6 lg:col-span-7">

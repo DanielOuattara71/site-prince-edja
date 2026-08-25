@@ -1,5 +1,5 @@
 import type { Bijou } from '@/types'
-import { LazyImage } from '@/components/media/LazyImage'
+import { ParallaxImage } from '@/components/media/ParallaxImage'
 
 interface BijouCardProps {
   bijou: Bijou
@@ -8,12 +8,13 @@ interface BijouCardProps {
 export function BijouCard({ bijou }: BijouCardProps) {
   return (
     <article className="group flex h-full flex-col">
-      <LazyImage
+      <ParallaxImage
         src={bijou.image}
         alt={`Bijou ${bijou.nom}, inspiré de la culture ${bijou.culture}`}
         ratio="3/4"
+        range={4}
+        zoomOnHover
         className="rounded-t-[7rem] rounded-b-md"
-        imgClassName="transition-transform duration-(--d-reveal) ease-expo group-hover:scale-[1.05]"
       />
       <div className="flex items-baseline justify-between gap-4 pt-5">
         <p aria-hidden className="font-display text-heading-sm text-gold-400">{bijou.numero}</p>

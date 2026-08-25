@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#14100B"/>
+  <circle cx="1300" cy="200" r="90" fill="#F2ECDF" opacity="0.85"/>
+  <path d="M0 900V520l90-140 90 140v380zM260 900V420l110-170 110 170v480zM560 900V560l80-120 80 120v340zM820 900V380l120-185 120 185v520zM1140 900V540l85-130 85 130v360z" fill="#1C140D"/>
+  <path d="M0 900h1600v-60l-160-40-200 50-240-60-220 45-260-55-240 50-180-30z" fill="#201812"/>
+  <text x="80" y="120" font-family="Arial, sans-serif" font-size="34" letter-spacing="10" fill="#E4DAC6" opacity="0.5">IMAGE À VENIR — TAÏ</text>
+</svg>

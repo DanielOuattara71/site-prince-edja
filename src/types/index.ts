@@ -87,3 +87,13 @@ export interface ContactMotif {
   titre: string
   description: string
 }
+
+export interface GalleryItem {
+  src: string
+  alt: string
+  to: string
+  ratio: string
+  speed: number
+  label?: string
+  external?: boolean
+}
