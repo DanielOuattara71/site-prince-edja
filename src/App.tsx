@@ -32,9 +32,19 @@ function AnimatedOutlet() {
         exit={
           reducedMotion
             ? undefined
-            : { opacity: 0, y: -16, transition: { duration: 0.28, ease: EASE_QUART } }
+            : {
+                opacity: 0,
+                y: -16,
+                transition: {
+                  duration: 0.28,
+                  ease: EASE_QUART,
+                },
+              }
         }
-        transition={{ duration: DUR.base, ease: EASE_EXPO }}
+        transition={{
+          duration: DUR.base,
+          ease: EASE_EXPO,
+        }}
       >
         <Outlet />
       </motion.main>
@@ -51,12 +61,24 @@ function SiteLayout() {
       >
         Aller au contenu
       </a>
+
       <ScrollToTop />
+
       <LoaderIntro />
+
       <Header />
-      <Suspense fallback={<div className="min-h-svh" aria-busy="true" />}>
+
+      <Suspense
+        fallback={
+          <div
+            className="min-h-svh"
+            aria-busy="true"
+          />
+        }
+      >
         <AnimatedOutlet />
       </Suspense>
+
       <Footer />
     </>
   )
@@ -64,19 +86,55 @@ function SiteLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/site-prince-edja">
       <Routes>
         <Route element={<SiteLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="/a-propos" element={<AboutPage />} />
-          <Route path="/xplore" element={<XplorePage />} />
-          <Route path="/xplore/:slug" element={<EpisodeDetailPage />} />
-          <Route path="/taste-and-travel" element={<TasteTravelPage />} />
-          <Route path="/boutique" element={<ShopPage />} />
-          <Route path="/journal" element={<JournalPage />} />
-          <Route path="/presse" element={<PressPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="*" element={<NotFoundPage />} />
+
+          <Route
+            path="/a-propos"
+            element={<AboutPage />}
+          />
+
+          <Route
+            path="/xplore"
+            element={<XplorePage />}
+          />
+
+          <Route
+            path="/xplore/:slug"
+            element={<EpisodeDetailPage />}
+          />
+
+          <Route
+            path="/taste-and-travel"
+            element={<TasteTravelPage />}
+          />
+
+          <Route
+            path="/boutique"
+            element={<ShopPage />}
+          />
+
+          <Route
+            path="/journal"
+            element={<JournalPage />}
+          />
+
+          <Route
+            path="/presse"
+            element={<PressPage />}
+          />
+
+          <Route
+            path="/contact"
+            element={<ContactPage />}
+          />
+
+          <Route
+            path="*"
+            element={<NotFoundPage />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>
