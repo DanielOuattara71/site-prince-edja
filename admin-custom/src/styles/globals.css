@@ -1,0 +1,38 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-sand-50: #faf6ee;
+  --color-sand-100: #f2ecdf;
+  --color-sand-200: #e4dac6;
+  --color-sand-300: #d6c8b0;
+  --color-ink-900: #1c140d;
+  --color-ink-700: #43362a;
+  --color-ink-500: #7a6b5b;
+  --color-ink-400: #85766a;
+  --color-ink-300: #b0a392;
+  --color-night-900: #14100b;
+  --color-night-800: #201812;
+  --color-night-700: #2e241c;
+  --color-cream-100: #f2ecdf;
+  --color-clay-400: #d98a4a;
+  --color-clay-500: #c96f2e;
+  --color-clay-600: #a8541f;
+  --color-clay-700: #7a3a14;
+  --color-gold-300: #e8c071;
+  --color-gold-400: #d9a441;
+  --color-gold-500: #b3862b;
+  --color-forest-900: #1a2e1a;
+  --color-forest-700: #2d4a32;
+  --color-leaf-600: #4a5a3a;
+  --color-sage-300: #b5c2a8;
+  --color-sage-100: #d4ddd0;
+  --font-display: 'Anton', sans-serif;
+  --font-sans: system-ui, sans-serif;
+}
+
+@layer base {
+  body { @apply bg-sand-50 text-ink-900 antialiased; }
+}
+
+@utility label-caps { font-size: 0.8125rem; line-height: 1.4; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; }
+@utility grain { position: relative; isolation: isolate; &::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.05; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); } }

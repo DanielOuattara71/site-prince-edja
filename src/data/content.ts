@@ -43,7 +43,7 @@ export const EPISODES: Episode[] = [
     titre: 'Le Dernier',
     lieu: 'Bouaké',
     pitch: 'Le dernier rhinocéros blanc d’Afrique de l’Ouest.',
-    image: '/images/episodes/bouake.jpg',
+    image: '/images/episodes/bouake.png',
   },
   {
     slug: 'la-cote-vive',
@@ -51,7 +51,7 @@ export const EPISODES: Episode[] = [
     titre: 'La Côte vive',
     lieu: 'Sassandra',
     pitch: 'L’écologie de luxe et la mémoire du littoral.',
-    image: '/images/episodes/sassandra.jpg',
+    image: '/images/episodes/sassandra.png',
     guide: '/guides/guide-sassandra.pdf',
   },
   {
@@ -60,7 +60,7 @@ export const EPISODES: Episode[] = [
     titre: 'Entre deux eaux',
     lieu: 'Jacqueville',
     pitch: 'Le lagon, l’océan et les hommes de la pêche.',
-    image: '/images/episodes/jacqueville.jpg',
+    image: '/images/episodes/jacqueville.png',
     guide: '/guides/guide-jacqueville.pdf',
   },
   {
@@ -69,7 +69,7 @@ export const EPISODES: Episode[] = [
     titre: 'La Forêt debout',
     lieu: 'Taï',
     pitch: 'La dernière grande forêt primaire et ses chimpanzés.',
-    image: '/images/episodes/tai.jpg',
+    image: '/images/episodes/tai.png',
     guide: '/guides/guide-tai.pdf',
   },
   {
@@ -78,7 +78,7 @@ export const EPISODES: Episode[] = [
     titre: 'Le Fleuve',
     lieu: 'Tiassalé',
     pitch: 'Le Bandama, ses rives et ses histoires.',
-    image: '/images/episodes/tiassale.jpg',
+    image: '/images/episodes/tiassale.png',
     guide: '/guides/guide-tiassale.pdf',
   },
   {
@@ -87,7 +87,7 @@ export const EPISODES: Episode[] = [
     titre: 'Les Îles mémoire',
     lieu: 'Adiaké',
     pitch: 'Les îles Ehotilé, entre patrimoine et transmission.',
-    image: '/images/episodes/adiake.jpg',
+    image: '/images/episodes/adiake.png',
     guide: '/guides/guide-adiake.pdf',
   },
 ]
@@ -96,17 +96,17 @@ export const TRAVEL_CITIES: TravelCity[] = [
   {
     nom: 'Abidjan',
     intention: 'Énergie, hospitalité et créativité ivoirienne.',
-    image: '/images/voyage/abidjan.jpg',
+    image: '/images/voyage/abidjan.png',
   },
   {
     nom: 'Dakar',
     intention: 'Élégance, mémoire et identité sénégalaise.',
-    image: '/images/voyage/dakar.jpg',
+    image: '/images/voyage/dakar.png',
   },
   {
     nom: 'Conakry',
     intention: 'Rythmes, paysages et générosité guinéenne.',
-    image: '/images/voyage/conakry.jpg',
+    image: '/images/voyage/conakry.png',
   },
 ]
 
@@ -205,7 +205,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Voyager sur le continent, c’est apprendre à regarder les nuances, les silences et les gestes qui échappent aux cartes postales.',
     statut: 'à venir',
-    image: '/images/journal/afrique-multitude-de-mondes.jpg',
+    image: '/images/journal/afrique-multitude-de-mondes.png',
   },
   {
     slug: 'citoyens-premiers-ambassadeurs',
@@ -214,7 +214,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Une destination ne se résume pas à une campagne : elle se construit dans les récits quotidiens de ceux qui l’habitent.',
     statut: 'à venir',
-    image: '/images/journal/citoyens-premiers-ambassadeurs.jpg',
+    image: '/images/journal/citoyens-premiers-ambassadeurs.png',
   },
   {
     slug: 'griot-moderne',
@@ -223,7 +223,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Comment les outils numériques peuvent transmettre les histoires sans les vider de leur sens.',
     statut: 'à venir',
-    image: '/images/journal/griot-moderne.jpg',
+    image: '/images/journal/griot-moderne.png',
   },
   {
     slug: 'voyager-change-le-regard',
@@ -232,7 +232,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Après plus de trente pays, une conviction : le voyage continental est aussi un acte de connaissance de soi.',
     statut: 'à venir',
-    image: '/images/journal/voyager-change-le-regard.jpg',
+    image: '/images/journal/voyager-change-le-regard.png',
   },
   {
     slug: 'porter-un-symbole',
@@ -241,7 +241,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Du masque Dan à la croix d’Agadez, les objets sont des archives vivantes qui relient les générations.',
     statut: 'à venir',
-    image: '/images/journal/porter-un-symbole.jpg',
+    image: '/images/journal/porter-un-symbole.png',
   },
   {
     slug: 'hotel-premiere-ambassade',
@@ -250,7 +250,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Service, architecture, cuisine : chaque détail participe à l’image mentale d’une destination.',
     statut: 'à venir',
-    image: '/images/journal/hotel-premiere-ambassade.jpg',
+    image: '/images/journal/hotel-premiere-ambassade.png',
   },
   {
     slug: 'raconter-pour-exister',
@@ -259,7 +259,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Créer nos propres images n’est pas un luxe : c’est une condition pour reprendre la maîtrise du récit africain.',
     statut: 'à venir',
-    image: '/images/journal/raconter-pour-exister.jpg',
+    image: '/images/journal/raconter-pour-exister.png',
   },
 ]
 

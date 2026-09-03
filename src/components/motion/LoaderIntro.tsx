@@ -5,6 +5,7 @@ import {
   EASE_QUART,
   introAlreadyPlayed,
   markIntroDone,
+  REPLAY_INTRO_EVENT,
 } from '@/lib/motion'
 import { SITE } from '@/data/site'
 import { MaskEmblem } from '@/components/motion/MaskEmblem'
@@ -38,6 +39,16 @@ export function LoaderIntro() {
 
     return () => timers.forEach(clearTimeout)
   }, [done])
+
+  useEffect(() => {
+    const onReplay = () => {
+      setPhase('words')
+      setIndex(0)
+      setDone(false)
+    }
+    window.addEventListener(REPLAY_INTRO_EVENT, onReplay)
+    return () => window.removeEventListener(REPLAY_INTRO_EVENT, onReplay)
+  }, [])
 
   if (done) return null
 

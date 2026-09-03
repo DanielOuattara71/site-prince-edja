@@ -37,7 +37,7 @@ export function UniversStack() {
                 className={cn(
                   'sticky mb-6 grid gap-4 rounded-2xl border p-8 shadow-sm sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-8 sm:p-10',
                   isLast
-                    ? 'grain border-night-900 bg-night-900 text-cream-100'
+                    ? 'grain overlay-forest border-forest-900 text-cream-100'
                     : 'border-sand-200 bg-sand-100 text-ink-900',
                 )}
               >

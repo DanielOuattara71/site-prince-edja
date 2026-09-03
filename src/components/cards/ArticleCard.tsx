@@ -27,14 +27,15 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
       />
       <div className={featured ? 'space-y-4' : 'mt-5 flex flex-1 flex-col space-y-3'}>
         <div className="flex items-center gap-3">
-          <Tag>{article.categorie}</Tag>
+          <Tag tone={article.slug === 'afrique-multitude-de-mondes' ? 'sage' : 'light'}>{article.categorie}</Tag>
           {article.statut === 'à venir' && <Badge statut={article.statut} />}
         </div>
         <h3
           className={
-            featured
-              ? 'font-display uppercase text-heading-md text-ink-900 transition-colors duration-(--d-base) group-hover:text-clay-600'
-              : 'font-display uppercase text-heading-sm text-ink-900 transition-colors duration-(--d-base) group-hover:text-clay-600'
+            (featured
+              ? 'font-display uppercase text-heading-md transition-colors duration-(--d-base) group-hover:text-leaf-600'
+              : 'font-display uppercase text-heading-sm transition-colors duration-(--d-base) group-hover:text-leaf-600') +
+            (article.slug === 'afrique-multitude-de-mondes' ? ' text-leaf-600' : ' text-ink-900')
           }
         >
           {article.titre}

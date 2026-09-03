@@ -41,14 +41,14 @@ export default function AboutPage() {
 
             <Reveal delay={0.15} className="lg:col-span-5">
               <ParallaxImage
-                src="/images/a-propos/portrait-edja.jpg"
+                src="/images/a-propos/portrait-edja.png"
                 alt="Prince Edja, storyteller et producteur audiovisuel"
                 ratio="4/5"
                 range={4}
                 zoomOnHover
                 className="rounded-t-[9rem] rounded-b-2xl"
               />
-              <p className="label-caps mt-4 text-center text-ink-300">{SITE.localisation}</p>
+              <p className="label-caps mt-4 text-center text-ink-400">{SITE.localisation}</p>
             </Reveal>
           </div>
 

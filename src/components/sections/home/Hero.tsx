@@ -5,7 +5,6 @@ import { introDelay, EASE_EXPO } from '@/lib/motion'
 import { Container } from '@/components/layout/Container'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { TextRevealLines } from '@/components/motion/TextRevealLines'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 
 export function Hero() {
@@ -19,31 +18,41 @@ export function Hero() {
   })
 
   return (
-    <section className="grain relative flex min-h-svh flex-col justify-end overflow-hidden bg-night-900 text-cream-100">
+    <section className="grain relative flex min-h-svh flex-col justify-end overflow-hidden bg-night-900 text-cream-100 lg:min-h-[92svh]">
+      {/* Photo plein écran - plus visible */}
       <div aria-hidden className="absolute inset-0">
         <ParallaxImage src={SITE.heroImage} alt="" priority className="h-full w-full" />
-        <div className="overlay-cinema absolute inset-0" />
-        <div className="overlay-vignette absolute inset-0" />
+        {/* Overlays allégés pour laisser respirer la photo */}
+        <div className="overlay-hero-warm absolute inset-0 opacity-45" />
+        <div className="overlay-cinema absolute inset-0 opacity-55" />
+        <div className="overlay-hero-scrim absolute inset-0 opacity-85" />
       </div>
 
-      <Container className="relative z-10 pt-36 pb-20 sm:pb-28">
-        <div className="space-y-6">
-          <motion.div {...(reducedMotion ? {} : enter(base))}>
-            <Eyebrow tone="dark">Griot 2.0 — Abidjan</Eyebrow>
-          </motion.div>
+      {/* Filigrane GRIOT 2.0 */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-[18%] hidden select-none overflow-hidden lg:block"
+      >
+        <p className="font-display whitespace-nowrap text-center text-[clamp(9rem,18vw,20rem)] leading-none tracking-[-0.04em] text-cream-100/[0.035]">
+          GRIOT 2.0
+        </p>
+      </div>
 
+      <Container className="relative z-10 pt-28 pb-10 sm:pb-16 lg:pt-32">
+        <div className="max-w-3xl space-y-6">
           <TextRevealLines
             as="h1"
             lines={['PRINCE EDJA']}
-            delay={base + 0.15}
-            className="font-display uppercase text-display-xl"
+            delay={base + 0.22}
+            className="font-display uppercase text-heading-md text-cream-100"
           />
 
-          <TextRevealLines
-            lines={[SITE.tagline.join(' · ')]}
-            delay={base + 0.4}
-            className="font-quote italic text-body-lg text-gold-400"
-          />
+          <motion.p
+            {...(reducedMotion ? {} : enter(base + 0.4))}
+            className="font-display uppercase text-heading-sm tracking-wide text-gold-400"
+          >
+            {SITE.tagline.join(' · ')}
+          </motion.p>
 
           <motion.p
             {...(reducedMotion ? {} : enter(base + 0.55))}
@@ -53,7 +62,7 @@ export function Hero() {
           </motion.p>
 
           <motion.div
-            {...(reducedMotion ? {} : enter(base + 0.7))}
+            {...(reducedMotion ? {} : enter(base + 0.72))}
             className="flex flex-wrap gap-4 pt-2"
           >
             <Button to="/a-propos" variant="primary">

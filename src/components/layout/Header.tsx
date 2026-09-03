@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { isDarkTop, NAV_ITEMS, SITE } from '@/data/site'
+import { replayIntro } from '@/lib/motion'
 import { Container } from '@/components/layout/Container'
 import { MagneticButton } from '@/components/motion/MagneticButton'
 import { Button } from '@/components/ui/Button'
@@ -40,6 +41,7 @@ export function Header() {
           <Link
             to="/"
             aria-label="Prince Edja — Accueil"
+            onClick={() => replayIntro()}
             className="flex items-baseline gap-1.5 font-display text-xl uppercase tracking-wide"
           >
             {SITE.name}

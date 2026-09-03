@@ -38,6 +38,8 @@ export const staggerContainer: Variants = {
 
 const INTRO_KEY = 'pe:intro-jouee'
 
+export const REPLAY_INTRO_EVENT = 'pe:replay-intro'
+
 export function introAlreadyPlayed(): boolean {
   try {
     return Boolean(sessionStorage.getItem(INTRO_KEY))
@@ -57,4 +59,13 @@ export function markIntroDone(): void {
   } catch {
     /* stockage indisponible : l'intro se rejouera simplement */
   }
+}
+
+export function replayIntro(): void {
+  try {
+    sessionStorage.removeItem(INTRO_KEY)
+  } catch {
+    /* ignore */
+  }
+  window.dispatchEvent(new CustomEvent(REPLAY_INTRO_EVENT))
 }

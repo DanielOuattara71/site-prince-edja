@@ -1,0 +1,125 @@
+backend:
+  name: github
+  branch: version_3
+  repo: prince-edja/site  # ← à remplacer par ton repo GitHub
+  base_url: https://api.netlify.com  # pour Netlify Identity / OAuth
+  auth_endpoint: api/v1
+
+# Décommenter pour test local sans GitHub : 
+# backend:
+#   name: test-repo
+
+local_backend: true
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
+publish_mode: editorial_workflow
+
+collections:
+  - name: "site"
+    label: "Identité du site"
+    files:
+      - label: "Prince Edja"
+        name: "prince_edja"
+        file: "src/data/site.ts"
+        fields:
+          - {label: "Nom", name: "name", widget: "string"}
+          - {label: "Rôle", name: "role", widget: "string"}
+          - {label: "Tagline (3 mots)", name: "tagline", widget: "list"}
+          - {label: "Devise", name: "devise", widget: "string"}
+          - {label: "Mission", name: "mission", widget: "text"}
+          - {label: "Bio (3 paragraphes)", name: "bio", widget: "list", field: {label: "Paragraphe", name: "bio", widget: "text"}}
+          - {label: "Email", name: "email", widget: "string"}
+          - {label: "LinkedIn", name: "linkedin", widget: "string"}
+          - {label: "Localisation", name: "localisation", widget: "string"}
+          - {label: "Image Hero", name: "heroImage", widget: "image", choose_url: false, media_folder: "public/images/hero", public_folder: "/images/hero"}
+          - label: "Stats"
+            name: "stats"
+            widget: "list"
+            fields:
+              - {label: "Valeur", name: "value", widget: "number"}
+              - {label: "Suffixe", name: "suffix", widget: "string", required: false}
+              - {label: "Label", name: "label", widget: "string"}
+
+  - name: "univers"
+    label: "Univers OHENE (4)"
+    folder: "src/data/content.ts"
+    extension: "ts"
+    format: "frontmatter"
+    create: true
+    fields:
+      - {label: "Numéro", name: "numero", widget: "string", pattern: ['^[0-9]{2}$', "2 chiffres"]}
+      - {label: "Nom", name: "nom", widget: "string"}
+      - {label: "Pitch", name: "pitch", widget: "text"}
+      - {label: "Lien CTA", name: "to", widget: "string"}
+
+  - name: "episodes"
+    label: "X'PLORE — Episodes (6)"
+    folder: "public/images/episodes"
+    extension: "ts"
+    create: true
+    fields:
+      - {label: "Slug", name: "slug", widget: "string", hint: "ex: le-dernier"}
+      - {label: "Numéro", name: "numero", widget: "string"}
+      - {label: "Titre", name: "titre", widget: "string"}
+      - {label: "Lieu", name: "lieu", widget: "string"}
+      - {label: "Pitch", name: "pitch", widget: "text"}
+      - {label: "Image", name: "image", widget: "image", media_folder: "public/images/episodes", public_folder: "/images/episodes"}
+      - {label: "Guide PDF", name: "guide", widget: "file", required: false, media_folder: "public/guides", public_folder: "/guides"}
+
+  - name: "journal"
+    label: "Journal — Articles (7)"
+    folder: "public/images/journal"
+    fields:
+      - {label: "Slug", name: "slug", widget: "string"}
+      - {label: "Catégorie", name: "categorie", widget: "select", options: ["Carnet de route", "Nation branding", "Culture", "Tourisme", "Patrimoine", "Hospitalité", "Création"]}
+      - {label: "Titre", name: "titre", widget: "string"}
+      - {label: "Extrait", name: "extrait", widget: "text"}
+      - {label: "Statut", name: "statut", widget: "select", options: ["publié", "à venir"]}
+      - {label: "Image", name: "image", widget: "image", media_folder: "public/images/journal", public_folder: "/images/journal"}
+
+  - name: "travel"
+    label: "Taste & Travel"
+    files:
+      - label: "Villes (3)"
+        name: "villes"
+        file: "src/data/content.ts"
+        fields:
+          - label: "Villes"
+            name: "TRAVEL_CITIES"
+            widget: "list"
+            fields:
+              - {label: "Nom", name: "nom", widget: "string"}
+              - {label: "Intention", name: "intention", widget: "string"}
+              - {label: "Image", name: "image", widget: "image", media_folder: "public/images/voyage", public_folder: "/images/voyage"}
+
+  - name: "presse"
+    label: "Presse (6)"
+    folder: "src/data/content.ts"
+    fields:
+      - {label: "Source", name: "source", widget: "string"}
+      - {label: "Date", name: "date", widget: "string"}
+      - {label: "Titre", name: "titre", widget: "string"}
+      - {label: "Résumé", name: "resume", widget: "text"}
+      - {label: "URL", name: "url", widget: "string"}
+
+  - name: "a_propos"
+    label: "À propos — Milestones"
+    folder: "src/data/content.ts"
+    fields:
+      - {label: "Période", name: "periode", widget: "string"}
+      - {label: "Titre", name: "titre", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+
+  - name: "gallery"
+    label: "Galerie Home (6) + Quote"
+    file: "src/data/gallery.ts"
+    fields:
+      - label: "Items"
+        name: "GALLERY"
+        widget: "list"
+        fields:
+          - {label: "Source image", name: "src", widget: "image", media_folder: "public/images", public_folder: "/images"}
+          - {label: "Alt", name: "alt", widget: "string"}
+          - {label: "Lien", name: "to", widget: "string"}
+          - {label: "Ratio", name: "ratio", widget: "select", options: ["4/3", "16/10", "21/9"]}
+          - {label: "Speed parallax", name: "speed", widget: "number", value_type: "int", min: 1, max: 10}

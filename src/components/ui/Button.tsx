@@ -8,8 +8,8 @@ type ButtonVariant = 'primary' | 'dark' | 'ghost-light' | 'ghost-dark'
 const VARIANT_STYLES: Record<ButtonVariant, { button: string; fill: string; hoverText: string }> =
   {
     primary: {
-      button: 'bg-clay-500 text-cream-100',
-      fill: 'bg-clay-600',
+      button: 'bg-clay-600 text-cream-100',
+      fill: 'bg-clay-700',
       hoverText: '',
     },
     dark: {

@@ -38,7 +38,7 @@ export const SITE: SiteInfo = {
   linkedin: 'https://www.linkedin.com/in/franckedja/',
   linkedinLabel: 'Voir le parcours LinkedIn',
   localisation: 'Abidjan · Côte d’Ivoire',
-  heroImage: '/images/hero/hero-prince-edja.jpg',
+  heroImage: '/images/hero/hero-prince-edja.png',
   stats: [
     { value: 30, suffix: '+', label: 'Pays parcourus' },
     { value: 600, suffix: 'K+', label: 'Abonnés cumulés' },

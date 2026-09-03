@@ -44,19 +44,31 @@ export default function JournalPage() {
           </Stagger>
 
           <Reveal className="mt-24">
-            <div className="grain rounded-2xl bg-night-900 px-8 py-14 text-center text-cream-100 sm:px-12">
-              <p className="label-caps text-gold-400">La lettre de route</p>
-              <h2 className="mx-auto mt-4 max-w-xl font-display uppercase text-display-lg">
-                Recevoir les prochains récits
-                <span aria-hidden className="text-clay-500">.</span>
-              </h2>
-              <div className="mt-8 flex justify-center">
-                <Button
-                  href={`mailto:${'contact@ohenetour.com'}?subject=Inscription%20au%20journal%20de%20Prince%20Edja`}
-                  variant="primary"
-                >
-                  S’inscrire au journal
-                </Button>
+            <div className="relative overflow-hidden rounded-2xl bg-night-900 px-8 py-14 text-center text-cream-100 sm:px-12">
+              <div
+                aria-hidden
+                className="absolute inset-0 opacity-100"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%2314100B'/%3E%3Cg fill='none' stroke='%23d9a441' stroke-width='1.6' opacity='0.95'%3E%3Cpath d='M60 10 L74 24 L60 38 L46 24 Z'/%3E%3Cpath d='M60 82 L74 96 L60 110 L46 96 Z'/%3E%3Cpath d='M10 60 L24 74 L38 60 L24 46 Z'/%3E%3Cpath d='M82 60 L96 74 L110 60 L96 46 Z'/%3E%3C/g%3E%3Cg fill='none' stroke='%23c96f2e' stroke-width='1.4' opacity='0.85'%3E%3Cpath d='M30 30 L42 42 M42 30 L30 42 M78 30 L90 42 M90 30 L78 42 M30 78 L42 90 M42 78 L30 90 M78 78 L90 90 M90 78 L78 90'/%3E%3C/g%3E%3Cg fill='%23d9a441' opacity='0.9'%3E%3Ccircle cx='60' cy='60' r='6'/%3E%3Ccircle cx='24' cy='24' r='1.8'/%3E%3Ccircle cx='96' cy='24' r='1.8'/%3E%3Ccircle cx='24' cy='96' r='1.8'/%3E%3Ccircle cx='96' cy='96' r='1.8'/%3E%3C/g%3E%3Cg fill='%23b5c2a8' opacity='0.85'%3E%3Cpath d='M60 42 L66 54 L54 54 Z'/%3E%3Cpath d='M60 78 L54 66 L66 66 Z'/%3E%3C/g%3E%3C/svg%3E")`,
+                  backgroundSize: '120px 120px',
+                  backgroundRepeat: 'repeat',
+                }}
+              />
+              <div aria-hidden className="absolute inset-0 bg-night-900/30" />
+              <div className="relative z-10">
+                <p className="label-caps text-gold-400">La lettre de route</p>
+                <h2 className="mx-auto mt-4 max-w-xl font-display uppercase text-display-lg">
+                  Recevoir les prochains récits
+                  <span aria-hidden className="text-clay-500">.</span>
+                </h2>
+                <div className="mt-8 flex justify-center">
+                  <Button
+                    href={`mailto:${'contact@ohenetour.com'}?subject=Inscription%20au%20journal%20de%20Prince%20Edja`}
+                    variant="primary"
+                  >
+                    S’inscrire au journal
+                  </Button>
+                </div>
               </div>
             </div>
           </Reveal>

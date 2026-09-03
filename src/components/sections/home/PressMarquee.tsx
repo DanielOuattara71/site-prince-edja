@@ -9,7 +9,7 @@ const SOURCES = [...new Set(PRESS.map((item) => item.source))]
 
 export function PressMarquee() {
   return (
-    <section aria-label="Ils parlent de Prince Edja" className="border-y border-sand-200 bg-sand-100 py-10">
+    <section aria-label="Ils parlent de Prince Edja" className="overlay-savane border-y border-sage-300 py-10">
       <Container>
         <Reveal>
           <Eyebrow num="05">Ils en parlent</Eyebrow>
@@ -19,10 +19,10 @@ export function PressMarquee() {
         <Marquee duration={30}>
           {SOURCES.map((source) => (
             <span key={source} className="flex shrink-0 items-center">
-              <span className="whitespace-nowrap px-8 font-display uppercase text-heading-sm text-ink-300 transition-colors duration-(--d-fast) hover:text-clay-500 lg:text-heading-md">
+              <span className="whitespace-nowrap px-8 font-display uppercase text-heading-sm text-ink-400 transition-colors duration-(--d-fast) hover:text-leaf-600 lg:text-heading-md">
                 {source}
               </span>
-              <span aria-hidden className="size-1.5 rounded-full bg-gold-400" />
+              <span aria-hidden className="size-1.5 rounded-full bg-leaf-600" />
             </span>
           ))}
         </Marquee>

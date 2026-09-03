@@ -2,7 +2,7 @@ import type { GalleryItem } from '@/types'
 
 export const GALLERY: GalleryItem[] = [
   {
-    src: '/images/episodes/bouake.jpg',
+    src: '/images/episodes/bouake.png',
     alt: 'Le Dernier — le dernier rhinocéros blanc de Bouaké',
     to: '/xplore/le-dernier',
     ratio: '4/3',
@@ -10,7 +10,7 @@ export const GALLERY: GalleryItem[] = [
     label: '01 · Bouaké',
   },
   {
-    src: '/images/episodes/tai.jpg',
+    src: '/images/episodes/tai.png',
     alt: 'La Forêt debout — la forêt primaire de Taï',
     to: '/xplore/la-foret-debout',
     ratio: '4/3',
@@ -26,7 +26,7 @@ export const GALLERY: GalleryItem[] = [
     label: 'TRIBE',
   },
   {
-    src: '/images/episodes/tiassale.jpg',
+    src: '/images/episodes/tiassale.png',
     alt: 'Le Fleuve — le Bandama à Tiassalé',
     to: '/xplore/le-fleuve',
     ratio: '16/10',
@@ -34,7 +34,7 @@ export const GALLERY: GalleryItem[] = [
     label: '05 · Tiassalé',
   },
   {
-    src: '/images/a-propos/portrait-edja.jpg',
+    src: '/images/a-propos/portrait-edja.png',
     alt: 'Prince Edja en carnet de route',
     to: '/a-propos',
     ratio: '16/10',
@@ -42,7 +42,7 @@ export const GALLERY: GalleryItem[] = [
     label: 'Portrait',
   },
   {
-    src: '/images/episodes/sassandra.jpg',
+    src: '/images/episodes/sassandra.png',
     alt: 'La Côte vive — le littoral de Sassandra',
     to: '/xplore/la-cote-vive',
     ratio: '21/9',

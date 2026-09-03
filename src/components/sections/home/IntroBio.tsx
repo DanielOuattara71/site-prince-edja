@@ -15,7 +15,7 @@ export function IntroBio() {
           <Reveal className="lg:col-span-5">
             <div className="space-y-8">
               <Eyebrow num="01">Qui suis-je</Eyebrow>
-              <blockquote className="border-l-2 border-gold-400 pl-6 font-quote italic leading-snug text-heading-sm text-ink-900 sm:text-heading-md">
+              <blockquote className="border-l-2 border-leaf-600 pl-6 font-quote italic leading-snug text-heading-sm text-ink-900 sm:text-heading-md">
                 {SITE.mission}
               </blockquote>
               <a
