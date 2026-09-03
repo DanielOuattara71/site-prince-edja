@@ -40,7 +40,7 @@ export default function ShopPage() {
             <Reveal delay={0.15} className="lg:col-span-5 lg:col-start-8">
               <div className="relative">
                 <ParallaxImage
-                  src="/images/boutique/hero-tribe.jpg"
+                  src={`${import.meta.env.BASE_URL}images/boutique/hero-tribe.jpg`}
                   alt="Pièce TRIBE façonnée à la main par des artisans ivoiriens"
                   ratio="4/5"
                   range={5}

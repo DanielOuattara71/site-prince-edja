@@ -41,7 +41,7 @@ export default function XplorePage() {
 
         <div className="relative">
           <ParallaxImage
-            src="/images/xplore/bandeau-foret.jpg"
+            src={`${import.meta.env.BASE_URL}images/xplore/bandeau-foret.jpg`}
             alt="La forêt de Taï — X'PLORE Côte d'Ivoire"
             ratio="21/9"
             range={8}

@@ -41,7 +41,7 @@ export default function AboutPage() {
 
             <Reveal delay={0.15} className="lg:col-span-5">
               <ParallaxImage
-                src="/images/a-propos/portrait-edja.png"
+                src={`${import.meta.env.BASE_URL}images/a-propos/portrait-edja.png`}
                 alt="Prince Edja, storyteller et producteur audiovisuel"
                 ratio="4/5"
                 range={4}

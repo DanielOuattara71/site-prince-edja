@@ -43,7 +43,7 @@ export const EPISODES: Episode[] = [
     titre: 'Le Dernier',
     lieu: 'Bouaké',
     pitch: 'Le dernier rhinocéros blanc d’Afrique de l’Ouest.',
-    image: '/images/episodes/bouake.png',
+    image: `${import.meta.env.BASE_URL}images/episodes/bouake.png`,
   },
   {
     slug: 'la-cote-vive',
@@ -51,8 +51,8 @@ export const EPISODES: Episode[] = [
     titre: 'La Côte vive',
     lieu: 'Sassandra',
     pitch: 'L’écologie de luxe et la mémoire du littoral.',
-    image: '/images/episodes/sassandra.png',
-    guide: '/guides/guide-sassandra.pdf',
+    image: `${import.meta.env.BASE_URL}images/episodes/sassandra.png`,
+    guide: `${import.meta.env.BASE_URL}guides/guide-sassandra.pdf`,
   },
   {
     slug: 'entre-deux-eaux',
@@ -60,8 +60,8 @@ export const EPISODES: Episode[] = [
     titre: 'Entre deux eaux',
     lieu: 'Jacqueville',
     pitch: 'Le lagon, l’océan et les hommes de la pêche.',
-    image: '/images/episodes/jacqueville.png',
-    guide: '/guides/guide-jacqueville.pdf',
+    image: `${import.meta.env.BASE_URL}images/episodes/jacqueville.png`,
+    guide: `${import.meta.env.BASE_URL}guides/guide-jacqueville.pdf`,
   },
   {
     slug: 'la-foret-debout',
@@ -69,8 +69,8 @@ export const EPISODES: Episode[] = [
     titre: 'La Forêt debout',
     lieu: 'Taï',
     pitch: 'La dernière grande forêt primaire et ses chimpanzés.',
-    image: '/images/episodes/tai.png',
-    guide: '/guides/guide-tai.pdf',
+    image: `${import.meta.env.BASE_URL}images/episodes/tai.png`,
+    guide: `${import.meta.env.BASE_URL}guides/guide-tai.pdf`,
   },
   {
     slug: 'le-fleuve',
@@ -78,8 +78,8 @@ export const EPISODES: Episode[] = [
     titre: 'Le Fleuve',
     lieu: 'Tiassalé',
     pitch: 'Le Bandama, ses rives et ses histoires.',
-    image: '/images/episodes/tiassale.png',
-    guide: '/guides/guide-tiassale.pdf',
+    image: `${import.meta.env.BASE_URL}images/episodes/tiassale.png`,
+    guide: `${import.meta.env.BASE_URL}guides/guide-tiassale.pdf`,
   },
   {
     slug: 'les-iles-memoire',
@@ -87,8 +87,8 @@ export const EPISODES: Episode[] = [
     titre: 'Les Îles mémoire',
     lieu: 'Adiaké',
     pitch: 'Les îles Ehotilé, entre patrimoine et transmission.',
-    image: '/images/episodes/adiake.png',
-    guide: '/guides/guide-adiake.pdf',
+    image: `${import.meta.env.BASE_URL}images/episodes/adiake.png`,
+    guide: `${import.meta.env.BASE_URL}guides/guide-adiake.pdf`,
   },
 ]
 
@@ -96,17 +96,17 @@ export const TRAVEL_CITIES: TravelCity[] = [
   {
     nom: 'Abidjan',
     intention: 'Énergie, hospitalité et créativité ivoirienne.',
-    image: '/images/voyage/abidjan.png',
+    image: `${import.meta.env.BASE_URL}images/voyage/abidjan.png`,
   },
   {
     nom: 'Dakar',
     intention: 'Élégance, mémoire et identité sénégalaise.',
-    image: '/images/voyage/dakar.png',
+    image: `${import.meta.env.BASE_URL}images/voyage/dakar.png`,
   },
   {
     nom: 'Conakry',
     intention: 'Rythmes, paysages et générosité guinéenne.',
-    image: '/images/voyage/conakry.png',
+    image: `${import.meta.env.BASE_URL}images/voyage/conakry.png`,
   },
 ]
 
@@ -121,7 +121,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Touareg',
     nom: 'Agadez',
     histoire: 'Les quatre directions du monde et le voyage guidé par l’étoile du Sud.',
-    image: '/images/boutique/agadez.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/agadez.jpg`,
   },
   {
     slug: 'akuaba',
@@ -129,7 +129,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Akan',
     nom: 'Akuaba',
     histoire: 'La fertilité, la vie et la promesse d’une transmission qui continue.',
-    image: '/images/boutique/akuaba.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/akuaba.jpg`,
   },
   {
     slug: 'deangle',
@@ -137,7 +137,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Dan',
     nom: 'Déanglé',
     histoire: 'La beauté, la bienveillance et l’équilibre entre force et grâce.',
-    image: '/images/boutique/deangle.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/deangle.jpg`,
   },
   {
     slug: 'oba',
@@ -145,7 +145,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Royaume du Bénin',
     nom: 'Oba',
     histoire: 'La continuité du pouvoir, la mémoire dynastique et la noblesse.',
-    image: '/images/boutique/oba.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/oba.jpg`,
   },
   {
     slug: 'baoule',
@@ -153,7 +153,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Côte d’Ivoire',
     nom: 'Baoulé',
     histoire: 'Le raffinement, la dignité et l’équilibre des formes de cour.',
-    image: '/images/boutique/baoule.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/baoule.jpg`,
   },
   {
     slug: 'nka',
@@ -161,7 +161,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Lignes de vie',
     nom: 'NKA',
     histoire: 'Les chemins, les rencontres et les architectures qui nous structurent.',
-    image: '/images/boutique/nka.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/nka.jpg`,
   },
   {
     slug: 'baobabe',
@@ -169,7 +169,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Arbre de vie',
     nom: 'Baobabé',
     histoire: 'L’enracinement, la sagesse, la protection et la renaissance.',
-    image: '/images/boutique/baobabe.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/baobabe.jpg`,
   },
   {
     slug: 'mambo',
@@ -177,7 +177,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Éléphant royal',
     nom: 'Mambo',
     histoire: 'La force tranquille, la mémoire et la grandeur intérieure.',
-    image: '/images/boutique/mambo.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/mambo.jpg`,
   },
   {
     slug: 'okoro',
@@ -185,7 +185,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Igbo',
     nom: 'Okoro',
     histoire: 'La noblesse intérieure, la discipline et la force qui ne s’affiche pas.',
-    image: '/images/boutique/okoro.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/okoro.jpg`,
   },
   {
     slug: 'kowe',
@@ -193,7 +193,7 @@ export const BIJOUX: Bijou[] = [
     culture: 'Unité',
     nom: 'Kôwê',
     histoire: 'Le tissage des forces, la cohésion et la résistance collective.',
-    image: '/images/boutique/kowe.jpg',
+    image: `${import.meta.env.BASE_URL}images/boutique/kowe.jpg`,
   },
 ]
 
@@ -205,7 +205,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Voyager sur le continent, c’est apprendre à regarder les nuances, les silences et les gestes qui échappent aux cartes postales.',
     statut: 'à venir',
-    image: '/images/journal/afrique-multitude-de-mondes.png',
+    image: `${import.meta.env.BASE_URL}images/journal/afrique-multitude-de-mondes.png`,
   },
   {
     slug: 'citoyens-premiers-ambassadeurs',
@@ -214,7 +214,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Une destination ne se résume pas à une campagne : elle se construit dans les récits quotidiens de ceux qui l’habitent.',
     statut: 'à venir',
-    image: '/images/journal/citoyens-premiers-ambassadeurs.png',
+    image: `${import.meta.env.BASE_URL}images/journal/citoyens-premiers-ambassadeurs.png`,
   },
   {
     slug: 'griot-moderne',
@@ -223,7 +223,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Comment les outils numériques peuvent transmettre les histoires sans les vider de leur sens.',
     statut: 'à venir',
-    image: '/images/journal/griot-moderne.png',
+    image: `${import.meta.env.BASE_URL}images/journal/griot-moderne.png`,
   },
   {
     slug: 'voyager-change-le-regard',
@@ -232,7 +232,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Après plus de trente pays, une conviction : le voyage continental est aussi un acte de connaissance de soi.',
     statut: 'à venir',
-    image: '/images/journal/voyager-change-le-regard.png',
+    image: `${import.meta.env.BASE_URL}images/journal/voyager-change-le-regard.png`,
   },
   {
     slug: 'porter-un-symbole',
@@ -241,7 +241,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Du masque Dan à la croix d’Agadez, les objets sont des archives vivantes qui relient les générations.',
     statut: 'à venir',
-    image: '/images/journal/porter-un-symbole.png',
+    image: `${import.meta.env.BASE_URL}images/journal/porter-un-symbole.png`,
   },
   {
     slug: 'hotel-premiere-ambassade',
@@ -250,7 +250,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Service, architecture, cuisine : chaque détail participe à l’image mentale d’une destination.',
     statut: 'à venir',
-    image: '/images/journal/hotel-premiere-ambassade.png',
+    image: `${import.meta.env.BASE_URL}images/journal/hotel-premiere-ambassade.png`,
   },
   {
     slug: 'raconter-pour-exister',
@@ -259,7 +259,7 @@ export const ARTICLES: Article[] = [
     extrait:
       'Créer nos propres images n’est pas un luxe : c’est une condition pour reprendre la maîtrise du récit africain.',
     statut: 'à venir',
-    image: '/images/journal/raconter-pour-exister.png',
+    image: `${import.meta.env.BASE_URL}images/journal/raconter-pour-exister.png`,
   },
 ]
 

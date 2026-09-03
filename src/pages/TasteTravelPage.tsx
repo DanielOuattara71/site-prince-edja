@@ -46,7 +46,7 @@ export default function TasteTravelPage() {
 
         <div className="relative">
           <ParallaxImage
-            src="/images/voyage/bandeau-littoral.png"
+            src={`${import.meta.env.BASE_URL}images/voyage/bandeau-littoral.png`}
             alt="Littoral ouest-africain — escale Taste & Travel"
             ratio="21/9"
             range={8}
