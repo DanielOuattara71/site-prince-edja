@@ -1,4 +1,5 @@
 import { SITE } from '@/data/site'
+import { DISTINCTIONS } from '@/data/distinctions'
 import { MILESTONES } from '@/data/content'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
@@ -9,6 +10,7 @@ import { StatItem } from '@/components/ui/StatItem'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
+import { DistinctionsCarousel } from '@/components/sections/about/DistinctionsCarousel'
 
 export default function AboutPage() {
   useSeo({
@@ -71,7 +73,7 @@ export default function AboutPage() {
               email: `mailto:${SITE.email}`,
               address: { '@type': 'PostalAddress', addressLocality: 'Abidjan', addressCountry: 'CI' },
               sameAs: [SITE.linkedin],
-              award: MILESTONES.filter((m) => m.periode >= '2024').map((m) => m.titre),
+              award: [...MILESTONES.filter((m) => m.periode >= '2024').map((m) => m.titre), ...DISTINCTIONS.map((d) => d.titre)],
             }),
           }}
         />
@@ -90,21 +92,31 @@ export default function AboutPage() {
             </div>
 
             <ol className="relative space-y-12 border-l border-sand-200 pl-8 lg:col-span-7">
-              {MILESTONES.map((milestone, index) => (
-                <li key={`${milestone.periode}-${milestone.titre}`} className="relative">
-                  <span
-                    aria-hidden
-                    className="absolute -left-[37px] top-1.5 size-2.5 rounded-full bg-clay-500 ring-4 ring-sand-50"
-                  />
-                  <Reveal delay={index * 0.06}>
-                    <p className="label-caps text-clay-600">{milestone.periode}</p>
+              {MILESTONES.map((milestone, index) => {
+                const isRecent = milestone.periode.startsWith('2025') || milestone.periode.startsWith('2026')
+                return (
+                  <li key={`${milestone.periode}-${milestone.titre}`} className="relative">
+                    <span
+                      aria-hidden
+                      className={
+                        isRecent
+                          ? 'absolute -left-[37px] top-1.5 size-2.5 rounded-full bg-leaf-600 ring-4 ring-sage-200'
+                          : 'absolute -left-[37px] top-1.5 size-2.5 rounded-full bg-clay-500 ring-4 ring-sand-50'
+                      }
+                    />
+                    <Reveal delay={index * 0.06}>
+                      <p className={isRecent ? 'label-caps text-leaf-600' : 'label-caps text-clay-600'}>
+                        {milestone.periode}
+                      </p>
                     <h3 className="mt-2 font-display uppercase text-heading-sm text-ink-900">
                       {milestone.titre}
                     </h3>
                     <p className="mt-2 max-w-xl text-body text-ink-500">{milestone.description}</p>
                   </Reveal>
                 </li>
-              ))}
+                )
+              })}
+
             </ol>
           </div>
 
@@ -118,6 +130,8 @@ export default function AboutPage() {
           </Reveal>
         </Container>
       </Section>
+
+      <DistinctionsCarousel />
     </>
   )
 }

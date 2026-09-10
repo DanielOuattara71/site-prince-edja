@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 import { MagneticButton } from '@/components/motion/MagneticButton'
 
-type ButtonVariant = 'primary' | 'dark' | 'ghost-light' | 'ghost-dark'
+type ButtonVariant = 'primary' | 'dark' | 'ghost-light' | 'ghost-dark' | 'sage-ghost'
 
 const VARIANT_STYLES: Record<ButtonVariant, { button: string; fill: string; hoverText: string }> =
   {
@@ -25,6 +25,11 @@ const VARIANT_STYLES: Record<ButtonVariant, { button: string; fill: string; hove
     'ghost-dark': {
       button: 'border border-ink-900/40 text-ink-900',
       fill: 'bg-ink-900',
+      hoverText: 'group-hover:text-cream-100',
+    },
+    'sage-ghost': {
+      button: 'border border-sage-300 text-leaf-600 bg-sage-100/60',
+      fill: 'bg-leaf-600',
       hoverText: 'group-hover:text-cream-100',
     },
   }

@@ -24,6 +24,8 @@ export function StatItem({ value, suffix = '', label }: StatItemProps) {
     return () => controls.stop()
   }, [inView, value, reducedMotion])
 
+  const isNatureStat = label.toLowerCase().includes('pays')
+
   return (
     <div ref={ref}>
       <p className="font-display uppercase text-heading-md text-ink-900 tnum">
@@ -33,7 +35,7 @@ export function StatItem({ value, suffix = '', label }: StatItemProps) {
         </span>
         <span aria-hidden>
           {display}
-          <span className="text-clay-500">{suffix}</span>
+          <span className={isNatureStat ? 'text-leaf-600' : 'text-clay-500'}>{suffix}</span>
         </span>
       </p>
       <p className="label-caps mt-2 text-ink-500">{label}</p>

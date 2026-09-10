@@ -17,7 +17,7 @@ export function ManifesteHorizontal() {
         <h2 className="mx-auto max-w-5xl px-6 font-display uppercase text-display-lg text-ink-900">
           L’Afrique n’est pas une destination<span aria-hidden className="text-clay-500">.</span>
         </h2>
-        <p className="mx-auto mt-6 max-w-3xl px-6 font-quote italic text-heading-sm text-ink-500">
+        <p className="mx-auto mt-6 max-w-3xl px-6 font-quote italic text-heading-sm text-forest-700/70">
           C’est une multitude de mondes.
         </p>
       </section>
@@ -38,7 +38,7 @@ export function ManifesteHorizontal() {
       </motion.h2>
       <motion.p
         style={{ x: xLead }}
-        className="mt-8 whitespace-nowrap pl-[24vw] font-quote italic text-body-lg text-ink-500 lg:text-heading-sm"
+        className="mt-8 whitespace-nowrap pl-[24vw] font-quote italic text-body-lg text-forest-700/70 lg:text-heading-sm"
       >
         C’est une multitude de mondes.
       </motion.p>

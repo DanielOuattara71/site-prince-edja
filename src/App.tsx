@@ -7,8 +7,17 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { LoaderIntro } from '@/components/motion/LoaderIntro'
+import { AdminLayout, AdminGuard } from '@/components/admin/AdminLayout'
 
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
+const AdminLoginPage = lazy(() => import('@/pages/AdminLoginPage'))
+const AdminDashboard = lazy(() => import('@/pages/admin/Dashboard'))
+const AdminArticles = lazy(() => import('@/pages/admin/Articles'))
+const AdminEpisodes = lazy(() => import('@/pages/admin/Episodes'))
+const AdminDistinctions = lazy(() => import('@/pages/admin/Distinctions'))
+const AdminSite = lazy(() => import('@/pages/admin/Site'))
+const AdminMedia = lazy(() => import('@/pages/admin/Media'))
+const AdminGeneric = lazy(() => import('@/pages/admin/Generic'))
 const XplorePage = lazy(() => import('@/pages/XplorePage'))
 const EpisodeDetailPage = lazy(() => import('@/pages/EpisodeDetailPage'))
 const TasteTravelPage = lazy(() => import('@/pages/TasteTravelPage'))
@@ -132,9 +141,33 @@ export default function App() {
           />
 
           <Route
+            path="/admin"
+            element={<AdminLoginPage />}
+          />
+
+          <Route
             path="*"
             element={<NotFoundPage />}
           />
+        </Route>
+
+        {/* Admin codé — même app, même serveur (séparation au déploiement) */}
+        <Route
+          element={
+            <AdminGuard>
+              <AdminLayout />
+            </AdminGuard>
+          }
+        >
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/articles" element={<AdminArticles />} />
+          <Route path="/admin/episodes" element={<AdminEpisodes />} />
+          <Route path="/admin/distinctions" element={<AdminDistinctions />} />
+          <Route path="/admin/travel" element={<AdminGeneric title="Taste & Travel — Villes" />} />
+          <Route path="/admin/site" element={<AdminSite />} />
+          <Route path="/admin/media" element={<AdminMedia />} />
+          <Route path="/admin/presse" element={<AdminGeneric title="Presse" />} />
+          <Route path="/admin/a-propos" element={<AdminGeneric title="À propos · Milestones" />} />
         </Route>
       </Routes>
     </BrowserRouter>

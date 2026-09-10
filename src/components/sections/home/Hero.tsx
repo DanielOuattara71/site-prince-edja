@@ -24,6 +24,7 @@ export function Hero() {
         <ParallaxImage src={SITE.heroImage} alt="" priority className="h-full w-full" />
         {/* Overlays allégés pour laisser respirer la photo */}
         <div className="overlay-hero-warm absolute inset-0 opacity-45" />
+        <div className="overlay-hero-forest absolute inset-0 opacity-10" />
         <div className="overlay-cinema absolute inset-0 opacity-55" />
         <div className="overlay-hero-scrim absolute inset-0 opacity-85" />
       </div>

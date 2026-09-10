@@ -82,6 +82,16 @@ export interface Milestone {
   description: string
 }
 
+export interface Distinction {
+  id: string
+  annee: string
+  titre: string
+  delivreePar?: string
+  description: string
+  image: string
+  url?: string
+}
+
 export interface ContactMotif {
   numero: string
   titre: string

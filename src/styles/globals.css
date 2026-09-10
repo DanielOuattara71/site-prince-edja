@@ -29,11 +29,13 @@
   --color-gold-400: #d9a441;
   --color-gold-500: #b3862b;
 
+  --color-forest-950: #0f1f14;
   --color-forest-900: #1a2e1a;
   --color-forest-700: #2d4a32;
   --color-leaf-600: #4a5a3a;
   --color-leaf-500: #3a724f;
   --color-sage-300: #b5c2a8;
+  --color-sage-200: #c8d6c0;
   --color-sage-100: #d4ddd0;
 
   --font-display: 'Anton', 'Arial Narrow', sans-serif;
@@ -96,6 +98,8 @@
     rgba(20, 16, 11, 0) 78%
   );
   --grad-hero-warm: linear-gradient(135deg, rgba(201, 111, 46, 0.22) 0%, rgba(20, 16, 11, 0) 62%);
+  /* Voile forêt très subtil — 10% pour ne pas tuer le luxe */
+  --grad-hero-forest: linear-gradient(135deg, rgba(45, 74, 50, 0.18) 0%, rgba(20, 16, 11, 0) 62%);
   /* Gradients accent */
   --grad-clay: linear-gradient(135deg, var(--color-clay-600) 0%, var(--color-clay-400) 55%, var(--color-gold-400) 100%);
   --grad-gold-shimmer: linear-gradient(90deg, var(--color-gold-300), var(--color-gold-400), var(--color-gold-500));
@@ -133,12 +137,12 @@
   }
 
   ::selection {
-    background-color: var(--color-accent);
-    color: var(--color-accent-contrast);
+    background-color: var(--color-nature);
+    color: var(--color-nature-contrast);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-nature);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -174,6 +178,10 @@
 
 @utility overlay-hero-warm {
   background-image: var(--grad-hero-warm);
+}
+
+@utility overlay-hero-forest {
+  background-image: var(--grad-hero-forest);
 }
 
 @utility overlay-clay {

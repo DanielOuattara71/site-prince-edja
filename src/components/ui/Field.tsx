@@ -2,7 +2,7 @@ import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes 
 import { cn } from '@/lib/cn'
 
 const BASE_FIELD =
-  'w-full rounded-lg border border-sand-200 bg-transparent px-4 py-3 text-body text-ink-900 placeholder:text-ink-300 transition-colors duration-(--d-fast) focus:border-clay-500 focus:outline-none'
+  'w-full rounded-lg border border-sand-200 bg-transparent px-4 py-3 text-body text-ink-900 placeholder:text-ink-300 transition-colors duration-(--d-fast) focus:border-leaf-600 focus:outline-none'
 
 interface FieldWrapProps {
   label: string
