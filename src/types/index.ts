@@ -107,3 +107,44 @@ export interface GalleryItem {
   label?: string
   external?: boolean
 }
+
+/* ============================================================
+   MARKETPLACE — Types
+   ============================================================ */
+
+export type UniversId = 'tribe' | 'porte' | 'don' | 'memoire' | 'awale'
+
+export type ProductStatut = 'Disponible' | 'Précommande' | 'Bientôt'
+
+export interface MarketUnivers {
+  id: UniversId
+  slug: string
+  num: string
+  nom: string
+  sousTitre: string
+  pitch: string
+  concept: string
+  image: string
+  /** Classe des Category Design Tokens (globals.css) */
+  tokenClass: string
+  rituel: { titre: string; texte: string }[]
+}
+
+export interface Product extends Bijou {
+  univers: UniversId
+  /** Prix en FCFA */
+  prix: number
+  statut: ProductStatut
+  matiere: string
+  /** Numéro d'édition, ex. "n°03/12" */
+  edition?: string
+}
+
+export interface CartLine {
+  slug: string
+  nom: string
+  image: string
+  prix: number
+  univers: UniversId
+  quantite: number
+}

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
-import { Menu, X } from 'lucide-react'
+import { Menu, ShoppingBag, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { isDarkTop, NAV_ITEMS, SITE } from '@/data/site'
+import { useCart } from '@/lib/cart'
 import { replayIntro } from '@/lib/motion'
 import { Container } from '@/components/layout/Container'
 import { MagneticButton } from '@/components/motion/MagneticButton'
@@ -14,6 +15,7 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = useCallback(() => setMenuOpen(false), [])
   const { pathname } = useLocation()
+  const { count } = useCart()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32)
@@ -67,6 +69,23 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <Link
+              to="/boutique/panier"
+              aria-label={`Panier${count > 0 ? `, ${count} article${count > 1 ? 's' : ''}` : ''}`}
+              className={cn(
+                'relative flex size-11 items-center justify-center rounded-full border transition-colors duration-(--d-fast)',
+                lightText || menuOpen
+                  ? 'border-cream-100/40 hover:bg-cream-100 hover:text-ink-900'
+                  : 'border-ink-900/30 hover:bg-ink-900 hover:text-cream-100',
+              )}
+            >
+              <ShoppingBag className="size-5" aria-hidden />
+              {count > 0 && (
+                <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-clay-500 text-[10px] font-bold text-cream-100 tnum">
+                  {count}
+                </span>
+              )}
+            </Link>
             <Button
               to="/contact"
               variant={lightText ? 'ghost-light' : 'ghost-dark'}

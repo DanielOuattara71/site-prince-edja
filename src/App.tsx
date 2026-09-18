@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react'
 import { BrowserRouter, Route, Routes, useLocation, Outlet } from 'react-router'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { DUR, EASE_EXPO, EASE_QUART } from '@/lib/motion'
+import { CartProvider } from '@/lib/cart'
 import HomePage from '@/pages/HomePage'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -21,7 +22,10 @@ const AdminGeneric = lazy(() => import('@/pages/admin/Generic'))
 const XplorePage = lazy(() => import('@/pages/XplorePage'))
 const EpisodeDetailPage = lazy(() => import('@/pages/EpisodeDetailPage'))
 const TasteTravelPage = lazy(() => import('@/pages/TasteTravelPage'))
-const ShopPage = lazy(() => import('@/pages/ShopPage'))
+const MarketplacePage = lazy(() => import('@/pages/MarketplacePage'))
+const UniversePage = lazy(() => import('@/pages/UniversePage'))
+const MarketProductPage = lazy(() => import('@/pages/ProductPage'))
+const CartPage = lazy(() => import('@/pages/CartPage'))
 const JournalPage = lazy(() => import('@/pages/JournalPage'))
 const PressPage = lazy(() => import('@/pages/PressPage'))
 const ContactPage = lazy(() => import('@/pages/ContactPage'))
@@ -95,7 +99,8 @@ function SiteLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter basename="/site-prince-edja">
+    <CartProvider>
+      <BrowserRouter basename="/site-prince-edja">
       <Routes>
         <Route element={<SiteLayout />}>
           <Route index element={<HomePage />} />
@@ -122,7 +127,22 @@ export default function App() {
 
           <Route
             path="/boutique"
-            element={<ShopPage />}
+            element={<MarketplacePage />}
+          />
+
+          <Route
+            path="/boutique/panier"
+            element={<CartPage />}
+          />
+
+          <Route
+            path="/boutique/:univers"
+            element={<UniversePage />}
+          />
+
+          <Route
+            path="/boutique/:univers/:slug"
+            element={<MarketProductPage />}
           />
 
           <Route
@@ -170,6 +190,7 @@ export default function App() {
           <Route path="/admin/a-propos" element={<AdminGeneric title="À propos · Milestones" />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+    </CartProvider>
   )
 }

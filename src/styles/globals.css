@@ -252,3 +252,121 @@
     animation: none;
   }
 }
+/* ============================================================
+   MARKETPLACE — Category Design Tokens
+   Le squelette global est commun ; chaque univers surcharge
+   les variables `--u-*` ci-dessous (voir Design System).
+   ============================================================ */
+
+:root {
+  /* Univers "maison" (Carrefour, panier, recherche) */
+  --u-bg: var(--color-sand-50);
+  --u-bg-deep: var(--color-sand-100);
+  --u-surface: var(--color-sand-100);
+  --u-border: var(--color-sand-200);
+  --u-accent: var(--color-clay-600);
+  --u-accent-hover: var(--color-clay-700);
+  --u-on-accent: var(--color-cream-100);
+  --u-accent-soft: color-mix(in srgb, var(--color-clay-400) 10%, transparent);
+  --u-text: var(--color-ink-900);
+  --u-text-muted: var(--color-ink-500);
+  --u-highlight: var(--color-gold-400);
+  --u-radius-card: 1.5rem;
+  --u-wipe: var(--color-sand-200);
+}
+
+/* TRIBE — musée nocturne : nuit + or */
+.u-tribe {
+  --u-bg: var(--color-night-900);
+  --u-bg-deep: var(--color-night-800);
+  --u-surface: var(--color-night-800);
+  --u-border: color-mix(in srgb, var(--color-cream-100) 16%, transparent);
+  --u-accent: var(--color-gold-400);
+  --u-accent-hover: var(--color-gold-300);
+  --u-on-accent: var(--color-night-900);
+  --u-accent-soft: color-mix(in srgb, var(--color-gold-400) 8%, transparent);
+  --u-text: var(--color-cream-100);
+  --u-text-muted: color-mix(in srgb, var(--color-cream-100) 62%, transparent);
+  --u-highlight: var(--color-gold-300);
+  --u-radius-card: 7rem 7rem 1rem 1rem;
+  --u-wipe: var(--color-night-900);
+}
+
+/* PORTÉ — tissu au vent : sable chaud + clay */
+.u-porte {
+  --u-bg: var(--color-sand-100);
+  --u-bg-deep: var(--color-sand-200);
+  --u-surface: var(--color-sand-50);
+  --u-border: var(--color-sand-300);
+  --u-accent: var(--color-clay-500);
+  --u-accent-hover: var(--color-clay-600);
+  --u-on-accent: var(--color-cream-100);
+  --u-accent-soft: color-mix(in srgb, var(--color-clay-400) 10%, transparent);
+  --u-text: var(--color-ink-900);
+  --u-text-muted: var(--color-ink-500);
+  --u-highlight: var(--color-gold-400);
+  --u-radius-card: 2rem;
+  --u-wipe: rgba(217, 138, 74, 0.35);
+}
+
+/* DON — rituel du coffret : crème + sage */
+.u-don {
+  --u-bg: var(--color-sand-50);
+  --u-bg-deep: var(--color-sage-100);
+  --u-surface: var(--color-sage-100);
+  --u-border: var(--color-sage-300);
+  --u-accent: var(--color-leaf-600);
+  --u-accent-hover: var(--color-forest-700);
+  --u-on-accent: var(--color-cream-100);
+  --u-accent-soft: color-mix(in srgb, var(--color-sage-100) 55%, transparent);
+  --u-text: var(--color-ink-900);
+  --u-text-muted: var(--color-ink-500);
+  --u-highlight: var(--color-gold-400);
+  --u-radius-card: 7rem 7rem 1rem 1rem;
+  --u-wipe: var(--color-sage-300);
+}
+
+/* MÉMOIRE — album retrouvé : sépia + tampon clay-700 */
+.u-memoire {
+  --u-bg: color-mix(in srgb, var(--color-sand-100) 92%, var(--color-clay-700) 8%);
+  --u-bg-deep: var(--color-sand-200);
+  --u-surface: var(--color-sand-50);
+  --u-border: var(--color-sand-300);
+  --u-accent: var(--color-clay-700);
+  --u-accent-hover: var(--color-ink-900);
+  --u-on-accent: var(--color-cream-100);
+  --u-accent-soft: color-mix(in srgb, var(--color-clay-700) 8%, transparent);
+  --u-text: var(--color-ink-900);
+  --u-text-muted: var(--color-ink-500);
+  --u-highlight: var(--color-clay-600);
+  --u-radius-card: 0.25rem;
+  --u-wipe: rgba(122, 58, 20, 0.4);
+}
+
+/* AWALÉ — le terrier : sage + forêt */
+.u-awale {
+  --u-bg: var(--color-sage-100);
+  --u-bg-deep: var(--color-sage-200);
+  --u-surface: var(--color-sand-50);
+  --u-border: var(--color-sage-300);
+  --u-accent: var(--color-forest-700);
+  --u-accent-hover: var(--color-forest-900);
+  --u-on-accent: var(--color-cream-100);
+  --u-accent-soft: color-mix(in srgb, var(--color-forest-700) 8%, transparent);
+  --u-text: var(--color-ink-900);
+  --u-text-muted: var(--color-ink-500);
+  --u-highlight: var(--color-clay-400);
+  --u-radius-card: 2rem;
+  --u-wipe: rgba(45, 74, 50, 0.4);
+}
+
+/* Titre outline/plein — signature typographique (JK) */
+@utility text-outline-ink {
+  -webkit-text-stroke: 1.5px var(--color-ink-900);
+  color: transparent;
+}
+
+@utility text-outline-cream {
+  -webkit-text-stroke: 1.5px var(--color-cream-100);
+  color: transparent;
+}
