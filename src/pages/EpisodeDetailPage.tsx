@@ -3,7 +3,7 @@ import { EPISODES } from '@/data/content'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Button } from '@/components/ui/Button'
 
 export default function EpisodeDetailPage() {
@@ -33,9 +33,11 @@ export default function EpisodeDetailPage() {
   return (
     <Section tone="dark" padded={false} className="pt-36 pb-20 lg:pt-48 lg:pb-28">
       <Container className="max-w-3xl space-y-6">
-        <Eyebrow num={episode.numero} tone="dark">
-          Film · {episode.lieu}
-        </Eyebrow>
+        <SectionMarker
+          num={episode.numero}
+          tone="sombre"
+          eyebrow={<>Film · {episode.lieu}</>}
+        />
         <h1 className="font-display uppercase text-display-lg">{episode.titre}</h1>
         <p className="text-body-lg text-cream-100/70">{episode.pitch}</p>
         <p className="label-caps text-gold-400">

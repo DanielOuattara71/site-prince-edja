@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none" role="presentation">
+  <!--
+    Comptoir 05 · Mémoire & éditions.
+    Dos de livres et filets typographiques : la bibliothèque du griot réduite à sa tranche.
+  -->
+  <g stroke="currentColor" stroke-width="1.8" opacity="0.85">
+    <path d="M14 20v80M26 20v80M40 26v74M54 20v80M70 30v70M84 20v80M100 24v76" />
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45">
+    <path d="M14 36h12M40 42h14M70 46h14M84 34h16" />
+    <path d="M14 78h12M40 84h14M70 88h14M84 80h16" />
+  </g>
+  <g fill="currentColor" opacity="0.5">
+    <rect x="14" y="20" width="12" height="4" />
+    <rect x="54" y="20" width="16" height="4" />
+    <rect x="100" y="24" width="6" height="4" />
+  </g>
+</svg>

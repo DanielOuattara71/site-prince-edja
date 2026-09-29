@@ -5,7 +5,7 @@ import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -53,7 +53,7 @@ export default function PressPage() {
     <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
       <Container>
         <div className="max-w-4xl space-y-6">
-          <Eyebrow num="06">Revue de presse</Eyebrow>
+          <SectionMarker num="06" eyebrow={<>Revue de presse</>} />
           <h1 className="font-display uppercase text-display-lg">
             Médias & presse<span aria-hidden className="text-clay-500">.</span>
           </h1>

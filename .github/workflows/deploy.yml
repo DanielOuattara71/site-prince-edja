@@ -33,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Le sitemap est écrit à la main dans public/ : ce contrôle le compare aux
+      # données réelles et échoue si une route manque. Sans lui, un produit ajouté
+      # resterait invisible pour les moteurs.
+      - name: Vérifier le sitemap
+        run: npm run seo:check
+
       - name: Build
         run: npm run build
 

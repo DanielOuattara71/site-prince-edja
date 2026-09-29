@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "typecheck": "tsc -b",
+    "seo": "node scripts/seo.mjs",
+    "seo:check": "node scripts/seo.mjs --check",
     "preview": "vite preview"
   },
   "dependencies": {

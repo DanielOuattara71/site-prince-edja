@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none" role="presentation">
+  <!--
+    Comptoir 01 · À porter (TRIBE).
+    Géométrie d'orfèvre : croix à quatre branches dans son cercle, poinçons de frappe.
+    Motif abstrait dessiné pour le projet — il évoque le travail du métal, il ne reproduit
+    aucun symbole à signification. Toute association symbole ↔ catégorie doit passer
+    par une validation culturelle avant mise en ligne.
+  -->
+  <g stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.9">
+    <circle cx="60" cy="60" r="26" />
+    <path d="M60 18v84M18 60h84" />
+    <path d="M44 44l32 32M76 44L44 76" opacity="0.45" />
+    <path d="M60 34l8 26-8 26-8-26z" />
+  </g>
+  <g fill="currentColor" opacity="0.5">
+    <circle cx="12" cy="12" r="2.5" />
+    <circle cx="108" cy="12" r="2.5" />
+    <circle cx="12" cy="108" r="2.5" />
+    <circle cx="108" cy="108" r="2.5" />
+  </g>
+</svg>

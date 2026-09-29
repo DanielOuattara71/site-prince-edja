@@ -1,13 +1,15 @@
 import { BIJOUX } from '@/data/content'
+import { IndexComptoirs } from '@/components/market/IndexComptoirs'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Button } from '@/components/ui/Button'
 import { BijouCard } from '@/components/cards/BijouCard'
+import { Chip } from '@/components/ui/Chip'
 
 const COMING_CATEGORIES = ['Jeux', 'Souvenirs', 'À porter', 'À offrir']
 
@@ -24,7 +26,7 @@ export default function ShopPage() {
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="space-y-6 lg:col-span-6">
-              <Eyebrow num="04">Marketplace culturelle · Édition 2026</Eyebrow>
+              <SectionMarker num="04" eyebrow={<>Marketplace culturelle · Édition 2026</>} />
               <h1 className="font-display uppercase text-display-lg">
                 Chaque bijou est une histoire
                 <span aria-hidden className="text-clay-500">.</span>
@@ -39,17 +41,19 @@ export default function ShopPage() {
             </div>
             <Reveal delay={0.15} className="lg:col-span-5 lg:col-start-8">
               <div className="relative">
+                {/* Le rayon vedette, une fois par écran. `rounded-t-[9rem]` était la valeur
+                    arbitraire que le contrat nomme et proscrit : quatre tokens, pas cinq. */}
                 <ParallaxImage
                   src={`${import.meta.env.BASE_URL}images/boutique/hero-tribe.jpg`}
                   alt="Pièce TRIBE façonnée à la main par des artisans ivoiriens"
                   ratio="4/5"
                   range={5}
                   zoomOnHover
-                  className="rounded-t-[9rem] rounded-b-2xl"
+                  className="rounded-feature"
                 />
-                <span className="label-caps absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-night-900/85 px-4 py-2 text-cream-100 backdrop-blur-sm">
+                <Chip className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2">
                   TRIBE · Pièces limitées
-                </span>
+                </Chip>
               </div>
             </Reveal>
           </div>
@@ -70,7 +74,7 @@ export default function ShopPage() {
               {COMING_CATEGORIES.map((category) => (
                 <li
                   key={category}
-                  className="label-caps rounded-full border border-sand-200 py-3 text-center text-ink-500"
+                  className="label-caps rounded-pill border border-sand-200 py-3 text-center text-ink-500"
                 >
                   {category}
                 </li>
@@ -88,6 +92,8 @@ export default function ShopPage() {
           </Reveal>
         </Container>
       </Section>
+
+      <IndexComptoirs />
     </>
   )
 }

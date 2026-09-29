@@ -3,7 +3,7 @@ import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Button } from '@/components/ui/Button'
 
 export function FeaturedFilm() {
@@ -34,9 +34,11 @@ export function FeaturedFilm() {
 
           <Reveal delay={0.12} className="lg:col-span-5">
             <div className="space-y-5">
-              <Eyebrow num={featured.numero} tone="dark">
-                Film · {featured.lieu}
-              </Eyebrow>
+              <SectionMarker
+                num={featured.numero}
+                tone="sombre"
+                eyebrow={<>Film · {featured.lieu}</>}
+              />
               <h2 className="font-display uppercase text-display-lg">{featured.titre}</h2>
               <p className="text-body-lg text-cream-100/70">{featured.pitch}</p>
               <p className="text-body text-cream-100/50">

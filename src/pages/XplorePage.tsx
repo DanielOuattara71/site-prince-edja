@@ -3,7 +3,7 @@ import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { AlbumScroll } from '@/components/sections/xplore/AlbumScroll'
 import { FeaturedFilm } from '@/components/sections/xplore/FeaturedFilm'
 import { GuidesGrid } from '@/components/sections/xplore/GuidesGrid'
@@ -19,9 +19,9 @@ export default function XplorePage() {
     <>
       <Section tone="dark" container={false} padded={false} className="pt-36 lg:pt-48 pb-0">
         <Container className="max-w-4xl space-y-6 pb-14 lg:pb-20">
-          <Eyebrow num="02" tone="dark">
+          <SectionMarker num="02" tone="sombre" eyebrow={<>
             Série documentaire · Saison 1
-          </Eyebrow>
+          </>} />
           <h1 className="font-display uppercase text-display-lg">
             Six routes. Six histoires
             <span aria-hidden className="text-clay-500">.</span>

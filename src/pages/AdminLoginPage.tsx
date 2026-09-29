@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import { useSeo } from '@/hooks/useSeo'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Field'
 
@@ -75,7 +74,8 @@ export default function AdminLoginPage() {
     <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
       <Container>
         <div className="mx-auto max-w-xl">
-          <Eyebrow>Accès réservé</Eyebrow>
+          {/* Un formulaire n'est pas une section : pas d'annonce, un simple label. */}
+          <p className="label-caps text-ink-500">Accès réservé</p>
           <h1 className="mt-4 font-display uppercase text-display-lg">
             Espace admin<span aria-hidden className="text-clay-500">.</span>
           </h1>

@@ -5,7 +5,7 @@ import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Input, Select, Textarea } from '@/components/ui/Field'
 import { Button } from '@/components/ui/Button'
 
@@ -109,7 +109,7 @@ export default function ContactPage() {
     <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
       <Container>
         <div className="max-w-4xl space-y-6">
-          <Eyebrow>Contact</Eyebrow>
+          <SectionMarker eyebrow={<>Contact</>} />
           <h1 className="font-display uppercase text-display-lg">
             Parlons du prochain récit
             <span aria-hidden className="text-clay-500">.</span>

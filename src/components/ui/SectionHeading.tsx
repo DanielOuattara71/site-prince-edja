@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 
 interface SectionHeadingProps {
   eyebrow: string
@@ -12,6 +12,10 @@ interface SectionHeadingProps {
   className?: string
 }
 
+/**
+ * Titre de section éditorial. L'annonce (trait capillaire + étiquette qui glisse)
+ * est assurée par `SectionMarker` : le titre ne s'affiche plus, il est annoncé.
+ */
 export function SectionHeading({
   eyebrow,
   num,
@@ -23,9 +27,7 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <div className={cn('max-w-3xl space-y-5', className)}>
-      <Eyebrow num={num} tone={tone}>
-        {eyebrow}
-      </Eyebrow>
+      <SectionMarker num={num} eyebrow={eyebrow} tone={tone === 'light' ? 'clair' : 'sombre'} />
       <Tag className="font-display uppercase text-display-lg">{title}</Tag>
       {lead && (
         <p className={cn('max-w-2xl text-body-lg', tone === 'light' ? 'text-ink-500' : 'text-cream-100/70')}>

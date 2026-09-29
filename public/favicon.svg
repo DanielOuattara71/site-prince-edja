@@ -1,5 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#14100B"/>
-  <path d="M20 48V32c0-6.6 5.4-12 12-12s12 5.4 12 12v16" fill="none" stroke="#D9A441" stroke-width="3.5" stroke-linecap="round"/>
-  <circle cx="45" cy="17" r="3.5" fill="#C96F2E"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Prince Edja">
+  <!--
+    Favicon Prince Edja — géométrie identique à `src/components/brand/Embleme.tsx`.
+    Les deux doivent rester synchrones : c'est la même marque, à deux tailles.
+    Version réduite : silhouette, bandeau, losange, arcs des yeux, bouche.
+    Fond nuit, trait or : les deux seules couleurs de la marque.
+  -->
+  <rect width="64" height="64" fill="#14100B"/>
+  <g transform="translate(11.5 -2) scale(0.19)">
+    <path d="M150 20C235 20 262 118 252 220 244 310 202 400 150 428 98 400 56 310 48 220 38 118 65 20 150 20Z" fill="#C96F2E" fill-opacity="0.4"/>
+    <g fill="none" stroke="#D9A441" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+      <rect x="30" y="212" width="34" height="80" rx="16"/>
+      <rect x="236" y="212" width="34" height="80" rx="16"/>
+      <path d="M60 122C70 42 230 42 240 122 200 92 100 92 60 122Z" fill="#D9A441" fill-opacity="0.85" stroke="none"/>
+      <path d="M150 112 190 154 150 196 110 154Z" stroke-width="12"/>
+      <path d="M84 238C96 214 130 208 144 234" stroke-width="16"/>
+      <path d="M216 238C204 214 170 208 156 234" stroke-width="16"/>
+      <path d="M150 212 174 302 150 318 126 302Z" stroke-width="12"/>
+    </g>
+  </g>
 </svg>

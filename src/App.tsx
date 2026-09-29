@@ -5,8 +5,10 @@ import { DUR, EASE_EXPO, EASE_QUART } from '@/lib/motion'
 import HomePage from '@/pages/HomePage'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { SiteChrome } from '@/components/layout/SiteChrome'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { LoaderIntro } from '@/components/motion/LoaderIntro'
+import { MarcheLayout } from '@/components/market/MarcheLayout'
 import { AdminLayout, AdminGuard } from '@/components/admin/AdminLayout'
 
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
@@ -22,6 +24,9 @@ const XplorePage = lazy(() => import('@/pages/XplorePage'))
 const EpisodeDetailPage = lazy(() => import('@/pages/EpisodeDetailPage'))
 const TasteTravelPage = lazy(() => import('@/pages/TasteTravelPage'))
 const ShopPage = lazy(() => import('@/pages/ShopPage'))
+const ComptoirPage = lazy(() => import('@/pages/ComptoirPage'))
+const PiecePage = lazy(() => import('@/pages/PiecePage'))
+const DemandePage = lazy(() => import('@/pages/DemandePage'))
 const JournalPage = lazy(() => import('@/pages/JournalPage'))
 const PressPage = lazy(() => import('@/pages/PressPage'))
 const ContactPage = lazy(() => import('@/pages/ContactPage'))
@@ -73,6 +78,8 @@ function SiteLayout() {
 
       <ScrollToTop />
 
+      <SiteChrome />
+
       <LoaderIntro />
 
       <Header />
@@ -121,9 +128,28 @@ export default function App() {
           />
 
           <Route
-            path="/boutique"
-            element={<ShopPage />}
-          />
+            element={<MarcheLayout />}
+          >
+            <Route
+              path="/boutique"
+              element={<ShopPage />}
+            />
+
+            <Route
+              path="/boutique/:comptoir"
+              element={<ComptoirPage />}
+            />
+
+            <Route
+              path="/boutique/:comptoir/:piece"
+              element={<PiecePage />}
+            />
+
+            <Route
+              path="/ma-demande"
+              element={<DemandePage />}
+            />
+          </Route>
 
           <Route
             path="/journal"

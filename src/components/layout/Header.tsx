@@ -38,14 +38,15 @@ export function Header() {
         )}
       >
         <Container className="flex h-16 items-center justify-between gap-4 lg:h-20">
+          {/* Le mot-marque seul : l'emblème vit dans le loader et dans l'onglet.
+              Pas de point or ici — il faisait doublon avec l'accent, déjà partout. */}
           <Link
             to="/"
             aria-label="Prince Edja — Accueil"
             onClick={() => replayIntro()}
-            className="flex items-baseline gap-1.5 font-display text-xl uppercase tracking-wide"
+            className="font-display text-xl uppercase tracking-wide"
           >
             {SITE.name}
-            <span aria-hidden className="size-1.5 rounded-full bg-gold-400" />
           </Link>
 
           <nav aria-label="Navigation principale" className="hidden items-center gap-1 lg:flex">

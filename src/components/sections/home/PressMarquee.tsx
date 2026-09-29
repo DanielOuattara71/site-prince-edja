@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { PRESS } from '@/data/content'
 import { Container } from '@/components/layout/Container'
 import { Marquee } from '@/components/motion/Marquee'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Reveal } from '@/components/motion/Reveal'
 
 const SOURCES = [...new Set(PRESS.map((item) => item.source))]
@@ -12,7 +12,7 @@ export function PressMarquee() {
     <section aria-label="Ils parlent de Prince Edja" className="overlay-savane border-y border-sage-300 py-10">
       <Container>
         <Reveal>
-          <Eyebrow num="05">Ils en parlent</Eyebrow>
+          <SectionMarker num="05" eyebrow={<>Ils en parlent</>} />
         </Reveal>
       </Container>
       <Link to="/presse" className="mt-8 block" aria-label="Lire la revue de presse complète">

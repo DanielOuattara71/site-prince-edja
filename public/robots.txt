@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://prince-edja.vercel.app/sitemap.xml
+Sitemap: https://danielouattara71.github.io/site-prince-edja/sitemap.xml

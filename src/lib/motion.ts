@@ -3,8 +3,10 @@ import type { Variants } from 'motion/react'
 export const EASE_EXPO = [0.16, 1, 0.3, 1] as const
 export const EASE_QUART = [0.76, 0, 0.24, 1] as const
 
+/** Miroir JS des jetons `--d-*` de `globals.css` : changer l'un sans l'autre casse la
+ *  cohérence des durées, et rien au build ne le signalera. */
 export const DUR = {
-  fast: 0.25,
+  fast: 0.2,
   base: 0.45,
   reveal: 0.75,
 } as const
@@ -68,4 +70,12 @@ export function replayIntro(): void {
     /* ignore */
   }
   window.dispatchEvent(new CustomEvent(REPLAY_INTRO_EVENT))
+}
+
+/**
+ * Délai de cascade qui se recycle tous les quatre éléments.
+ * Au-delà de quatre éléments en cascade, la révélation devient un spectacle : elle n'annonce plus rien.
+ */
+export function delaiCyclique(index: number, pas = 0.06): number {
+  return (index % 4) * pas
 }

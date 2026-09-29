@@ -6,10 +6,11 @@ import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Tag } from '@/components/ui/Tag'
 import { ArrowLink } from '@/components/ui/ArrowLink'
 import { Button } from '@/components/ui/Button'
+import { Chip } from '@/components/ui/Chip'
 import { CityCard } from '@/components/cards/CityCard'
 
 export default function TasteTravelPage() {
@@ -24,9 +25,9 @@ export default function TasteTravelPage() {
       <Section tone="dark" container={false} padded={false}>
         <Container className="pt-36 pb-14 lg:pt-48 lg:pb-20">
           <div className="max-w-4xl space-y-6">
-            <Eyebrow num="03" tone="dark">
+            <SectionMarker num="03" tone="sombre" eyebrow={<>
               Film · Gastronomie · Afrique
-            </Eyebrow>
+            </>} />
             <h1 className="font-display uppercase text-display-lg">Taste & Travel</h1>
             <Reveal delay={0.1}>
               <blockquote className="border-l-2 border-gold-400 pl-6 font-quote italic leading-snug text-heading-sm text-cream-100 sm:text-heading-md">
@@ -56,12 +57,7 @@ export default function TasteTravelPage() {
           <div className="absolute bottom-5 left-5 z-10 flex flex-wrap items-center gap-3 lg:left-10 lg:bottom-8">
             <span className="label-caps text-gold-400">Avec</span>
             {TRAVEL_PARTNERS.map((partner) => (
-              <span
-                key={partner}
-                className="rounded-full bg-night-900/85 px-4 py-2 text-sm font-semibold text-cream-100 backdrop-blur-sm"
-              >
-                {partner}
-              </span>
+              <Chip key={partner}>{partner}</Chip>
             ))}
           </div>
         </div>
@@ -77,7 +73,7 @@ export default function TasteTravelPage() {
 
           <div className="mt-24 grid gap-8 border-t border-cream-100/15 pt-16 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
-              <Eyebrow tone="dark">L’intention</Eyebrow>
+              <SectionMarker tone="sombre" eyebrow={<>L’intention</>} />
               <div className="mt-6 space-y-1">
                 {['Voir', 'Goûter', 'Comprendre'].map((word, index) => (
                   <Reveal key={word} delay={index * 0.1}>

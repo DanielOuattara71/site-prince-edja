@@ -8,7 +8,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { StatItem } from '@/components/ui/StatItem'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Button } from '@/components/ui/Button'
 import { DistinctionsCarousel } from '@/components/sections/about/DistinctionsCarousel'
 
@@ -25,7 +25,7 @@ export default function AboutPage() {
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="space-y-6 lg:col-span-7">
-              <Eyebrow num="01">Prince Edja</Eyebrow>
+              <SectionMarker num="01" eyebrow={<>Prince Edja</>} />
               <h1 className="font-display uppercase text-display-lg">
                 Raconter l’Afrique depuis l’Afrique
                 <span aria-hidden className="text-clay-500">.</span>
@@ -83,7 +83,7 @@ export default function AboutPage() {
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="space-y-8 lg:col-span-5">
-              <Eyebrow num="02">Le parcours</Eyebrow>
+              <SectionMarker num="02" eyebrow={<>Le parcours</>} />
               <Reveal>
                 <h2 className="font-display uppercase text-display-lg">
                   Onze ans au service du récit<span aria-hidden className="text-clay-500">.</span>

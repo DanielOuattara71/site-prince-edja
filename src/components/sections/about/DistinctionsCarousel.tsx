@@ -7,7 +7,7 @@ import { useAdminStore } from '@/lib/adminStore'
 import { DUR, EASE_EXPO } from '@/lib/motion'
 import { cn } from '@/lib/cn'
 import { Container } from '@/components/layout/Container'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Reveal } from '@/components/motion/Reveal'
 
 function isPlaceholder(src: string): boolean {
@@ -18,7 +18,7 @@ function Card({ d }: { d: Distinction }) {
   const placeholder = isPlaceholder(d.image)
   const [open, setOpen] = useState(false)
   return (
-    <li className="group flex w-[88vw] max-w-[560px] shrink-0 snap-center flex-col overflow-hidden rounded-[1.75rem] border border-sand-200/70 bg-white/80 backdrop-blur-sm transition duration-500 hover:-translate-y-0.5">
+    <li className="group flex w-[88vw] max-w-[560px] shrink-0 snap-center flex-col overflow-hidden rounded-feature border border-sand-200/70 bg-white/80 backdrop-blur-sm transition duration-500 hover:-translate-y-0.5">
       {/* Photo entièrement visible — luxueuse mais non masquée */}
       <div className="relative aspect-[4/3] max-h-[62vh] overflow-hidden bg-sand-100 sm:aspect-[3/2]">
         {placeholder ? (
@@ -148,7 +148,7 @@ export function DistinctionsCarousel({ distinctions }: { distinctions?: Distinct
     return (
       <section aria-label="Mes distinctions" className="section-y bg-sand-50">
         <Container>
-          <Eyebrow num="03">Mes distinctions</Eyebrow>
+          <SectionMarker num="03" eyebrow={<>Mes distinctions</>} />
           <h2 className="mt-4 max-w-3xl font-display uppercase text-display-lg">
             Des moments qui comptent<span aria-hidden className="text-clay-500">.</span>
           </h2>
@@ -169,7 +169,7 @@ export function DistinctionsCarousel({ distinctions }: { distinctions?: Distinct
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <Eyebrow num="03">Mes distinctions</Eyebrow>
+              <SectionMarker num="03" eyebrow={<>Mes distinctions</>} />
               <h2 className="mt-4 max-w-3xl font-display uppercase text-display-lg">
                 Des moments qui comptent<span aria-hidden className="text-clay-500">.</span>
               </h2>

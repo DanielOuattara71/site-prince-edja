@@ -4,7 +4,7 @@ import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 import { Button } from '@/components/ui/Button'
 import { ArticleCard } from '@/components/cards/ArticleCard'
 
@@ -22,7 +22,7 @@ export default function JournalPage() {
       <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
         <Container>
           <div className="max-w-4xl space-y-6">
-            <Eyebrow num="05">Le journal</Eyebrow>
+            <SectionMarker num="05" eyebrow={<>Le journal</>} />
             <h1 className="font-display uppercase text-display-lg">
               Idées & récits<span aria-hidden className="text-clay-500">.</span>
             </h1>

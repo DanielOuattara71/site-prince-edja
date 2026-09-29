@@ -5,7 +5,7 @@ import { Section } from '@/components/layout/Section'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { StatItem } from '@/components/ui/StatItem'
-import { Eyebrow } from '@/components/ui/Eyebrow'
+import { SectionMarker } from '@/components/ui/SectionMarker'
 
 export function IntroBio() {
   return (
@@ -14,7 +14,7 @@ export function IntroBio() {
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
             <div className="space-y-8">
-              <Eyebrow num="01">Qui suis-je</Eyebrow>
+              <SectionMarker num="01" eyebrow={<>Qui suis-je</>} />
               <blockquote className="border-l-2 border-leaf-600 pl-6 font-quote italic leading-snug text-heading-sm text-ink-900 sm:text-heading-md">
                 {SITE.mission}
               </blockquote>

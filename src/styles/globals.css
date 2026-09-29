@@ -38,9 +38,31 @@
   --color-sage-200: #c8d6c0;
   --color-sage-100: #d4ddd0;
 
+  /* Trois voix + une voix de donnée.
+     Anton = voix du brand · Fraunces = voix de la pièce · Manrope = voix du service · data = voix du chiffre */
   --font-display: 'Anton', 'Arial Narrow', sans-serif;
   --font-sans: 'Manrope Variable', system-ui, sans-serif;
   --font-quote: 'Fraunces Variable', Georgia, serif;
+  --font-title: 'Fraunces Variable', Georgia, serif;
+  --font-data: ui-monospace, 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
+
+  /* Échelle de rayons verrouillée — aucune valeur arbitraire ailleurs.
+     sharp = action marchande · soft = bloc · feature = visuel vedette (une fois par écran) · pill = navigation */
+  --radius-sharp: 3px;
+  --radius-soft: 14px;
+  --radius-feature: 28px;
+  --radius-pill: 9999px;
+
+  /* Palettes des comptoirs (thèmes de contexte) — complètent sand/ink/night/clay/gold/forest */
+  --color-kola-900: #16283f;
+  --color-kola-700: #1e3a5f;
+  --color-kola-500: #2c5282;
+  --color-kaolin-50: #f5efe3;
+  --color-kaolin-100: #ede6da;
+  --color-kaolin-200: #ded4c2;
+  --color-brique-500: #b8492f;
+  --color-brique-600: #a33b27;
+  --color-brique-700: #7e2c1c;
 
   --text-display-xl: clamp(3.5rem, 13vw, 12rem);
   --text-display-xl--line-height: 0.92;
@@ -64,7 +86,9 @@
 }
 
 :root {
-  --d-fast: 250ms;
+  /* Le contrat de DA fixe le feedback à 200 ms ; `DUR.fast` côté JS est le miroir exact
+     de ce jeton, et les deux doivent bouger ensemble. */
+  --d-fast: 200ms;
   --d-base: 450ms;
   --d-reveal: 750ms;
   --stagger: 80ms;
@@ -142,7 +166,12 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-nature);
+    /* Un anneau de focus doit se voir sur le sol où il vit. `leaf-600` ne rend que
+       2,5:1 sur nuit et 2,0:1 sur kola : sur les deux comptoirs sombres du marché, la
+       touche Tab devenait invisible. L'accent du comptoir prend le relais (8,4:1 sur
+       nuit, 6,8:1 sur kola, 6,1:1 sur brique, 17:1 sur sable) ; hors marché, `--c-accent`
+       n'existe pas et la couleur de nature reste la règle. */
+    outline: 2px solid var(--c-accent, var(--color-nature));
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -230,6 +259,83 @@
 @utility marquee-track {
   animation: marquee var(--marquee-duration, 36s) linear infinite;
   will-change: transform;
+}
+
+/* ————— Socle marketplace (Lot 1) ————— */
+
+/* Grain global : un seul calque fixe, posé une fois dans SiteChrome.
+   À ne plus utiliser en par-section pour le contenu marchand (le `grain` reste pour le éditorial). */
+@utility grain-fixed {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+
+/* Halo de comptoir : lueur chaude posée sur le sol d'un univers */
+@utility halo-comptoir {
+  background-image: radial-gradient(
+    60% 70% at 50% 100%,
+    color-mix(in srgb, var(--c-accent) 26%, transparent) 0%,
+    color-mix(in srgb, var(--c-accent-doux) 12%, transparent) 45%,
+    transparent 72%
+  );
+}
+
+/* Le trait capillaire qui se trace sous un marqueur de section */
+@utility hairline-draw {
+  background-color: currentColor;
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform var(--d-base) var(--ease-expo);
+}
+
+@utility hairline-drawn {
+  transform: scaleX(1);
+}
+
+/* Chiffres et montants alignés : à appliquer sur tout ce qui est prix, référence, compteur */
+@utility data-mono {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* Ken Burns lent — visuels d'ambiance uniquement, jamais un produit */
+@keyframes pe-kenburns {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.08) translate3d(1.5%, -1.5%, 0);
+  }
+}
+
+@keyframes pe-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Le grain reste : c'est une texture statique, pas du mouvement.
+     Seuls les filets animés sont posés d'emblée. */
+  .hairline-draw {
+    transform: scaleX(1);
+    transition: none;
+  }
 }
 
 @keyframes marquee {

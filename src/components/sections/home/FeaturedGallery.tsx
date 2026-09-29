@@ -9,6 +9,7 @@ import { LazyImage } from '@/components/media/LazyImage'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { ArrowLink } from '@/components/ui/ArrowLink'
 import { Button } from '@/components/ui/Button'
+import { Chip } from '@/components/ui/Chip'
 import type { GalleryItem } from '@/types'
 
 function GalleryCard({ item, className }: { item: GalleryItem; className?: string }) {
@@ -25,10 +26,9 @@ function GalleryCard({ item, className }: { item: GalleryItem; className?: strin
         zoomOnHover
       />
       {item.label && (
-        <span className="label-caps absolute left-4 top-4 z-10 flex items-center gap-2 rounded-full bg-night-900/85 px-4 py-2 text-cream-100 backdrop-blur-sm">
-          <span aria-hidden className="size-1.5 rounded-full bg-gold-400" />
+        <Chip bague className="absolute top-4 left-4 z-10">
           {item.label}
-        </span>
+        </Chip>
       )}
       <span
         aria-hidden

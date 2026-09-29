@@ -107,3 +107,23 @@ export interface GalleryItem {
   label?: string
   external?: boolean
 }
+
+/** Un comptoir : une catégorie de la marketplace, avec son univers de design. */
+export interface ComptoirInfo {
+  slug: string
+  numero: string
+  /** Nom affiché dans le dock et les titres. */
+  nom: string
+  /** Collection éditoriale (TRIBE, MAILLE…), si le comptoir en porte une. */
+  collection?: string
+  /** Une phrase d'intention, jamais plus de 90 caractères. */
+  intention: string
+  /** Ce que le visiteur verra en 0,4 s : sol + accent + motif viennent du thème. */
+  theme: string
+  nbPieces: number
+  image: string
+  /** Boucle silencieuse du comptoir, optionnelle au lancement. */
+  boucle?: string
+  poster?: string
+}
+
