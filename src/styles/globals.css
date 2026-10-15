@@ -3,40 +3,54 @@
 @import '@fontsource-variable/fraunces';
 @import '@fontsource-variable/fraunces/wght-italic.css';
 @import 'tailwindcss';
+/* Leaflet : la feuille de style du moteur cartographique. Chargée ici, une seule fois,
+   à côté des tokens — les surcharges maison sont juste en dessous. */
+@import 'leaflet/dist/leaflet.css';
 
 @theme {
+  /* Fond : trois pas d'ivoire. `sand-150` est le beige chaud des sections boutique. */
   --color-sand-50: #faf6ee;
   --color-sand-100: #f2ecdf;
+  --color-sand-150: #f1eee7;
   --color-sand-200: #e4dac6;
   --color-sand-300: #d6c8b0;
 
+  /* Encre : trois pas. `900` le titre, `700` le corps secondaire, `500` le muet,
+     `500` est le pas le plus clair qui passe 4.5:1 sur toutes les surfaces sable. */
   --color-ink-900: #1c140d;
   --color-ink-700: #43362a;
-  --color-ink-500: #7a6b5b;
-  --color-ink-400: #85766a;
-  --color-ink-300: #b0a392;
+  --color-ink-500: #72634f;
 
+  /* Nuit : le seul noir du site, et son pas intermédiaire. */
   --color-night-900: #14100b;
   --color-night-800: #201812;
-  --color-night-700: #2e241c;
   --color-cream-100: #f2ecdf;
 
-  --color-clay-400: #d98a4a;
-  --color-clay-500: #c96f2e;
-  --color-clay-600: #a8541f;
-  --color-clay-700: #7a3a14;
-  --color-gold-300: #e8c071;
-  --color-gold-400: #d9a441;
-  --color-gold-500: #b3862b;
-
+  /* Famille de marque : le vert. `forest` pour les surfaces sombres, `leaf` pour le
+     texte et les filets sur ivoire (6.3:1 mini), `sage` pour les étiquettes.
+     Jamais en texte sur fond nuit (2.5:1) : là-bas c'est crème et or. */
   --color-forest-950: #0f1f14;
   --color-forest-900: #1a2e1a;
   --color-forest-700: #2d4a32;
   --color-leaf-600: #4a5a3a;
-  --color-leaf-500: #3a724f;
   --color-sage-300: #b5c2a8;
   --color-sage-200: #c8d6c0;
   --color-sage-100: #d4ddd0;
+
+  /* Accent : le terracotta. `500` pour les aplats, `600` pour le texte et les filets,
+     `700` pour le survol. */
+  --color-clay-500: #c96f2e;
+  --color-clay-600: #a8541f;
+  --color-clay-700: #7a3a14;
+
+  /* Matériau : l'or ne s'utilise qu'en filet, puce ou trait, jamais en texte sur
+     fond clair. `300`/`500` ne servent qu'au dégradé du shimmer. */
+  --color-gold-300: #e8c071;
+  --color-gold-400: #d9a441;
+  --color-gold-500: #b3862b;
+
+  /* Rouge de prix soldé : un seul usage au monde, celui du prix barré. */
+  --color-promo-500: #d0021b;
 
   --font-display: 'Anton', 'Arial Narrow', sans-serif;
   --font-sans: 'Manrope Variable', system-ui, sans-serif;
@@ -68,23 +82,27 @@
   --d-base: 450ms;
   --d-reveal: 750ms;
   --stagger: 80ms;
-  /* Surfaces sémantiques */
+  /* Couche sémantique : seuls ces alias sont consommés par le CSS et les composants.
+     Une variable qui ne sert plus s'enlève : une palette n'est pas une réserve. */
   --color-bg: var(--color-sand-50);
   --color-surface: var(--color-sand-100);
-  --color-surface-hover: var(--color-sand-200);
   --color-border: var(--color-sand-200);
-  --color-border-strong: var(--color-sand-300);
   --color-text: var(--color-ink-900);
   --color-text-muted: var(--color-ink-500);
-  --color-text-faint: var(--color-ink-400);
   --color-accent: var(--color-clay-600);
   --color-accent-hover: var(--color-clay-700);
   --color-accent-contrast: var(--color-cream-100);
-  --color-highlight: var(--color-gold-400);
-  --color-nature: var(--color-leaf-600);
-  --color-nature-contrast: var(--color-cream-100);
+  --color-brand: var(--color-leaf-600);
+  --color-brand-surface: var(--color-forest-950);
   --color-sage-bg: var(--color-sage-100);
   --color-sage-border: var(--color-sage-300);
+
+  /* Traînée du curseur Gye Nyame : les valeurs vivent ici, le composant les lit
+     par `var()` : un seul endroit décide, pas deux. */
+  --curseur-perle-1: var(--color-leaf-600);
+  --curseur-perle-2: var(--color-forest-700);
+  --curseur-perle-3: var(--color-clay-500);
+  --curseur-perle-4: var(--color-gold-400);
 
   /* Gradients existants */
   --grad-cinema: radial-gradient(ellipse at 50% 0%, var(--color-night-800) 0%, var(--color-night-900) 70%);
@@ -98,12 +116,26 @@
     rgba(20, 16, 11, 0) 78%
   );
   --grad-hero-warm: linear-gradient(135deg, rgba(201, 111, 46, 0.22) 0%, rgba(20, 16, 11, 0) 62%);
-  /* Voile forêt très subtil — 10% pour ne pas tuer le luxe */
+  /* Voiles de la famille de marque : la boutique vit sur `forest-950`, et un
+     dégradé noir sur du vert se lit comme une tache. Les valeurs rgb reprennent
+     `forest-950`. */
+  --grad-cinema-forest: radial-gradient(
+    ellipse at 50% 0%,
+    var(--color-forest-900) 0%,
+    var(--color-forest-950) 70%
+  );
+  --grad-hero-scrim-forest: linear-gradient(
+    to top,
+    rgba(15, 31, 20, 0.92) 0%,
+    rgba(15, 31, 20, 0.72) 32%,
+    rgba(15, 31, 20, 0.35) 58%,
+    rgba(15, 31, 20, 0) 78%
+  );
   --grad-hero-forest: linear-gradient(135deg, rgba(45, 74, 50, 0.18) 0%, rgba(20, 16, 11, 0) 62%);
   /* Gradients accent */
-  --grad-clay: linear-gradient(135deg, var(--color-clay-600) 0%, var(--color-clay-400) 55%, var(--color-gold-400) 100%);
+  --grad-clay: linear-gradient(135deg, var(--color-clay-600) 0%, var(--color-clay-500) 55%, var(--color-gold-400) 100%);
   --grad-gold-shimmer: linear-gradient(90deg, var(--color-gold-300), var(--color-gold-400), var(--color-gold-500));
-  --grad-night: linear-gradient(180deg, var(--color-night-700) 0%, var(--color-night-900) 100%);
+  --grad-night: linear-gradient(180deg, var(--color-night-800) 0%, var(--color-night-900) 100%);
   --grad-sand: linear-gradient(180deg, var(--color-sand-50) 0%, var(--color-sand-100) 100%);
   --grad-forest: linear-gradient(180deg, var(--color-forest-700) 0%, var(--color-forest-900) 100%);
   --grad-leaf: linear-gradient(135deg, var(--color-forest-700) 0%, var(--color-leaf-600) 100%);
@@ -113,6 +145,8 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Sous la barre flottante : un titre ancré ne doit jamais disparaître derrière. */
+    scroll-padding-top: 6.5rem;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -137,14 +171,15 @@
   }
 
   ::selection {
-    background-color: var(--color-nature);
-    color: var(--color-nature-contrast);
+    background-color: var(--color-accent);
+    color: var(--color-accent-contrast);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-nature);
+    outline: 2px solid var(--color-accent);
     outline-offset: 3px;
-    border-radius: 2px;
+    /* Pas de `border-radius` ici : l'anneau doit épouser la forme du contrôle. Forcé
+       à 2 px, il dessinait un rectangle autour de toutes les pastilles plein. */
   }
 }
 
@@ -174,6 +209,16 @@
 
 @utility overlay-hero-scrim {
   background-image: var(--grad-hero-scrim);
+}
+
+/* Pendants forêt des deux voiles ci-dessus. `@utility` reste à la racine du fichier :
+   imbriqué, il casserait le build entier. */
+@utility overlay-cinema-forest {
+  background-image: var(--grad-cinema-forest);
+}
+
+@utility overlay-hero-scrim-forest {
+  background-image: var(--grad-hero-scrim-forest);
 }
 
 @utility overlay-hero-warm {
@@ -227,6 +272,36 @@
   }
 }
 
+@utility motif-tisse {
+  position: relative;
+  isolation: isolate;
+
+  /*
+    Trame de tissage.
+
+    Inspiration formelle du tissage ouest-africain : un losange par tuile, jointifs
+    par les pointes, qui dessinent un treillis. Aucun symbole nommé n'est reproduit —
+    un motif porteur de sens ne devient pas une texture.
+
+    Réservée aux surfaces de marque de la boutique (`forest-950`, `night-900`).
+    Jamais sur sable : la trame y deviendrait une tache. Jamais sur une photo de
+    pièce : elle en fauxerait la matière.
+
+    `z-index: 0` et non `1` comme `grain` : posée au-dessus, la trame voilerait le
+    texte crème, qui n'a pas de `z-index` propre. L'utilitaire reste en racine du
+    fichier — imbriqué, il casserait le build entier.
+  */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z' fill='none' stroke='%23f2ecdf' stroke-width='1'/%3E%3C/svg%3E");
+  }
+}
+
 @utility marquee-track {
   animation: marquee var(--marquee-duration, 36s) linear infinite;
   will-change: transform;
@@ -251,4 +326,232 @@
   .marquee-track {
     animation: none;
   }
+}
+
+/* Le curseur natif n'est masqué que lorsque l'effet est actif : la classe est posée
+   par le composant, et retirée au démontage ou si l'appareil est tactile. */
+body.curseur-on,
+body.curseur-on * {
+  cursor: none !important;
+}
+
+/* Le symbole est opt-in : il ne se révèle que dans une zone `data-curseur` (galeries,
+   lookbook). Hors de ces zones, curseur natif — plus de précision, et pas de pointeur
+   fantôme au-dessus du vrai. */
+.curseur {
+  opacity: 0;
+}
+
+.curseur--actif {
+  opacity: 1;
+}
+
+.curseur,
+.perle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+}
+
+/* Les perles naissent cachées et ne sont révélées que par `body.curseur-on` : leur
+   opacité est écrite en ligne par le composant, un simple `opacity: 0` CSS ne
+   tiendrait pas face à elle. */
+.perle {
+  display: none;
+}
+
+body.curseur-on .perle {
+  display: block;
+}
+
+.curseur {
+  display: grid;
+  place-items: center;
+  /* Valeurs de repli : le composant les réaligne par script pour que le centrage
+     suive la taille effectivement retenue. */
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  /* Seules ces propriétés sont animées en transition. La position, elle, est écrite
+     chaque frame par `requestAnimationFrame`. La transition ne doit jamais la
+     concerner, sinon le curseur ramerait derrière la souris. `opacity` porte la
+     montée et la descente de l'effet, qui est opt-in. */
+  transition:
+    width 0.3s ease,
+    height 0.3s ease,
+    margin 0.3s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    opacity 0.2s ease;
+}
+
+.curseur img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: tourne-gye-nyame 10s linear infinite;
+  transition: opacity 0.2s ease;
+}
+
+.curseur span {
+  position: absolute;
+  opacity: 0;
+  color: var(--color-cream-100);
+  font: 600 13px / 1 sans-serif;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  transition: opacity 0.2s ease;
+}
+
+.curseur--survol {
+  width: 130px;
+  height: 130px;
+  margin: -65px 0 0 -65px;
+  background-color: var(--color-night-800);
+  border-color: var(--color-gold-400);
+}
+
+.curseur--survol img {
+  opacity: 0;
+}
+
+.curseur--survol span {
+  opacity: 1;
+}
+
+.curseur--clic {
+  scale: 0.85;
+}
+
+.perle {
+  border-radius: 50%;
+}
+
+@keyframes tourne-gye-nyame {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* --- Carte Leaflet (parcours X'PLORE) ------------------------------------
+   Surcharges minimales : Leaflet apporte ses propres couleurs et ses propres
+   polices, héritées d'il y a dix ans. On ne garde que la mécanique. */
+
+/*
+  Hauteur du cadre de la carte.
+
+  Écrite en classe maison et non en `h-[clamp(...)]` : Taillet ne génère pas une valeur
+  arbitraire contenant des virgules — la classe n'existait tout simplement pas, et le
+  cadre mesurait 0 px de haut. La carte ne pouvait rien afficher.
+
+  Un clamp plutôt qu'une part d'écran : sous 360 px elle deviendrait illisible,
+  au-delà de 720 px elle écraserait la page. Même hauteur utile sur téléphone et sur
+  grand écran.
+*/
+.cadre-carte {
+  height: clamp(360px, 62svh, 720px);
+}
+
+/* Les frontières sont dessinées en vecteur : la mer et le pays doivent se lire comme
+   deux aplats distincts, pas comme un même fond. */
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--color-sand-50);
+}
+
+.leaflet-control-attribution {
+  font-size: 10px;
+  color: var(--color-ink-500);
+  background: var(--color-sand-50) !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--color-clay-600);
+}
+
+/* Pastille d'étape : nuit, filet or, numéro. Remplace l'épingle bleue par défaut. */
+.marqueur-etape {
+  background: none;
+  border: none;
+}
+
+.marqueur-etape__pastille {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1.5px solid var(--color-gold-400);
+  background: var(--color-night-900);
+  color: var(--color-cream-100);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  /* Ombre portée : sur un fond de carte clair, la pastille doit se détacher sans
+     changer de couleur — l'or et la nuit restent lisibles tels quels. */
+  box-shadow: 0 4px 14px rgb(20 16 11 / 35%);
+  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+}
+
+.marqueur-etape__pastille:hover,
+.marqueur-etape:focus-visible .marqueur-etape__pastille {
+  background: var(--color-clay-600);
+}
+
+/* Étiquette de ville, posée en permanence au-dessus de la pastille. */
+.etiquette-etape {
+  border: none;
+  border-radius: 9999px;
+  background: var(--color-sand-50);
+  box-shadow: 0 2px 10px rgb(28 20 13 / 22%);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 3px 10px;
+}
+
+.etiquette-etape::before {
+  /* La pointe par défaut vise le haut : sur une étiquette au-dessus du marqueur, elle
+     pointerait à l'envers. */
+  display: none;
+}
+
+/* La carte doit rester dans son cadre, sans débordement de tuiles. */
+.leaflet-container img {
+  max-width: none !important;
+}
+
+/* Fenêtre d'information : aux tokens du site, avec son anneau de focus. */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  border: 1px solid var(--color-sand-200);
+  background: var(--color-sand-50);
+  color: var(--color-ink-900);
+  box-shadow: 0 18px 40px rgb(28 20 13 / 18%);
+}
+
+.leaflet-popup-tip {
+  background: var(--color-sand-50);
+  border: 1px solid var(--color-sand-200);
+}
+
+.leaflet-popup-content {
+  margin: 14px 18px;
+  min-width: 180px;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--color-ink-500);
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--color-ink-900);
 }

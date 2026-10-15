@@ -3,21 +3,45 @@ import { SITE } from '@/data/site'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'
 import { Reveal } from '@/components/motion/Reveal'
-import { Stagger } from '@/components/motion/Stagger'
-import { StatItem } from '@/components/ui/StatItem'
+import { LazyImage } from '@/components/media/LazyImage'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 
+/**
+ * Manifeste de la page d'accueil.
+ *
+ * Le CDC demande trois choses et rien de plus : un texte court sur la mission, un
+ * portrait éditorial et une citation. Les chiffres ne vivent plus ici, ils ont leur
+ * propre bande (« Preuves ») : les répéter sur le même écran les rendait invisibles.
+ */
 export function IntroBio() {
   return (
     <Section tone="light">
       <Container>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
-            <div className="space-y-8">
-              <Eyebrow num="01">Qui suis-je</Eyebrow>
-              <blockquote className="border-l-2 border-leaf-600 pl-6 font-quote italic leading-snug text-heading-sm text-ink-900 sm:text-heading-md">
-                {SITE.mission}
-              </blockquote>
+            <LazyImage
+              src={`${import.meta.env.BASE_URL}images/a-propos/portrait-edja.jpg`}
+              alt="Prince Edja, portrait éditorial"
+              ratio="4/5"
+              className="overflow-hidden rounded-md bg-sand-200"
+            />
+          </Reveal>
+
+          <div className="space-y-8 lg:col-span-7">
+            <Reveal>
+              <div className="space-y-6">
+                <Eyebrow num="01">Qui suis-je</Eyebrow>
+                <blockquote className="border-l-2 border-leaf-600 pl-6 font-quote text-heading-sm italic leading-snug text-ink-900 sm:text-heading-md">
+                  {SITE.mission}
+                </blockquote>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.08}>
+              <p className="max-w-2xl text-body-lg text-ink-700">{SITE.role}</p>
+            </Reveal>
+
+            <Reveal delay={0.16}>
               <a
                 href={SITE.linkedin}
                 target="_blank"
@@ -30,23 +54,7 @@ export function IntroBio() {
                   className="size-4 transition-transform duration-(--d-fast) ease-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 />
               </a>
-            </div>
-          </Reveal>
-
-          <div className="space-y-8 lg:col-span-7">
-            {SITE.bio.map((paragraph, index) => (
-              <Reveal key={paragraph.slice(0, 24)} delay={index * 0.08}>
-                <p className={index === 0 ? 'text-body-lg font-semibold text-ink-900' : 'text-body-lg text-ink-700'}>
-                  {paragraph}
-                </p>
-              </Reveal>
-            ))}
-
-            <Stagger className="grid grid-cols-2 gap-x-6 gap-y-10 border-t border-sand-200 pt-10 sm:grid-cols-4">
-              {SITE.stats.map((stat) => (
-                <StatItem key={stat.label} value={stat.value} suffix={stat.suffix} label={stat.label} />
-              ))}
-            </Stagger>
+            </Reveal>
           </div>
         </div>
       </Container>

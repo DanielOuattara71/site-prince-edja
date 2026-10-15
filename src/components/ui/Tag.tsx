@@ -14,7 +14,7 @@ export function Tag({ children, tone = 'light' }: TagProps) {
         tone === 'light'
           ? 'bg-sand-200/70 text-ink-700'
           : tone === 'sage'
-            ? 'bg-sage-100 text-leaf-600 ring-1 ring-sage-300'
+            ? 'bg-sage-100 text-ink-700 border border-sage-300'
             : 'bg-night-800 text-cream-100/80',
       )}
     >

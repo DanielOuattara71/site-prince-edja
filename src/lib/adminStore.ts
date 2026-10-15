@@ -16,7 +16,23 @@ export type Episode = {
   image: string
   guide?: string
 }
-export type SiteInfo = { name: string; role: string; heroImage: string; email: string; localisation: string }
+const SEED_STATS: { value: number | null; suffix?: string; label: string; date?: string }[] = [
+  { value: 600, suffix: 'K+', label: 'Communauté' },
+  { value: 30, suffix: '+', label: 'Pays parcourus' },
+  { value: 4, label: 'Distinctions' },
+  { value: 11, suffix: ' ans', label: 'D’expérience' },
+  { value: null, label: 'Portée' },
+]
+
+export type SiteInfo = {
+  name: string
+  role: string
+  heroImage: string
+  email: string
+  localisation: string
+  /** Chiffres clés du bloc « Preuves ». `null` = chiffre non fourni. */
+  stats?: { value: number | null; suffix?: string; label: string; date?: string }[]
+}
 export type Distinction = {
   id: string
   annee: string
@@ -34,7 +50,7 @@ const SEED_ARTICLES: Article[] = [
     titre: 'L’Afrique n’est pas une destination. C’est une multitude de mondes.',
     extrait: 'Voyager sur le continent, c’est apprendre à regarder les nuances.',
     statut: 'à venir',
-    image: `${import.meta.env.BASE_URL}images/journal/afrique-multitude-de-mondes.png`,
+    image: `${import.meta.env.BASE_URL}images/journal/afrique-multitude-de-mondes.jpg`,
   },
   {
     slug: 'citoyens-premiers-ambassadeurs',
@@ -42,7 +58,7 @@ const SEED_ARTICLES: Article[] = [
     titre: 'Et si les citoyens devenaient les premiers ambassadeurs ?',
     extrait: 'Une destination ne se résume pas à une campagne.',
     statut: 'à venir',
-    image: `${import.meta.env.BASE_URL}images/journal/citoyens-premiers-ambassadeurs.png`,
+    image: `${import.meta.env.BASE_URL}images/journal/citoyens-premiers-ambassadeurs.jpg`,
   },
   {
     slug: 'griot-moderne',
@@ -50,7 +66,7 @@ const SEED_ARTICLES: Article[] = [
     titre: 'Le griot moderne ne remplace pas la mémoire.',
     extrait: 'Comment les outils numériques transmettent sans vider de sens.',
     statut: 'à venir',
-    image: `${import.meta.env.BASE_URL}images/journal/griot-moderne.png`,
+    image: `${import.meta.env.BASE_URL}images/journal/griot-moderne.jpg`,
   },
 ]
 
@@ -61,7 +77,7 @@ const SEED_EPISODES: Episode[] = [
     titre: 'Le Dernier',
     lieu: 'Bouaké',
     pitch: 'Le dernier rhinocéros blanc.',
-    image: `${import.meta.env.BASE_URL}images/episodes/bouake.png`,
+    image: `${import.meta.env.BASE_URL}images/episodes/bouake.jpg`,
   },
   {
     slug: 'la-foret-debout',
@@ -69,7 +85,7 @@ const SEED_EPISODES: Episode[] = [
     titre: 'La Forêt debout',
     lieu: 'Taï',
     pitch: 'La dernière forêt primaire.',
-    image: `${import.meta.env.BASE_URL}images/episodes/tai.png`,
+    image: `${import.meta.env.BASE_URL}images/episodes/tai.jpg`,
   },
 ]
 
@@ -77,7 +93,7 @@ const SEED_DISTINCTIONS: Distinction[] = [
   {
     id: 'aip-2024',
     annee: '2024',
-    titre: 'AIP Awards — Meilleur créateur web pro',
+    titre: 'AIP Awards · Meilleur créateur web pro',
     delivreePar: 'AIP',
     description: 'Distinction nationale pour la qualité du récit digital.',
     image: `${import.meta.env.BASE_URL}images/placeholder-carre.svg`,
@@ -87,7 +103,7 @@ const SEED_DISTINCTIONS: Distinction[] = [
     annee: '2025',
     titre: 'Ambassadeur du Tourisme et des Loisirs',
     delivreePar: 'Ministère du Tourisme',
-    description: 'Nomination officielle au cercle des Ambassadeurs — Sublime Côte d’Ivoire.',
+    description: 'Nomination officielle au cercle des Ambassadeurs, Sublime Côte d’Ivoire.',
     image: `${import.meta.env.BASE_URL}images/placeholder-foret.svg`,
   },
   {
@@ -101,7 +117,7 @@ const SEED_DISTINCTIONS: Distinction[] = [
   {
     id: 'masa-2026',
     annee: '2026',
-    titre: 'MASA — Parrain des jeunes créateurs',
+    titre: 'MASA · Parrain des jeunes créateurs',
     delivreePar: 'MASA',
     description: 'Ambassadeur du Marché des Arts du Spectacle Africain.',
     image: `${import.meta.env.BASE_URL}images/placeholder-paysage.svg`,
@@ -138,10 +154,11 @@ export function useAdminStore() {
       get: (): SiteInfo =>
         load('pe_admin_site', {
           name: 'Prince Edja',
-          role: 'Entrepreneur, storyteller — je révèle la Côte d’Ivoire au monde.',
-          heroImage: `${import.meta.env.BASE_URL}images/hero/hero-prince-edja.png`,
+          role: 'Entrepreneur et storyteller. Je révèle la Côte d’Ivoire au monde.',
+          heroImage: `${import.meta.env.BASE_URL}images/hero/hero-prince-edja-2000.jpg`,
           email: 'contact@ohenetour.com',
           localisation: 'Abidjan · Côte d’Ivoire',
+          stats: SEED_STATS,
         }),
       set: (v: SiteInfo) => save('pe_admin_site', v),
     },

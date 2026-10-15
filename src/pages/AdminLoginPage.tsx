@@ -27,7 +27,7 @@ function isAuthed(): boolean {
 export default function AdminLoginPage() {
   const navigate = useNavigate()
   useSeo({
-    title: 'Connexion — Espace admin · Prince Edja',
+    title: 'Connexion · Espace admin · Prince Edja',
     description: 'Accès réservé à l’administration du site Prince Edja (admin codé intégré).',
   })
 
@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
         navigate(ADMIN_DASHBOARD)
       }, 400)
     } else {
-      setError(`Identifiants incorrects. (reçu: "${u}" / "${p}" — attendu: "${EXPECTED_USER}" / "${EXPECTED_PASS}")`)
+      setError(`Identifiants incorrects. (reçu: "${u}" / "${p}" ; attendu: "${EXPECTED_USER}" / "${EXPECTED_PASS}")`)
     }
   }
 
@@ -81,12 +81,12 @@ export default function AdminLoginPage() {
           </h1>
           <p className="mt-4 max-w-2xl text-body-lg text-ink-500">
             Connexion à l’admin codé intégré au site principal (même serveur, même app). Les dossiers{' '}
-            <code className="rounded bg-sand-100 px-1.5 py-0.5 text-sm">admin/</code> et{' '}
-            <code className="rounded bg-sand-100 px-1.5 py-0.5 text-sm">admin-custom/</code> restent inchangés
-            — séparation prévue au déploiement.
+            <code className="rounded bg-sand-100 px-1.5 py-0.5 text-caption">admin/</code> et{' '}
+            <code className="rounded bg-sand-100 px-1.5 py-0.5 text-caption">admin-custom/</code> restent inchangés
+            Séparation prévue au déploiement.
           </p>
 
-          <div className="mt-10 rounded-2xl border border-sand-200 bg-sand-100 p-8 sm:p-10">
+          <div className="mt-10 rounded-xl border border-sand-200 bg-sand-100 p-8 sm:p-10">
             {authed ? (
               <div className="space-y-6">
                 <p className="font-display uppercase text-heading-sm text-leaf-600">
@@ -94,10 +94,10 @@ export default function AdminLoginPage() {
                 </p>
                 <p className="text-body text-ink-500">
                   Accès validé. L’admin est intégré sur ce même serveur à{' '}
-                  <code className="rounded bg-white px-1.5 py-0.5 text-sm ring-1 ring-sand-200">
+                  <code className="rounded bg-sand-50 px-1.5 py-0.5 text-caption border border-sand-200">
                     {ADMIN_DASHBOARD}
                   </code>{' '}
-                  (même app, même port — {ADMIN_EXTERNAL_URL} reste dispo pour comparatif).
+                  (même app, même port ; {ADMIN_EXTERNAL_URL} reste dispo pour comparatif).
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Button magnetic={false} onClick={handleGoAdmin}>
@@ -107,9 +107,9 @@ export default function AdminLoginPage() {
                     Se déconnecter
                   </Button>
                 </div>
-                <p className="text-sm text-ink-400">
-                  Tous les modules admin sont sur <code className="rounded bg-white px-1 py-0.5 text-xs ring-1 ring-sand-200">/admin/*</code> — même
-                  origine, même localStorage.
+                <p className="text-caption text-ink-500">
+                  Tous les modules admin sont sur <code className="rounded bg-sand-50 px-1 py-0.5 text-caption border border-sand-200">/admin/*</code>, même
+                  origine et même localStorage.
                 </p>
               </div>
             ) : (
@@ -134,7 +134,7 @@ export default function AdminLoginPage() {
                   onChange={(e) => setPass(e.target.value)}
                 />
                 {error && (
-                  <p role="alert" className="text-sm font-semibold text-clay-600">
+                  <p role="alert" className="text-caption font-semibold text-clay-600">
                     {error}
                   </p>
                 )}
@@ -155,22 +155,22 @@ export default function AdminLoginPage() {
                     Remplir admin / admin
                   </Button>
                 </div>
-                <p className="text-xs leading-relaxed text-ink-400">
-                  Défaut dev : <code className="rounded bg-white px-1 py-0.5 ring-1 ring-sand-200">admin / admin</code>
+                <p className="text-caption leading-relaxed text-ink-500">
+                  Défaut dev : <code className="rounded bg-sand-50 px-1 py-0.5 border border-sand-200">admin / admin</code>
                   {' · '}attendu actuel :{' '}
-                  <code className="rounded bg-white px-1 py-0.5 ring-1 ring-sand-200">
+                  <code className="rounded bg-sand-50 px-1 py-0.5 border border-sand-200">
                     {EXPECTED_USER} / {EXPECTED_PASS}
                   </code>{' '}
                   · configure via{' '}
-                  <code className="rounded bg-white px-1 py-0.5 ring-1 ring-sand-200">VITE_ADMIN_USER / VITE_ADMIN_PASS</code> dans{' '}
-                  <code className="rounded bg-white px-1 py-0.5 ring-1 ring-sand-200">.env</code> (copie{' '}
-                  <code className="rounded bg-white px-1 py-0.5 ring-1 ring-sand-200">.env.example</code>).
+                  <code className="rounded bg-sand-50 px-1 py-0.5 border border-sand-200">VITE_ADMIN_USER / VITE_ADMIN_PASS</code> dans{' '}
+                  <code className="rounded bg-sand-50 px-1 py-0.5 border border-sand-200">.env</code> (copie{' '}
+                  <code className="rounded bg-sand-50 px-1 py-0.5 border border-sand-200">.env.example</code>).
                 </p>
               </form>
             )}
           </div>
 
-          <p className="mt-8 text-sm text-ink-400">
+          <p className="mt-8 text-caption text-ink-500">
             L’admin Decap reste accessible séparément sur{' '}
             <a
               href="http://localhost:5174"
@@ -180,7 +180,7 @@ export default function AdminLoginPage() {
             >
               localhost:5174
             </a>{' '}
-            — non modifié.
+            (non modifié).
           </p>
         </div>
       </Container>

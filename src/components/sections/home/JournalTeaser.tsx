@@ -19,7 +19,7 @@ export function JournalTeaser() {
                 Idées & récits<span aria-hidden className="text-clay-500">.</span>
               </>
             }
-            lead="Tourisme, culture, nation branding et mémoires africaines — la lettre de route de Prince Edja."
+            lead="Tourisme, culture, nation branding et mémoires africaines : la lettre de route de Prince Edja."
           />
           <ArrowLink to="/journal" className="shrink-0">
             Tous les articles

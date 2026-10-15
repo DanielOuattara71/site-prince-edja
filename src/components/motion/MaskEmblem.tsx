@@ -3,19 +3,19 @@ export function MaskEmblem({ className }: { className?: string }) {
     <svg
       viewBox="0 0 300 440"
       role="img"
-      aria-label="Masque africain stylisé — emblème Prince Edja"
+      aria-label="Masque africain stylisé, emblème Prince Edja"
       className={className}
     >
-      <g stroke="#14100B" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round">
+      <g stroke="var(--color-night-900)" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round">
         <path
           d="M150 20C235 20 262 118 252 220 244 310 202 400 150 428 98 400 56 310 48 220 38 118 65 20 150 20Z"
-          fill="#C96F2E"
+          fill="var(--color-clay-500)"
         />
-        <rect x="26" y="212" width="36" height="82" rx="17" fill="#A8541F" />
-        <rect x="238" y="212" width="36" height="82" rx="17" fill="#A8541F" />
-        <path d="M60 122C70 42 230 42 240 122 200 92 100 92 60 122Z" fill="#1C140B" />
-        <path d="M150 116 188 156 150 196 112 156Z" fill="#D9A441" strokeWidth="4" />
-        <path d="M150 136 168 156 150 176 132 156Z" fill="#14100B" strokeWidth="0" />
+        <rect x="26" y="212" width="36" height="82" rx="17" fill="var(--color-clay-600)" />
+        <rect x="238" y="212" width="36" height="82" rx="17" fill="var(--color-clay-600)" />
+        <path d="M60 122C70 42 230 42 240 122 200 92 100 92 60 122Z" fill="var(--color-ink-900)" />
+        <path d="M150 116 188 156 150 196 112 156Z" fill="var(--color-gold-400)" strokeWidth="4" />
+        <path d="M150 136 168 156 150 176 132 156Z" fill="var(--color-night-900)" strokeWidth="0" />
         <path d="M84 238 116 206M216 238 184 206" strokeWidth="0" />
         <path
           d="M84 238C96 214 130 208 144 234"
@@ -27,10 +27,10 @@ export function MaskEmblem({ className }: { className?: string }) {
           fill="none"
           strokeWidth="11"
         />
-        <path d="M150 212 174 302 150 318 126 302Z" fill="#A8541F" strokeWidth="4" />
-        <ellipse cx="150" cy="356" rx="27" ry="15" fill="#A8541F" strokeWidth="4" />
+        <path d="M150 212 174 302 150 318 126 302Z" fill="var(--color-clay-600)" strokeWidth="4" />
+        <ellipse cx="150" cy="356" rx="27" ry="15" fill="var(--color-clay-600)" strokeWidth="4" />
       </g>
-      <g fill="#D9A441">
+      <g fill="var(--color-gold-400)">
         <circle cx="86" cy="88" r="4" />
         <circle cx="104" cy="74" r="4" />
         <circle cx="123" cy="65" r="4" />
@@ -45,7 +45,7 @@ export function MaskEmblem({ className }: { className?: string }) {
         <circle cx="166" cy="90" r="3.4" />
         <circle cx="186" cy="96" r="3.4" />
         <circle cx="206" cy="108" r="3.4" />
-        <circle cx="150" cy="156" r="4.5" fill="#F2ECDF" />
+        <circle cx="150" cy="156" r="4.5" fill="var(--color-cream-100)" />
         <circle cx="106" cy="152" r="3" />
         <circle cx="102" cy="172" r="3" />
         <circle cx="106" cy="192" r="3" />
@@ -71,7 +71,7 @@ export function MaskEmblem({ className }: { className?: string }) {
       </g>
       <path
         d="M150 22C200 22 230 62 243 118 234 66 200 34 150 34 100 34 66 66 57 118 70 62 100 22 150 22Z"
-        fill="#F2ECDF"
+        fill="var(--color-cream-100)"
         opacity="0.18"
       />
     </svg>

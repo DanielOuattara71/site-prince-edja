@@ -47,8 +47,8 @@ export default function Articles() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display uppercase text-heading-md">Journal — Articles</h1>
-          <p className="text-sm text-ink-500">
+          <h1 className="font-display uppercase text-heading-md">Journal · Articles</h1>
+          <p className="text-caption text-ink-500">
             Ajoute article + photo (localStorage démo → à brancher sur <code>src/data/content.ts</code>)
           </p>
         </div>
@@ -56,25 +56,25 @@ export default function Articles() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
-        <div className="rounded-2xl border border-sand-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-sand-200 bg-sand-50 p-6">
           <h2 className="font-display uppercase text-heading-sm">{editing ? 'Modifier' : 'Nouvel article'}</h2>
           <div className="mt-4 space-y-3">
             <input
               placeholder="Slug (afrique-multitude...)"
               value={form.slug}
               onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              className="w-full rounded-xl border border-sand-200 px-4 py-3 text-sm focus:border-clay-600 focus:outline-none"
+              className="w-full rounded-xl border border-sand-200 px-4 py-3 text-caption focus:border-clay-600 focus:outline-none"
             />
             <input
               placeholder="Titre"
               value={form.titre}
               onChange={(e) => setForm({ ...form, titre: e.target.value })}
-              className="w-full rounded-xl border border-sand-200 px-4 py-3 text-sm focus:border-clay-600 focus:outline-none"
+              className="w-full rounded-xl border border-sand-200 px-4 py-3 text-caption focus:border-clay-600 focus:outline-none"
             />
             <select
               value={form.categorie}
               onChange={(e) => setForm({ ...form, categorie: e.target.value })}
-              className="w-full rounded-xl border border-sand-200 bg-white px-4 py-3 text-sm"
+              className="w-full rounded-xl border border-sand-200 bg-sand-50 px-4 py-3 text-caption"
             >
               {['Carnet de route', 'Nation branding', 'Culture', 'Tourisme', 'Patrimoine', 'Hospitalité', 'Création'].map(
                 (o) => (
@@ -85,7 +85,7 @@ export default function Articles() {
             <select
               value={form.statut}
               onChange={(e) => setForm({ ...form, statut: e.target.value as Article['statut'] })}
-              className="w-full rounded-xl border border-sand-200 bg-white px-4 py-3 text-sm"
+              className="w-full rounded-xl border border-sand-200 bg-sand-50 px-4 py-3 text-caption"
             >
               <option>à venir</option>
               <option>publié</option>
@@ -95,11 +95,11 @@ export default function Articles() {
               value={form.extrait}
               onChange={(e) => setForm({ ...form, extrait: e.target.value })}
               rows={3}
-              className="w-full rounded-xl border border-sand-200 px-4 py-3 text-sm"
+              className="w-full rounded-xl border border-sand-200 px-4 py-3 text-caption"
             />
             <div>
               <label className="label-caps text-ink-500">Photo</label>
-              <input type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} className="mt-2 w-full text-sm" />
+              <input type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} className="mt-2 w-full text-caption" />
               {(preview || form.image) && <img src={preview || form.image} alt="" className="mt-3 h-32 w-full rounded-xl object-cover" />}
             </div>
             <button
@@ -117,7 +117,7 @@ export default function Articles() {
                   setForm({ slug: '', categorie: 'Carnet de route', titre: '', extrait: '', statut: 'à venir', image: '' })
                   setPreview('')
                 }}
-                className="w-full rounded-full border border-sand-200 py-3 text-sm"
+                className="w-full rounded-full border border-sand-200 py-3 text-caption"
               >
                 Annuler
               </button>
@@ -129,20 +129,20 @@ export default function Articles() {
           {items.map((a) => (
             <article
               key={a.slug}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-sm"
+              className="group flex flex-col overflow-hidden rounded-xl border border-sand-200 bg-sand-50"
             >
               <div className="h-36 overflow-hidden bg-sand-100">
                 <img src={a.image} alt="" className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
               </div>
               <div className="space-y-2 p-4">
                 <span
-                  className={`label-caps rounded-full px-2 py-1 text-xs ${a.statut === 'publié' ? 'bg-gold-400 text-night-900' : 'bg-sage-100 text-leaf-600'}`}
+                  className={`label-caps rounded-full px-2 py-1 text-caption ${a.statut === 'publié' ? 'bg-gold-400 text-night-900' : 'bg-sage-100 text-leaf-600'}`}
                 >
                   {a.statut}
                 </span>
                 <h3 className="font-display uppercase text-heading-sm leading-tight">{a.titre}</h3>
-                <p className="text-sm text-ink-500 line-clamp-2">{a.extrait}</p>
-                <p className="text-xs text-ink-400">
+                <p className="text-caption text-ink-500 line-clamp-2">{a.extrait}</p>
+                <p className="text-caption text-ink-500">
                   {a.categorie} · {a.slug}
                 </p>
                 <div className="flex gap-2 pt-2">
@@ -153,14 +153,14 @@ export default function Articles() {
                       setForm(a)
                       setPreview(a.image)
                     }}
-                    className="rounded-full bg-night-900 px-4 py-1.5 text-xs font-semibold text-cream-100"
+                    className="rounded-full bg-night-900 px-4 py-1.5 text-caption font-semibold text-cream-100"
                   >
                     Éditer
                   </button>
                   <button
                     type="button"
                     onClick={() => persist(items.filter((i) => i.slug !== a.slug))}
-                    className="rounded-full border border-clay-600 px-4 py-1.5 text-xs font-semibold text-clay-600 hover:bg-clay-600 hover:text-cream-100"
+                    className="rounded-full border border-clay-600 px-4 py-1.5 text-caption font-semibold text-clay-600 hover:bg-clay-600 hover:text-cream-100"
                   >
                     Supprimer
                   </button>

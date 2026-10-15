@@ -9,6 +9,9 @@ interface ParallaxImageProps {
   range?: number
   ratio?: string
   zoomOnHover?: boolean
+  /** Sources alternatives, pour ne pas servir une image plus large que l'écran. */
+  srcSet?: string
+  sizes?: string
   className?: string
   imgClassName?: string
 }
@@ -20,6 +23,8 @@ export function ParallaxImage({
   range = 6,
   ratio,
   zoomOnHover = false,
+  srcSet,
+  sizes,
   className,
   imgClassName,
 }: ParallaxImageProps) {
@@ -37,11 +42,13 @@ export function ParallaxImage({
       <div
         className={cn(
           'h-full w-full transition-transform duration-(--d-reveal) ease-expo',
-          zoomOnHover && 'group-hover:scale-[1.06]',
+          zoomOnHover && 'group-hover:scale-[1.03]',
         )}
       >
         <motion.img
           src={src}
+          srcSet={srcSet}
+          sizes={sizes}
           alt={alt}
           loading={priority ? 'eager' : 'lazy'}
           decoding={priority ? 'sync' : 'async'}

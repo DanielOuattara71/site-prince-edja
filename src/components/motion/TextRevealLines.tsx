@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'motion/react'
-import { DUR, EASE_EXPO } from '@/lib/motion'
+import { EASE_EXPO } from '@/lib/motion'
 
 interface TextRevealLinesProps {
   lines: string[]
@@ -46,5 +46,3 @@ export function TextRevealLines({ lines, as = 'p', delay = 0, className }: TextR
     </Tag>
   )
 }
-
-export const TEXT_REVEAL_DURATION = DUR.reveal

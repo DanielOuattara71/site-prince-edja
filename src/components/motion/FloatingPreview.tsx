@@ -51,7 +51,7 @@ export function FloatingPreview({ src }: FloatingPreviewProps) {
           exit={{ opacity: 0, scale: 0.6 }}
           transition={{ duration: DUR.base, ease: EASE_EXPO }}
           style={{ x, y, rotate: tilt, width: PREVIEW_WIDTH, height: PREVIEW_HEIGHT }}
-          className="pointer-events-none fixed top-0 left-0 z-30 overflow-hidden rounded-md shadow-lg"
+          className="pointer-events-none fixed top-0 left-0 z-30 overflow-hidden rounded-md"
         >
           <img src={src} alt="" aria-hidden className="h-full w-full object-cover" />
         </motion.div>

@@ -26,11 +26,11 @@ export function FilmsList() {
                 le regard<span aria-hidden className="text-clay-500">.</span>
               </>
             }
-            lead="Six épisodes X’PLORE, une caméra à hauteur d’homme : la Côte d’Ivoire révélée aux Ivoiriens — et au monde."
+            lead="Six épisodes X’PLORE, une caméra à hauteur d’homme : la Côte d’Ivoire révélée aux Ivoiriens et au monde."
           />
         </div>
 
-        <div onMouseLeave={() => setActiveImage(null)} className="border-b border-cream-100/15">
+        <div onMouseLeave={() => setActiveImage(null)} className="border-b border-cream-100/25">
           <Stagger>
             {EPISODES.map((episode) => (
               <FilmRow
@@ -50,7 +50,7 @@ export function FilmsList() {
 
         <div className="flex justify-center pt-14">
           <Button to="/taste-and-travel" variant="ghost-light">
-            Taste & Travel — le film
+            Taste & Travel, le film
           </Button>
         </div>
 

@@ -44,22 +44,22 @@ export function AdminLayout() {
           >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
-          <Link to="/admin/dashboard" className="font-display text-lg uppercase tracking-wide">
+          <Link to="/admin/dashboard" className="font-display uppercase tracking-wide text-heading-sm">
             Prince Edja <span className="text-gold-400">· Admin</span>
           </Link>
         </div>
         <div className="flex items-center gap-3">
-          <span className="hidden text-sm text-cream-100/60 sm:block">Abidjan · Côte d’Ivoire</span>
+          <span className="hidden text-caption text-cream-100/60 sm:block">Abidjan · Côte d’Ivoire</span>
           <Link
             to="/"
-            className="hidden rounded-full bg-clay-600 px-5 py-2 text-sm font-semibold text-cream-100 hover:bg-clay-700 sm:inline-flex"
+            className="hidden rounded-full bg-clay-600 px-5 py-2 text-caption font-semibold text-cream-100 hover:bg-clay-700 sm:inline-flex"
           >
             Voir le site
           </Link>
           <button
             type="button"
             onClick={handleLogout}
-            className="inline-flex items-center gap-2 rounded-full border border-cream-100/20 px-4 py-2 text-sm font-semibold text-cream-100 transition hover:bg-cream-100 hover:text-ink-900"
+            className="inline-flex items-center gap-2 rounded-full border border-cream-100/20 px-4 py-2 text-caption font-semibold text-cream-100 transition hover:bg-cream-100 hover:text-ink-900"
           >
             <LogOut className="size-4" />
             <span className="hidden sm:inline">Déconnexion</span>
@@ -81,8 +81,8 @@ export function AdminLayout() {
         <aside
           id="admin-nav"
           className={cn(
-            'grain fixed left-0 top-16 bottom-0 z-30 flex w-64 flex-col overflow-y-auto bg-night-800 transition-transform duration-300 ease-expo lg:static lg:translate-x-0 lg:top-auto lg:bottom-auto lg:h-[calc(100svh-4rem)] lg:shrink-0',
-            open ? 'translate-x-0 shadow-2xl' : '-translate-x-full',
+            'grain fixed left-0 top-16 bottom-0 z-30 flex w-64 flex-col overflow-y-auto bg-night-800 transition-transform duration-(--d-fast) ease-expo lg:static lg:translate-x-0 lg:top-auto lg:bottom-auto lg:h-[calc(100svh-4rem)] lg:shrink-0',
+            open ? 'translate-x-0' : '-translate-x-full',
           )}
         >
           <nav className="flex-1 space-y-1 p-4">
@@ -94,9 +94,9 @@ export function AdminLayout() {
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition',
+                    'flex items-center gap-3 rounded-xl px-4 py-3 text-caption font-semibold transition',
                     isActive
-                      ? 'bg-gold-400 text-night-900 shadow-sm'
+                      ? 'bg-gold-400 text-night-900'
                       : 'text-cream-100/80 hover:bg-cream-100/10 hover:text-cream-100',
                   )
                 }
@@ -109,10 +109,10 @@ export function AdminLayout() {
           <div className="p-4">
             <div className="rounded-xl bg-leaf-600 p-4 text-cream-100">
               <p className="label-caps text-cream-100/70">Même app</p>
-              <p className="mt-1 text-sm leading-snug">Admin sur le même serveur — séparation au déploiement.</p>
+              <p className="mt-1 text-caption leading-snug">Admin sur le même serveur, séparation au déploiement.</p>
               <Link
                 to="/"
-                className="mt-3 inline-flex text-xs font-semibold underline-offset-4 hover:underline lg:hidden"
+                className="mt-3 inline-flex text-caption font-semibold underline-offset-4 hover:underline lg:hidden"
               >
                 ← Retour au site
               </Link>
@@ -140,12 +140,12 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   if (!authed) {
     return (
       <div className="flex min-h-svh items-center justify-center bg-sand-50 p-8">
-        <div className="max-w-md rounded-2xl border border-sand-200 bg-white p-8 text-center">
+        <div className="max-w-md rounded-xl border border-sand-200 bg-sand-50 p-8 text-center">
           <p className="font-display uppercase text-heading-sm">Accès restreint</p>
-          <p className="mt-2 text-sm text-ink-500">Veuillez vous connecter pour accéder à l’administration.</p>
+          <p className="mt-2 text-caption text-ink-500">Veuillez vous connecter pour accéder à l’administration.</p>
           <Link
             to="/admin"
-            className="mt-6 inline-flex rounded-full bg-clay-600 px-6 py-3 text-sm font-semibold text-cream-100 hover:bg-clay-700"
+            className="mt-6 inline-flex rounded-full bg-clay-600 px-6 py-3 text-caption font-semibold text-cream-100 hover:bg-clay-700"
           >
             Aller à la connexion
           </Link>

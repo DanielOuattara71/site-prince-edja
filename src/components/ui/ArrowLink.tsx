@@ -20,8 +20,10 @@ export function ArrowLink({
   tone = 'dark',
   className,
 }: ArrowLinkProps) {
+  // `min-h-11` : ce lien sert de seul CTA à plusieurs sections. Sans lui, la cible
+  // ne dépassait pas 20 px de haut.
   const classes = cn(
-    'group inline-flex items-center gap-2 text-button font-semibold',
+    'group inline-flex min-h-11 items-center gap-2 text-button font-semibold',
     tone === 'light' ? 'text-cream-100' : 'text-ink-900',
     className,
   )

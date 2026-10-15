@@ -30,7 +30,7 @@ function Panel({ episode, index }: { episode: Episode; index: number }) {
       <span
         aria-hidden
         className={cn(
-          'pointer-events-none absolute top-1/2 -translate-y-1/2 select-none font-display uppercase leading-none text-cream-100/10 text-[26vw]',
+          'pointer-events-none absolute top-1/2 -translate-y-1/2 select-none font-display uppercase leading-none text-cream-100/10 text-display-xl',
           alignRight ? 'left-0' : 'right-0',
         )}
       >
@@ -79,7 +79,7 @@ export function AlbumScroll() {
     return (
       <section aria-label="Album des épisodes" className="bg-night-900">
         {EPISODES.map((episode, index) => (
-          <div key={episode.slug} className="h-screen">
+          <div key={episode.slug} className="h-svh">
             <Panel episode={episode} index={index} />
           </div>
         ))}
@@ -90,11 +90,12 @@ export function AlbumScroll() {
   return (
     <section
       ref={sectionRef}
-      aria-label="Album des épisodes — feuilletez en scrollant"
+      aria-label="Album des épisodes, feuilletez en scrollant"
+      data-curseur="galerie"
       className="relative bg-night-900"
       style={{ height: `${COUNT * 100}vh` }}
     >
-      <div className="grain sticky top-0 h-screen overflow-hidden">
+      <div className="grain sticky top-0 h-svh overflow-hidden">
         <motion.div style={{ x }} className="flex h-full w-full">
           {EPISODES.map((episode, index) => (
             <Panel key={episode.slug} episode={episode} index={index} />
@@ -113,7 +114,7 @@ export function AlbumScroll() {
           className="tnum absolute bottom-6 left-5 z-20 font-display uppercase text-heading-sm text-cream-100 lg:left-10"
         >
           {String(index + 1).padStart(2, '0')}
-          <span className="text-cream-100/50"> / {String(COUNT).padStart(2, '0')}</span>
+          <span className="text-cream-100/60"> / {String(COUNT).padStart(2, '0')}</span>
         </p>
 
         <motion.p

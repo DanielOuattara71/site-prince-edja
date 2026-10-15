@@ -17,7 +17,19 @@ export function Eyebrow({ children, num, tone = 'light', className }: EyebrowPro
         className,
       )}
     >
-      {num && <span className="font-display tracking-normal text-gold-400">{num}</span>}
+      {num && (
+        // Le numéro est or sur fond nuit (8,4:1) et terracotta sur ivoire (4,9:1) :
+        // l'or en texte sur sable tombe à 2,1:1, la règle de la maison le réserve aux
+        // filets et aux puces.
+        <span
+          className={cn(
+            'font-display tracking-normal',
+            tone === 'dark' ? 'text-gold-400' : 'text-clay-600',
+          )}
+        >
+          {num}
+        </span>
+      )}
       {num && <span aria-hidden className="h-px w-6 bg-current opacity-50" />}
       <span>{children}</span>
     </p>

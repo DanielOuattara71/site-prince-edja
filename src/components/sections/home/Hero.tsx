@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'motion/react'
 import { ArrowDown } from 'lucide-react'
 import { SITE } from '@/data/site'
+import { useLangue } from '@/i18n/contexteLangue'
 import { introDelay, EASE_EXPO } from '@/lib/motion'
 import { Container } from '@/components/layout/Container'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
@@ -8,6 +9,7 @@ import { TextRevealLines } from '@/components/motion/TextRevealLines'
 import { Button } from '@/components/ui/Button'
 
 export function Hero() {
+  const { t } = useLangue()
   const reducedMotion = useReducedMotion()
   const base = introDelay()
 
@@ -18,15 +20,29 @@ export function Hero() {
   })
 
   return (
-    <section className="grain relative flex min-h-svh flex-col justify-end overflow-hidden bg-night-900 text-cream-100 lg:min-h-[92svh]">
+    <section
+      data-theme-bare="dark"
+      className="grain relative flex min-h-svh flex-col justify-end overflow-hidden bg-night-900 text-cream-100 lg:min-h-[92svh]"
+    >
       {/* Photo plein écran - plus visible */}
       <div aria-hidden className="absolute inset-0">
-        <ParallaxImage src={SITE.heroImage} alt="" priority className="h-full w-full" />
-        {/* Overlays allégés pour laisser respirer la photo */}
-        <div className="overlay-hero-warm absolute inset-0 opacity-45" />
-        <div className="overlay-hero-forest absolute inset-0 opacity-10" />
-        <div className="overlay-cinema absolute inset-0 opacity-55" />
-        <div className="overlay-hero-scrim absolute inset-0 opacity-85" />
+        <ParallaxImage
+          src={SITE.heroImage}
+          srcSet={SITE.heroSrcSet}
+          sizes={SITE.heroSizes}
+          alt=""
+          priority
+          className="h-full w-full"
+        />
+        {/*
+          Deux voiles, plus quatre. Le film noir global (`overlay-cinema`) assombrissait
+          toute l'image à 55 % : la photo ne se lisait plus, et sa disparition suffit à
+          établir le fond haut que la barre traverse. Restent la chaleur de marque,
+          étalée sur la surface, et le scrim en bas — l'unique garde-fou de lisibilité
+          du titre et de la citation.
+        */}
+        <div className="overlay-hero-warm absolute inset-0 opacity-25" />
+        <div className="overlay-hero-scrim absolute inset-0 opacity-90" />
       </div>
 
       {/* Filigrane GRIOT 2.0 */}
@@ -34,7 +50,9 @@ export function Hero() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-[18%] hidden select-none overflow-hidden lg:block"
       >
-        <p className="font-display whitespace-nowrap text-center text-[clamp(9rem,18vw,20rem)] leading-none tracking-[-0.04em] text-cream-100/[0.035]">
+        {/* `display-xl` et non un clamp écrit à la main : le filigrane entre dans
+            l'échelle, et descend de 320 px à 192 px de haut. */}
+        <p className="font-display whitespace-nowrap text-center text-display-xl leading-none tracking-[-0.04em] text-cream-100/[0.035]">
           GRIOT 2.0
         </p>
       </div>
@@ -45,21 +63,21 @@ export function Hero() {
             as="h1"
             lines={['PRINCE EDJA']}
             delay={base + 0.22}
-            className="font-display uppercase text-heading-md text-cream-100"
+            className="font-display uppercase text-display-lg leading-[0.92] text-cream-100"
           />
 
           <motion.p
             {...(reducedMotion ? {} : enter(base + 0.4))}
-            className="font-display uppercase text-heading-sm tracking-wide text-gold-400"
+            className="font-display uppercase tracking-[0.18em] text-gold-400"
           >
-            {SITE.tagline.join(' · ')}
+            {SITE.signature}
           </motion.p>
 
           <motion.p
             {...(reducedMotion ? {} : enter(base + 0.55))}
-            className="max-w-xl text-body-lg text-cream-100/80"
+            className="max-w-xl font-quote text-heading-sm italic text-cream-100 sm:text-heading-md"
           >
-            {SITE.role}
+            {SITE.manifeste}
           </motion.p>
 
           <motion.div
@@ -67,10 +85,10 @@ export function Hero() {
             className="flex flex-wrap gap-4 pt-2"
           >
             <Button to="/a-propos" variant="primary">
-              Découvrir le parcours
+              {t('hero.ctaHistoire')}
             </Button>
-            <Button to="/contact" variant="ghost-light">
-              Parlons-en
+            <Button to="/travailler-ensemble" variant="ghost-light">
+              {t('hero.ctaTravailler')}
             </Button>
           </motion.div>
         </div>

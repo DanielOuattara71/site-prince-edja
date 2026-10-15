@@ -75,7 +75,7 @@ export function LoaderIntro() {
             animate={reducedMotion ? undefined : { y: [0, -9, 0] }}
             transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
           >
-            <MaskEmblem className="h-32 w-auto drop-shadow-[0_20px_32px_rgba(0,0,0,0.45)] sm:h-44 lg:h-52" />
+            <MaskEmblem className="h-32 w-auto sm:h-44 lg:h-52" />
           </motion.div>
         </motion.div>
 
@@ -117,7 +117,7 @@ export function LoaderIntro() {
         <motion.div
           aria-hidden
           className="absolute inset-x-0 top-full h-[12vh]"
-          style={{ borderRadius: '0 0 100% 100%', background: '#14100B' }}
+          style={{ borderRadius: '0 0 100% 100%', background: 'var(--color-night-900)' }}
         />
       </motion.div>
     </AnimatePresence>

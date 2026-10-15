@@ -6,7 +6,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading'
 import { ArrowLink } from '@/components/ui/ArrowLink'
 
 const HEADER_OFFSET = 96
-const STACK_STEP = 16
+const STACK_STEP = 14
 
 export function UniversStack() {
   const lastIndex = UNIVERS.length - 1
@@ -15,16 +15,16 @@ export function UniversStack() {
     <Section tone="light">
       <Container>
         <SectionHeading
-          eyebrow="L’écosystème OHENE"
+          eyebrow="Les six piliers"
           num="04"
           title={
             <>
-              Produire. Transmettre.
+              Raconter. Explorer.
               <br />
-              Faire découvrir<span aria-hidden className="text-clay-500">.</span>
+              Faire rayonner<span aria-hidden className="text-clay-500">.</span>
             </>
           }
-          lead="Quatre façons de servir le récit africain — du voyage au film, du conseil à la transmission."
+          lead="Six manières de servir le récit africain, du terrain à la scène."
         />
 
         <div className="mt-16">
@@ -35,7 +35,7 @@ export function UniversStack() {
                 key={univers.numero}
                 style={{ top: `${HEADER_OFFSET + index * STACK_STEP}px` }}
                 className={cn(
-                  'sticky mb-6 grid gap-4 rounded-2xl border p-8 shadow-sm sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-8 sm:p-10',
+                  'sticky mb-6 grid gap-4 rounded-xl border p-8 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-8 sm:p-10',
                   isLast
                     ? 'grain overlay-forest border-forest-900 text-cream-100'
                     : 'border-sand-200 bg-sand-100 text-ink-900',

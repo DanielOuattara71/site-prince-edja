@@ -21,14 +21,8 @@ export function FeaturedFilm() {
                 ratio="16/9"
                 range={3}
               />
-              <span
-                aria-hidden
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <span className="flex size-16 items-center justify-center rounded-full bg-clay-500/90 pl-1 text-cream-100">
-                  ▶
-                </span>
-              </span>
+              {/* Pas de glyphe de lecture : il n'y a pas de lecteur sur cette page, et
+                  un bouton « play » qui ne joue rien est une promesse creuse. */}
             </div>
           </Reveal>
 
@@ -39,11 +33,11 @@ export function FeaturedFilm() {
               </Eyebrow>
               <h2 className="font-display uppercase text-display-lg">{featured.titre}</h2>
               <p className="text-body-lg text-cream-100/70">{featured.pitch}</p>
-              <p className="text-body text-cream-100/50">
+              <p className="text-body text-cream-100/60">
                 Un film nature et mémoire, pensé avec une ambition visuelle internationale.
               </p>
               <Button
-                href={`mailto:contact@ohenetour.com?subject=Projection%20Le%20Dernier`}
+                href={`mailto:contact@ohenetour.com?subject=${encodeURIComponent(`Projection · ${featured.titre}`)}`}
                 variant="primary"
               >
                 Être informé de la projection

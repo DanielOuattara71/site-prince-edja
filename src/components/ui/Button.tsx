@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 import { MagneticButton } from '@/components/motion/MagneticButton'
 
-type ButtonVariant = 'primary' | 'dark' | 'ghost-light' | 'ghost-dark' | 'sage-ghost'
+type ButtonVariant = 'primary' | 'dark' | 'ghost-light' | 'ghost-dark'
 
 const VARIANT_STYLES: Record<ButtonVariant, { button: string; fill: string; hoverText: string }> =
   {
@@ -27,11 +27,6 @@ const VARIANT_STYLES: Record<ButtonVariant, { button: string; fill: string; hove
       fill: 'bg-ink-900',
       hoverText: 'group-hover:text-cream-100',
     },
-    'sage-ghost': {
-      button: 'border border-sage-300 text-leaf-600 bg-sage-100/60',
-      fill: 'bg-leaf-600',
-      hoverText: 'group-hover:text-cream-100',
-    },
   }
 
 interface ButtonProps {
@@ -43,6 +38,7 @@ interface ButtonProps {
   magnetic?: boolean
   type?: 'button' | 'submit'
   onClick?: () => void
+  disabled?: boolean
   className?: string
 }
 
@@ -55,6 +51,7 @@ export function Button({
   magnetic = true,
   type = 'button',
   onClick,
+  disabled = false,
   className,
 }: ButtonProps) {
   const styles = VARIANT_STYLES[variant]
@@ -80,8 +77,9 @@ export function Button({
   )
 
   const classes = cn(
-    'group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-full px-7 py-3.5 text-button font-semibold',
+    'group relative inline-flex items-center justify-center overflow-hidden rounded-full px-7 py-3.5 text-button font-semibold',
     styles.button,
+    disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
     className,
   )
 
@@ -105,7 +103,13 @@ export function Button({
     )
   } else {
     element = (
-      <button type={type} onClick={onClick} className={classes}>
+      <button
+        type={type}
+        onClick={onClick}
+        disabled={disabled}
+        aria-busy={disabled || undefined}
+        className={classes}
+      >
         {inner}
       </button>
     )

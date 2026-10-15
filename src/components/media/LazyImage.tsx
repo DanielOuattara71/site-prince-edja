@@ -6,6 +6,9 @@ interface LazyImageProps {
   alt: string
   ratio?: string
   priority?: boolean
+  /** Sources alternatives, pour ne pas servir une image plus large que l'écran. */
+  srcSet?: string
+  sizes?: string
   className?: string
   imgClassName?: string
 }
@@ -15,6 +18,8 @@ export function LazyImage({
   alt,
   ratio,
   priority = false,
+  srcSet,
+  sizes,
   className,
   imgClassName,
 }: LazyImageProps) {
@@ -27,6 +32,8 @@ export function LazyImage({
     >
       <img
         src={src}
+        srcSet={srcSet}
+        sizes={sizes}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
         decoding={priority ? 'sync' : 'async'}

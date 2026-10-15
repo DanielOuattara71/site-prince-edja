@@ -15,7 +15,7 @@ function GalleryCard({ item, className }: { item: GalleryItem; className?: strin
   return (
     <Link
       to={item.to}
-      className={cn('group relative block overflow-hidden rounded-2xl', className)}
+      className={cn('group relative block overflow-hidden rounded-md', className)}
     >
       <ParallaxImage
         src={item.src}
@@ -44,7 +44,7 @@ export function FeaturedGallery() {
   const [itemA, itemB, itemC, itemD, itemE, itemWide] = GALLERY
 
   return (
-    <section aria-label="Galerie" className="bg-sand-50 pb-36 pt-24 lg:pt-32">
+    <section aria-label="Galerie" data-curseur="galerie" className="section-y bg-sand-50">
       <Container>
         <SectionHeading
           eyebrow="Carnet de route"
@@ -55,12 +55,12 @@ export function FeaturedGallery() {
               <span aria-hidden className="text-clay-500">.</span>
             </>
           }
-          lead="Films, bijoux, portraits : un aperçu du voyage en images — cliquez pour suivre la route."
+          lead="Films, bijoux, portraits : un aperçu du voyage en images. Cliquez pour suivre la route."
         />
 
         <div className="mt-14 grid gap-6 lg:grid-cols-12">
           <Reveal className="lg:col-span-5">
-            <div className="grain flex h-full flex-col gap-8 rounded-2xl bg-night-900 p-8 text-cream-100 lg:p-10">
+            <div className="grain flex h-full flex-col gap-8 rounded-xl bg-night-900 p-8 text-cream-100 lg:p-10">
               <p className="label-caps text-gold-400">Revue de presse</p>
               <blockquote className="flex-1 font-quote italic leading-snug text-heading-sm">
                 {GALLERY_QUOTE.texte}
@@ -76,7 +76,7 @@ export function FeaturedGallery() {
                     <p className="font-display uppercase text-heading-sm">
                       {GALLERY_QUOTE.source}
                     </p>
-                    <p className="label-caps text-cream-100/50">{GALLERY_QUOTE.date}</p>
+                    <p className="label-caps text-cream-100/60">{GALLERY_QUOTE.date}</p>
                   </div>
                 </div>
                 <ArrowLink href={GALLERY_QUOTE.url} external tone="light" className="shrink-0">
@@ -110,7 +110,7 @@ export function FeaturedGallery() {
         </div>
 
         <Reveal className="relative z-10 mx-auto -mt-14 max-w-xl">
-          <div className="flex flex-col items-center justify-between gap-4 rounded-3xl bg-sand-100 p-4 pl-8 shadow-xl ring-1 ring-sand-200 sm:flex-row sm:rounded-full">
+          <div className="flex flex-col items-center justify-between gap-4 rounded-xl bg-sand-100 p-4 pl-8 border border-sand-200 sm:flex-row sm:rounded-full">
             <p className="text-button font-semibold text-ink-900">
               Un projet, une histoire à raconter ?
             </p>

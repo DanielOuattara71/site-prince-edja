@@ -14,17 +14,17 @@ import { CityCard } from '@/components/cards/CityCard'
 
 export default function TasteTravelPage() {
   useSeo({
-    title: 'Taste & Travel — Prince Edja',
+    title: 'Taste & Travel · Prince Edja',
     description:
       'Trois capitales, trois tables, une Afrique qui se découvre par le goût : Abidjan, Dakar, Conakry. Avec Noom Hotels et Air Côte d’Ivoire.',
   })
 
   return (
     <>
-      <Section tone="dark" container={false} padded={false}>
-        <Container className="pt-36 pb-14 lg:pt-48 lg:pb-20">
-          <div className="max-w-4xl space-y-6">
-            <Eyebrow num="03" tone="dark">
+      <Section tone="dark" container={false} padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
+        <Container>
+          <div className="max-w-3xl space-y-6">
+            <Eyebrow num="01" tone="dark">
               Film · Gastronomie · Afrique
             </Eyebrow>
             <h1 className="font-display uppercase text-display-lg">Taste & Travel</h1>
@@ -46,8 +46,8 @@ export default function TasteTravelPage() {
 
         <div className="relative">
           <ParallaxImage
-            src={`${import.meta.env.BASE_URL}images/voyage/bandeau-littoral.png`}
-            alt="Littoral ouest-africain — escale Taste & Travel"
+            src={`${import.meta.env.BASE_URL}images/voyage/bandeau-littoral.jpg`}
+            alt="Littoral ouest-africain, escale Taste & Travel"
             ratio="21/9"
             range={8}
             priority
@@ -58,7 +58,7 @@ export default function TasteTravelPage() {
             {TRAVEL_PARTNERS.map((partner) => (
               <span
                 key={partner}
-                className="rounded-full bg-night-900/85 px-4 py-2 text-sm font-semibold text-cream-100 backdrop-blur-sm"
+                className="rounded-full bg-night-900/85 px-4 py-2 text-caption font-semibold text-cream-100 backdrop-blur-sm"
               >
                 {partner}
               </span>
@@ -75,7 +75,7 @@ export default function TasteTravelPage() {
             ))}
           </Stagger>
 
-          <div className="mt-24 grid gap-8 border-t border-cream-100/15 pt-16 lg:grid-cols-12 lg:gap-16">
+          <div className="mt-24 grid gap-8 border-t border-cream-100/25 pt-16 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
               <Eyebrow tone="dark">L’intention</Eyebrow>
               <div className="mt-6 space-y-1">
@@ -113,7 +113,7 @@ export default function TasteTravelPage() {
           </div>
 
           <Reveal className="mt-24">
-            <div className="grain flex flex-col items-start justify-between gap-8 rounded-2xl bg-night-800 p-10 text-cream-100 lg:flex-row lg:items-center lg:p-12">
+            <div className="grain flex flex-col items-start justify-between gap-8 rounded-xl bg-night-800 p-10 text-cream-100 lg:flex-row lg:items-center lg:p-12">
               <div className="max-w-xl space-y-3">
                 <p className="label-caps text-gold-400">Diffusion & partenariats</p>
                 <h2 className="font-display uppercase text-heading-md">

@@ -9,7 +9,7 @@ export default function Dashboard() {
           Administration<span className="text-clay-600">.</span>
         </h1>
         <p className="mt-2 max-w-2xl text-body text-ink-500">
-          Gère tout ton site depuis ici — style Prince Edja (sand / night / clay / gold / forest). Données en
+          Gère tout ton site depuis ici, dans le style Prince Edja (sand / night / clay / gold / forest). Données en
           localStorage pour la démo, même app que le site principal (séparation au déploiement).
         </p>
       </div>
@@ -23,7 +23,7 @@ export default function Dashboard() {
           <Link
             key={card.label}
             to={card.to}
-            className="rounded-2xl border border-sand-200 bg-white p-6 shadow-sm hover:border-clay-500/30"
+            className="rounded-xl border border-sand-200 bg-sand-50 p-6 hover:border-clay-500/30"
           >
             <div className={`flex size-10 items-center justify-center rounded-xl text-cream-100 ${card.color}`}>
               <card.icon className="size-5" />
@@ -33,9 +33,9 @@ export default function Dashboard() {
           </Link>
         ))}
       </div>
-      <div className="rounded-2xl border border-sage-300 bg-sage-100 p-6">
+      <div className="rounded-xl border border-sage-300 bg-sage-100 p-6">
         <p className="label-caps text-leaf-600">Même application</p>
-        <p className="mt-2 text-sm text-ink-700">
+        <p className="mt-2 text-caption text-ink-700">
           Admin intégré au site principal sur le même serveur (<code>/site-prince-edja</code> +{' '}
           <code>/admin/*</code>). Les dossiers <code>admin/</code> et <code>admin-custom/</code> restent
           inchangés pour le futur déploiement séparé.

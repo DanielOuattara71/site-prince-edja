@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://prince-edja.vercel.app/</loc><priority>1.0</priority></url>
-  <url><loc>https://prince-edja.vercel.app/a-propos</loc><priority>0.8</priority></url>
-  <url><loc>https://prince-edja.vercel.app/xplore</loc><priority>0.9</priority></url>
-  <url><loc>https://prince-edja.vercel.app/taste-and-travel</loc><priority>0.7</priority></url>
-  <url><loc>https://prince-edja.vercel.app/boutique</loc><priority>0.7</priority></url>
-  <url><loc>https://prince-edja.vercel.app/journal</loc><priority>0.6</priority></url>
-  <url><loc>https://prince-edja.vercel.app/presse</loc><priority>0.6</priority></url>
-  <url><loc>https://prince-edja.vercel.app/contact</loc><priority>0.8</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/</loc><priority>1.0</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/histoires</loc><priority>0.9</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/xplore</loc><priority>0.9</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/a-propos</loc><priority>0.8</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/taste-and-travel</loc><priority>0.7</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/boutique</loc><priority>0.7</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/journal</loc><priority>0.6</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/presse</loc><priority>0.6</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/travailler-ensemble</loc><priority>0.6</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/contact</loc><priority>0.5</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/archive-afrique</loc><priority>0.5</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/mentions-legales</loc><priority>0.3</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/confidentialite</loc><priority>0.3</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/cookies</loc><priority>0.3</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/cgv</loc><priority>0.3</priority></url>
+  <url><loc>https://danielouattara71.github.io/site-prince-edja/retours</loc><priority>0.3</priority></url>
 </urlset>

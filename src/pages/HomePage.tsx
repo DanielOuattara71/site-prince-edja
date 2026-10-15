@@ -1,6 +1,10 @@
 import { useSeo } from '@/hooks/useSeo'
 import { SITE } from '@/data/site'
 import { Hero } from '@/components/sections/home/Hero'
+import { Preuves } from '@/components/sections/home/Preuves'
+import { ALaUne } from '@/components/sections/home/ALaUne'
+import { Collaborations } from '@/components/sections/home/Collaborations'
+import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 import { IntroBio } from '@/components/sections/home/IntroBio'
 import { FilmsList } from '@/components/sections/home/FilmsList'
 import { UniversStack } from '@/components/sections/home/UniversStack'
@@ -12,7 +16,7 @@ import { FeaturedGallery } from '@/components/sections/home/FeaturedGallery'
 
 export default function HomePage() {
   useSeo({
-    title: `${SITE.name} — Raconter · Transmettre · Voyager`,
+    title: `${SITE.name} · Raconter · Transmettre · Voyager`,
     description:
       'Documentaires X’PLORE Côte d’Ivoire, Taste & Travel, circuits OHENE Tour et bijoux TRIBE par Prince Edja, griot 2.0 basé à Abidjan.',
   })
@@ -20,14 +24,18 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <Preuves />
       <NameBanner />
       <IntroBio />
       <FeaturedGallery />
+      <ALaUne />
       <FilmsList />
       <UniversStack />
       <ManifesteHorizontal />
       <PressMarquee />
       <JournalTeaser />
+      <Collaborations />
+      <BlocNewsletter />
     </>
   )
 }
