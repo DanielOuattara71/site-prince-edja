@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { PROMESSE_NEWSLETTER } from '@/data/newsletter'
 import { cn } from '@/lib/cn'
+import {
+  consignerIntention,
+  emailValide,
+  marquerInscrit,
+  VERSION_CONSENTEMENT,
+  type IntentionNewsletter,
+} from '@/lib/newsletter'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeading } from '@/components/ui/SectionHeading'
@@ -11,46 +18,30 @@ interface Props {
   className?: string
 }
 
-interface Intention {
-  prenom: string
-  email: string
-  pays: string
-}
 
-const CLE_STOCKAGE = 'pe_newsletter_intentions'
 
-/** Les intentions restent locales : le jour d'un prestataire, ce appel est remplacé. */
-function consigner(intention: Intention) {
-  try {
-    const brutes = window.localStorage.getItem(CLE_STOCKAGE)
-    const liste: Intention[] = brutes ? JSON.parse(brutes) : []
-    liste.push(intention)
-    window.localStorage.setItem(CLE_STOCKAGE, JSON.stringify(liste))
-  } catch {
-    /* Stockage indisponible (navigation privée) : l'inscription n'est pas perdue pour
-       l'utilisateur, elle n'est simplement pas conservée côté maison. */
+/** Consentement rétrospectif : horodaté au moment de l'acceptation, avec la version
+ *  du texte et la page d'origine — la trace légale du consentement. */
+function consentementDu(): IntentionNewsletter['consentement'] {
+  return {
+    date: new Date().toISOString(),
+    version: VERSION_CONSENTEMENT,
+    source: window.location.pathname,
   }
 }
 
-/**
- * Bloc d'inscription à la lettre.
- *
- * Champs du CDC : prénom, email, pays, consentement. Le texte de consentement est à
- * fournir par la maison (du juridique ne s'invente pas) : la case est donc là, vérifiée,
- * mais son libellé annonce l'attente.
- */
 export function BlocNewsletter({ compact = false, className }: Props) {
-  const { t, l } = useLangue()
+  const { t } = useLangue()
   const [prenom, setPrenom] = useState('')
   const [email, setEmail] = useState('')
   const [pays, setPays] = useState('')
   const [consentement, setConsentement] = useState(false)
   const [envoye, setEnvoye] = useState(false)
 
-  const valide = prenom.trim() !== '' && email.includes('@') && consentement
+  const valide = prenom.trim() !== '' && emailValide(email) && consentement
   // La variante compacte ne demande qu'un email : exiger `prenom`, qu'elle n'affiche
   // pas, laissait son bouton désactivé pour toujours.
-  const valideCompact = email.includes('@')
+  const valideCompact = emailValide(email) && consentement
 
   if (compact) {
     return (
@@ -72,7 +63,11 @@ export function BlocNewsletter({ compact = false, className }: Props) {
             onSubmit={(evenement) => {
               evenement.preventDefault()
               if (!valideCompact) return
-              consigner({ prenom, email, pays })
+              consignerIntention({
+                email,
+                consentement: consentementDu(),
+              })
+              marquerInscrit({ email, consentement: consentementDu() })
               setEnvoye(true)
             }}
           >
@@ -85,6 +80,17 @@ export function BlocNewsletter({ compact = false, className }: Props) {
               aria-label={t('newsletter.email')}
               className="min-h-11 min-w-40 flex-1 rounded-full border border-cream-100/25 bg-transparent px-4 text-caption text-cream-100 placeholder:text-cream-100/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
             />
+            <label className="flex items-baseline gap-3 text-caption text-ink-500">
+              <input
+                type="checkbox"
+                required
+                checked={consentement}
+                onChange={(evenement) => setConsentement(evenement.target.checked)}
+                className="mt-0.5 size-4 shrink-0"
+              />
+              <span>{t('newsletter.consentement')}</span>
+            </label>
+
             <button
               type="submit"
               disabled={!valideCompact}
@@ -119,7 +125,13 @@ export function BlocNewsletter({ compact = false, className }: Props) {
             onSubmit={(evenement) => {
               evenement.preventDefault()
               if (!valide) return
-              consigner({ prenom, email, pays })
+              consignerIntention({
+                email,
+                prenom,
+                pays,
+                consentement: consentementDu(),
+              })
+              marquerInscrit({ email, prenom, pays, consentement: consentementDu() })
               setEnvoye(true)
             }}
           >
@@ -165,7 +177,6 @@ export function BlocNewsletter({ compact = false, className }: Props) {
               />
               <span>
                 {t('newsletter.consentement')}
-                <span className="ml-1 text-ink-500">({l({ fr: 'texte à fournir', en: 'text to be provided' })})</span>
               </span>
             </label>
 

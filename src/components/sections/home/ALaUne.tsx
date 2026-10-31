@@ -1,5 +1,4 @@
 import { Link } from 'react-router'
-import { ArrowUpRight } from 'lucide-react'
 import { ARTICLES, EPISODES } from '@/data/content'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Container } from '@/components/layout/Container'
@@ -57,19 +56,13 @@ export function ALaUne() {
             </div>
 
             <div className="space-y-5 lg:col-span-5">
-              <div className="flex items-center gap-3">
-                <Eyebrow num="03">{une.etiquette}</Eyebrow>
-              </div>
+              <Eyebrow>{une.etiquette}</Eyebrow>
               <h2 className="font-display uppercase text-display-lg leading-[0.95]">
                 {une.titre}
               </h2>
               <p className="max-w-xl text-body-lg text-ink-700">{une.chapo}</p>
-              <span className="group inline-flex items-center gap-2 text-button font-semibold text-clay-600">
+              <span className="text-button font-semibold text-clay-600">
                 {l({ fr: 'Voir', en: 'View' })}
-                <ArrowUpRight
-                  aria-hidden
-                  className="size-4 transition-transform duration-(--d-fast) ease-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                />
               </span>
             </div>
           </Link>

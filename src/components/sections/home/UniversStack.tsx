@@ -16,7 +16,6 @@ export function UniversStack() {
       <Container>
         <SectionHeading
           eyebrow="Les six piliers"
-          num="04"
           title={
             <>
               Raconter. Explorer.

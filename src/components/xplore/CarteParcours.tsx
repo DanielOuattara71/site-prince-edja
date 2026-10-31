@@ -160,7 +160,7 @@ export function CarteParcours({
             retrouvait plaqué à l'origine du SVG (« M0 0 ») — invisible.
           */
           L.polyline(
-            tracé.coordinates.map(([lng, lat]) => [lat, lng]),
+            tracé.coordinates.map(([lng, lat]) => [lat, lng] as L.LatLngExpression),
             {
               color: '#a8541f', // clay-600
               weight: 2.5,

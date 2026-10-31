@@ -11,6 +11,7 @@ import { Tag } from '@/components/ui/Tag'
 import { ArrowLink } from '@/components/ui/ArrowLink'
 import { Button } from '@/components/ui/Button'
 import { CityCard } from '@/components/cards/CityCard'
+import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 
 export default function TasteTravelPage() {
   useSeo({
@@ -21,10 +22,26 @@ export default function TasteTravelPage() {
 
   return (
     <>
-      <Section tone="dark" container={false} padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
+      <Section
+        tone="dark"
+        container={false}
+        padded={false}
+        className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-44 lg:pb-28"
+      >
+        {/* L'arche en crème évoque une porte de voyage, dans l'espace libre à droite
+            du titre. Le bandeau photo, plus bas, n'est pas concerné. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <AfricanPattern
+            motif="linear-01"
+            couleur="var(--color-cream-100)"
+            opacite={0.045}
+            className="-right-16 top-24 hidden h-72 w-72 lg:block"
+          />
+        </div>
+
         <Container>
           <div className="max-w-3xl space-y-6">
-            <Eyebrow num="01" tone="dark">
+            <Eyebrow tone="dark">
               Film · Gastronomie · Afrique
             </Eyebrow>
             <h1 className="font-display uppercase text-display-lg">Taste & Travel</h1>

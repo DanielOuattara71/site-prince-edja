@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+<title id="title">Motif circulaire concentrique 03</title>
+<g fill="none" stroke="#4B3018" stroke-width="8">
+  <circle cx="100" cy="100" r="72"/>
+  <circle cx="100" cy="100" r="53"/>
+  <circle cx="100" cy="100" r="34"/>
+  <circle cx="100" cy="100" r="16"/>
+</g>
+</svg>

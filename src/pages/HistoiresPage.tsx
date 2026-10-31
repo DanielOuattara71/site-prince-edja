@@ -5,18 +5,27 @@ import { useSeo } from '@/hooks/useSeo'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { LazyImage } from '@/components/media/LazyImage'
+import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { cn } from '@/lib/cn'
+
+/**
+ * Photo du hero : le panorama « Contemplation sur la vallée dorée », servi à deux
+ * largeurs (téléphone 1200, grand écran 1920). Visuel de cette page seule — le hero
+ * d'accueil garde son portrait, et rien dans `SITE` ne bouge.
+ */
+const HERO_HISTOIRES = `${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree.jpg`
+const HERO_HISTOIRES_SRCSET = `${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree-1200.jpg 1200w, ${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree.jpg 1920w`
 
 /** Correspondance entre les filtres du CDC et les données du projet. */
 function correspond(projet: Projet, filtre: string): boolean {
   switch (filtre) {
     case 'Documentaires':
+      return projet.format === 'Documentaire'
     case 'Séries':
-      return projet.format === filtre.slice(0, -1) || projet.format === 'Émission'
+      return projet.format === 'Série'
     case 'Histoire':
       return projet.theme.includes('Histoire') || projet.theme.includes('Mémoire')
     case 'Patrimoine':
@@ -39,46 +48,60 @@ function correspond(projet: Projet, filtre: string): boolean {
 function CarteProjet({ projet }: { projet: Projet }) {
   const { l } = useLangue()
 
-  return (
-    <article className="group flex h-full flex-col">
-      <Link
-        to={projet.aFournir ? '/histoires' : (projet.route ?? `/xplore/${projet.slug}`)}
-        className="flex h-full flex-col focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600"
-      >
-        <div className="relative aspect-4/5 overflow-hidden rounded-md bg-sand-200">
-          {projet.image ? (
-            <LazyImage
-              src={projet.image}
-              alt={projet.titre}
-              ratio="4/5"
-              className="h-full w-full object-cover transition-transform duration-[700ms] ease-expo group-hover:scale-[1.03]"
-            />
-          ) : (
-            <span className="absolute inset-0 flex items-center justify-center">
-              <span className="label-caps px-6 text-center text-ink-500">
-                {l({ fr: 'Visuel à fournir', en: 'Visual to be provided' })}
-              </span>
-            </span>
-          )}
-          {projet.aFournir && (
-            <span className="label-caps absolute left-3 top-3 rounded-full bg-night-900/85 px-3 py-1.5 text-cream-100">
-              {l({ fr: 'À fournir', en: 'To be provided' })}
-            </span>
-          )}
-        </div>
+  /** Un projet sans contenu n'a pas de fiche : la carte reste une annonce informative,
+   *  sans lien mort qui rechargerait cette même page. */
+  const interactif = !projet.aFournir
 
-        <div className="mt-3 flex flex-1 flex-col px-3 pb-2">
-          <h3 className="font-display uppercase text-heading-sm text-ink-900 transition-colors duration-(--d-base) group-hover:text-clay-600">
-            {projet.titre}
-          </h3>
-          <p className="mt-2 text-body text-ink-500">{projet.accroche}</p>
-          <p className="label-caps mt-auto pt-4 text-ink-500">
-            {[projet.format, projet.annee, projet.pays[0], projet.statut]
-              .filter(Boolean)
-              .join(' · ')}
-          </p>
-        </div>
-      </Link>
+  const corps = (
+    <>
+      <div className="relative aspect-4/5 overflow-hidden rounded-md bg-sand-200">
+        {projet.image ? (
+          <LazyImage
+            src={projet.image}
+            alt={projet.titre}
+            ratio="4/5"
+            className="h-full w-full object-cover transition-transform duration-[700ms] ease-expo group-hover:scale-[1.03]"
+          />
+        ) : (
+          <span className="absolute inset-0 flex items-center justify-center">
+            <span className="label-caps px-6 text-center text-ink-500">
+              {l({ fr: 'Visuel à fournir', en: 'Visual to be provided' })}
+            </span>
+          </span>
+        )}
+        {projet.aFournir && (
+          <span className="label-caps absolute left-3 top-3 rounded-full bg-night-900/85 px-3 py-1.5 text-cream-100">
+            {l({ fr: 'À fournir', en: 'To be provided' })}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-3 flex flex-1 flex-col px-3 pb-2">
+        <h3 className="font-display uppercase text-heading-sm text-ink-900 transition-colors duration-(--d-base) group-hover:text-clay-600">
+          {projet.titre}
+        </h3>
+        <p className="mt-2 text-body text-ink-500">{projet.accroche}</p>
+        <p className="label-caps mt-auto pt-4 text-ink-500">
+          {[projet.format, projet.annee, projet.pays[0], projet.statut]
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
+      </div>
+    </>
+  )
+
+  return (
+    <article className={cn('flex h-full flex-col', interactif && 'group')}>
+      {interactif ? (
+        <Link
+          to={projet.route ?? `/xplore/${projet.slug}`}
+          className="flex h-full flex-col focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600"
+        >
+          {corps}
+        </Link>
+      ) : (
+        <div className="flex h-full flex-col">{corps}</div>
+      )}
     </article>
   )
 }
@@ -105,17 +128,40 @@ export default function HistoiresPage() {
 
   return (
     <>
-      <Section tone="dark" padded={false} className="relative pt-32 pb-20 lg:pt-44 lg:pb-28">
-        <Container className="space-y-6">
-          <Eyebrow num="01" tone="dark">
-            Projets &amp; histoires
-          </Eyebrow>
+      <Section
+        tone="dark"
+        padded={false}
+        className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-44 lg:pb-28"
+      >
+        {/* Photo panoramique : la moitié droite du hero, bord gauche dissous dans la
+            nuit. Le fondu part de la gauche du bloc photo — aucune frontière nette
+            entre la nuit du titre et le lever de soleil. */}
+        <div aria-hidden className="absolute inset-y-0 right-0 w-full lg:w-[58%]">
+          <ParallaxImage
+            src={HERO_HISTOIRES}
+            srcSet={HERO_HISTOIRES_SRCSET}
+            sizes="(min-width: 1024px) 58vw, 100vw"
+            alt=""
+            priority
+            range={6}
+            className="h-full w-full"
+            imgClassName="object-[10%_50%]"
+          />
+          <div className="overlay-hero-lateral absolute inset-0" />
+          {/* Sous lg, le texte couvre toute la largeur : un voile simple fonce la
+              photo, le dégradé latéral seul ne suffit pas pour le titre. */}
+          <div className="absolute inset-0 bg-night-900/60 lg:hidden" />
+        </div>
+
+        <Container className="relative z-10 space-y-6">
           <h1 className="font-display uppercase text-display-lg text-cream-100">
-            Des histoires qui voyagent
+            Des histoires
+            <br />
+            qui voyagent
             <span aria-hidden className="text-clay-500">.</span>
           </h1>
           <p className="max-w-2xl text-body-lg text-cream-100/75">
- Films, séries, archives et mémoires : la plateforme documentaire de Prince Edja.
+            Films, séries, archives et mémoires : la plateforme documentaire de Prince Edja.
           </p>
         </Container>
       </Section>
@@ -191,7 +237,11 @@ export default function HistoiresPage() {
             ))}
           </div>
 
-          <Stagger className="grid grid-cols-2 gap-1 sm:grid-cols-3">
+          {/* Remontée à chaque changement de filtre : Stagger ne révèle ses enfants
+              qu'une seule fois (whileInView + once). Sans remontée, les emplacements
+              qui apparaissent après le premier déclenchement héritent de `hidden`
+              (opacity: 0) et restent à jamais invisibles. */}
+          <Stagger key={filtre ?? 'tous-les-projets'} className="grid grid-cols-2 gap-1 sm:grid-cols-3">
             {visibles.map((projet) => (
               <CarteProjet key={projet.slug} projet={projet} />
             ))}

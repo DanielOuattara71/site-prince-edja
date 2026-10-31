@@ -12,7 +12,7 @@ export function PressMarquee() {
     <section aria-label="Ils parlent de Prince Edja" className="overlay-savane border-y border-sage-300 py-10">
       <Container>
         <Reveal>
-          <Eyebrow num="04">Ils en parlent</Eyebrow>
+          <Eyebrow>Ils en parlent</Eyebrow>
         </Reveal>
       </Container>
       <Link to="/presse" className="mt-8 block" aria-label="Lire la revue de presse complète">

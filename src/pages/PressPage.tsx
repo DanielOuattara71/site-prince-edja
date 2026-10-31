@@ -6,10 +6,10 @@ import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { Eyebrow } from '@/components/ui/Eyebrow'
-import { ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { DistinctionsCarousel } from '@/components/sections/about/DistinctionsCarousel'
+import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 
 interface PressCardProps {
   item: PressItem
@@ -22,7 +22,7 @@ function PressCard({ item, index }: PressCardProps) {
       href={item.url}
       target="_blank"
       rel="noreferrer"
-      className="group grid grid-cols-[auto_1fr_auto] items-start gap-x-6 gap-y-2 border-t border-sand-200 py-8 transition-colors duration-(--d-base) hover:border-clay-500/70"
+      className="group grid grid-cols-[auto_1fr] items-start gap-x-6 gap-y-2 border-t border-sand-200 py-8 transition-colors duration-(--d-base) hover:border-clay-500/70"
     >
       <span aria-hidden className="font-display text-heading-sm text-clay-600">
         {String(index + 1).padStart(2, '0')}
@@ -36,10 +36,6 @@ function PressCard({ item, index }: PressCardProps) {
         </h3>
         <p className="mt-2 max-w-xl text-body text-ink-500">{item.resume}</p>
       </div>
-      <ArrowUpRight
-        aria-hidden
-        className="size-5 -translate-x-1 translate-y-1 text-clay-500 opacity-0 transition-all duration-(--d-base) ease-expo group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
-      />
     </a>
   )
 }
@@ -53,12 +49,26 @@ export default function PressPage() {
 
   return (
     <>
-      <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
+      <Section
+        tone="light"
+        padded={false}
+        className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-44 lg:pb-28"
+      >
+        {/* Spirale dans la marge droite, plus basse que les anneaux du Journal :
+            même registre, composition différente. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <AfricanPattern
+            motif="spiral-02"
+            opacite={0.04}
+            className="-right-20 top-40 hidden h-72 w-72 lg:block"
+          />
+        </div>
+
         <Container>
           <Breadcrumb className="mb-8" />
 
         <div className="max-w-3xl space-y-6">
-          <Eyebrow num="01">Revue de presse</Eyebrow>
+          <Eyebrow>Revue de presse</Eyebrow>
           <h1 className="font-display uppercase text-display-lg">
             Médias &amp; presse<span aria-hidden className="text-clay-500">.</span>
           </h1>
@@ -91,7 +101,7 @@ export default function PressPage() {
             maison les fournit. */}
         <div className="mt-20 space-y-8">
           <div className="space-y-2">
-            <Eyebrow num="03">Bios presse</Eyebrow>
+            <Eyebrow>Bios presse</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Trois longueurs<span aria-hidden className="text-clay-500">.</span>
             </h2>
@@ -116,7 +126,7 @@ export default function PressPage() {
         {/* Éléments de marque : portraits HD, logos, éléments. Fichiers à fournir. */}
         <div className="mt-20 space-y-8">
           <div className="space-y-2">
-            <Eyebrow num="04">Éléments de marque</Eyebrow>
+            <Eyebrow>Éléments de marque</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Portraits, logos, éléments<span aria-hidden className="text-clay-500">.</span>
             </h2>
@@ -136,7 +146,7 @@ export default function PressPage() {
         {/* Apparitions : médias, panels, conférences. Données à fournir. */}
         <div className="mt-20 space-y-8">
           <div className="space-y-2">
-            <Eyebrow num="05">Apparitions</Eyebrow>
+            <Eyebrow>Apparitions</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Médias, panels, conférences<span aria-hidden className="text-clay-500">.</span>
             </h2>

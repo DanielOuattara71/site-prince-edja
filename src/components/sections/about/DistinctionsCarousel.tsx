@@ -3,7 +3,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import type { Distinction } from '@/types'
 import { DISTINCTIONS as SEED } from '@/data/distinctions'
-import { useAdminStore } from '@/lib/adminStore'
 import { DUR, EASE_EXPO } from '@/lib/motion'
 import { cn } from '@/lib/cn'
 import { Container } from '@/components/layout/Container'
@@ -174,7 +173,7 @@ function Entete({ titre, lead }: { titre?: string; lead?: string }) {
   if (!titre) return null
   return (
     <div>
-      <Eyebrow num="02">Mes distinctions</Eyebrow>
+      <Eyebrow>Mes distinctions</Eyebrow>
       <h2 className="mt-4 max-w-3xl font-display uppercase text-display-lg">
         {titre}
         <span aria-hidden className="text-clay-500">.</span>
@@ -198,20 +197,8 @@ interface Props {
 export function DistinctionsCarousel({ distinctions, titre, lead, className }: Props) {
   const reduced = useReducedMotion()
   const ref = useRef<HTMLDivElement>(null)
-  const store = useAdminStore()
-  const [items, setItems] = useState<Distinction[]>(() => distinctions ?? SEED)
+  const items = distinctions ?? SEED
   const [index, setIndex] = useState(0)
-
-  // charge depuis localStorage (éditable admin) si disponible
-  useEffect(() => {
-    if (distinctions) return
-    try {
-      const v = store.distinctions.get()
-      if (v.length) setItems(v)
-    } catch {
-      /* ignore */
-    }
-  }, [distinctions, store])
 
   const scrollTo = (i: number) => {
     const el = ref.current

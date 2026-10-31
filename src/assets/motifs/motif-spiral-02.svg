@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+<title id="title">Motif à quatre spirales 02</title>
+<g fill="none" stroke="#4B3018" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M96 49 C84 20 42 22 30 45 C17 69 39 89 57 78 C70 70 65 53 54 54 C46 54 45 64 51 66"/>
+  <path d="M104 49 C116 20 158 22 170 45 C183 69 161 89 143 78 C130 70 135 53 146 54 C154 54 155 64 149 66"/>
+  <path d="M96 151 C84 180 42 178 30 155 C17 131 39 111 57 122 C70 130 65 147 54 146 C46 146 45 136 51 134"/>
+  <path d="M104 151 C116 180 158 178 170 155 C183 131 161 111 143 122 C130 130 135 147 146 146 C154 146 155 136 149 134"/>
+  <path d="M52 93 L100 100 L148 93 M52 107 L100 100 L148 107"/>
+</g>
+</svg>

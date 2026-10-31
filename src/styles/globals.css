@@ -116,6 +116,16 @@
     rgba(20, 16, 11, 0) 78%
   );
   --grad-hero-warm: linear-gradient(135deg, rgba(201, 111, 46, 0.22) 0%, rgba(20, 16, 11, 0) 62%);
+  /* Fondu latéral du hero « Histoires » : la photo n'occupe que la moitié droite et
+     son bord gauche se dissout dans la nuit (rgb de `night-900`). Les pourcentages
+     sont relatifs au bloc photo, pas à l'écran entier. */
+  --grad-hero-lateral: linear-gradient(
+    to right,
+    rgba(20, 16, 11, 1) 0%,
+    rgba(20, 16, 11, 1) 10%,
+    rgba(20, 16, 11, 0.5) 24%,
+    rgba(20, 16, 11, 0) 38%
+  );
   /* Voiles de la famille de marque : la boutique vit sur `forest-950`, et un
      dégradé noir sur du vert se lit comme une tache. Les valeurs rgb reprennent
      `forest-950`. */
@@ -225,6 +235,13 @@
   background-image: var(--grad-hero-warm);
 }
 
+/* Voile latéral du hero « Histoires » : la photo est posée sur la moitié droite, le
+   fondu gauche fait la couture avec la nuit. Reste à la racine du fichier — imbriqué,
+   un `@utility` casserait le build entier. */
+@utility overlay-hero-lateral {
+  background-image: var(--grad-hero-lateral);
+}
+
 @utility overlay-hero-forest {
   background-image: var(--grad-hero-forest);
 }
@@ -299,6 +316,27 @@
     pointer-events: none;
     opacity: 0.05;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z' fill='none' stroke='%23f2ecdf' stroke-width='1'/%3E%3C/svg%3E");
+  }
+}
+
+/*
+  Ruban de motifs africains.
+
+  La tuile est une image SVG (data URI) posée par le composant ; le CSS ne fait que
+  la répéter. `auto 100%` fait suivre l'échelle de la hauteur du ruban : les motifs
+  restent proportionnés, sans déformation ni débordement. La variante mobile est une
+  tuile plus courte, avec quatre motifs au lieu de cinq.
+*/
+.ruban-motifs {
+  background-image: var(--ruban-desktop);
+  background-position: left center;
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+}
+
+@media (max-width: 39.999rem) {
+  .ruban-motifs {
+    background-image: var(--ruban-mobile);
   }
 }
 

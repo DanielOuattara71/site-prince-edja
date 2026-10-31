@@ -1,20 +1,27 @@
 import { useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { BIJOUX } from '@/data/content'
+import { GALERIE_SHOP } from '@/data/shop'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Eyebrow } from '@/components/ui/Eyebrow'
-import { Button } from '@/components/ui/Button'
 import { BijouCard } from '@/components/cards/BijouCard'
 import { ColonneMots } from '@/components/shop/ColonneMots'
-import { SectionPortes } from '@/components/shop/SectionPortes'
-import { BijouLightbox } from '@/components/shop/BijouLightbox'
-import { BandeParallaxe, BlocSuivant, CitationEncadree } from '@/components/shop/BlocsEditoriaux'
+import { GalerieLightbox } from '@/components/shop/GalerieLightbox'
+import { CitationEncadree } from '@/components/shop/BlocsEditoriaux'
 import { LookbookPleinEcran } from '@/components/shop/LookbookPleinEcran'
-import { visuelCouverture, visuelCouvertureSrcSet, visuelCouvertureSizes } from '@/lib/visuels'
+import {
+  visuelCouverture,
+  visuelCouvertureSrcSet,
+  visuelCouvertureSizes,
+  VISUEL_TEST_CARTE,
+  ALT_TEST_CARTE,
+} from '@/lib/visuels'
 import { FiltresCatalogue } from '@/components/shop/FiltresCatalogue'
+import { SectionLivres } from '@/components/shop/SectionLivres'
+import { AfricanPatternRibbon } from '@/components/motifs/AfricanPatternRibbon'
 
 /**
  * Photographie de couverture, en fond de hero.
@@ -53,13 +60,13 @@ function HeroCouverture() {
  * Page Edja Shop.
  *
  * L'ordre suit un raisonnement de vente éditoriale : d'abord ce que la collection
- * **est** (hero, colonne de mots), ensuite ce qu'il faut **voir** (trois pièces mises
- * en avant), puis **tout** le reste (lookbook plein écran), et enfin ce que la pièce
+ * **est** (hero, colonne de mots), ensuite ce qu'il faut **voir** (une sélection de
+ * pièces), puis **le regard** (galerie indépendante), et enfin ce que la pièce
  * **devient** (le porté). On ne met pas la collection entière en avant : dès qu'on
  * montre dix pièces en grand, plus rien ne l'est.
  */
 export default function ShopPage() {
-  const [visionneuse, setVisionneuse] = useState<number | null>(null)
+  const [galerieIndex, setGalerieIndex] = useState<number | null>(null)
   const rail = useRef<HTMLDivElement>(null)
 
   useSeo({
@@ -67,8 +74,6 @@ export default function ShopPage() {
     description:
       'Des objets qui parlent, des symboles qui relient : bijoux TRIBE façonnés à la main par des artisans ivoiriens.',
   })
-
-  const reste = BIJOUX.slice(3)
 
   const defiler = (sens: 1 | -1) => {
     const piste = rail.current
@@ -90,28 +95,13 @@ export default function ShopPage() {
       <Section
         tone="dark"
         padded={false}
-        className="motif-tisse relative overflow-hidden bg-forest-950"
+        className="relative overflow-hidden bg-forest-950"
       >
         <HeroCouverture />
 
         <Container className="relative z-10 flex min-h-[78svh] flex-col justify-end pb-20 pt-32 lg:min-h-[86svh] lg:pb-28">
-          {/* Ligne de base : trois repères, un filet au-dessus, séparateurs pointillés. */}
-          <div className="mb-6 flex items-center justify-between gap-4 border-t border-cream-100/30 pt-4 text-cream-100 lg:mb-10">
-            <span className="label-caps">Edja Shop</span>
-            <span
-              aria-hidden
-              className="h-px flex-1 border-t border-dotted border-cream-100/40"
-            />
-            <span className="label-caps hidden sm:inline">Collection TRIBE</span>
-            <span
-              aria-hidden
-              className="hidden h-px flex-1 border-t border-dotted border-cream-100/40 sm:block"
-            />
-            <span className="label-caps">Abidjan</span>
-          </div>
-
           <div className="space-y-6">
-            <Eyebrow num="01" tone="dark">
+            <Eyebrow tone="dark">
               Chaque bijou est une histoire
             </Eyebrow>
             <h1 className="font-display uppercase text-display-xl leading-[0.92] text-cream-100">
@@ -120,28 +110,22 @@ export default function ShopPage() {
               est une histoire
               <span aria-hidden className="text-clay-500">.</span>
             </h1>
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <Reveal delay={0.15}>
-                <p className="max-w-xl text-body-lg text-cream-100/75">
-                  Un passeport culturel façonné à la main par des artisans ivoiriens.
-                  Bronze, laiton et argent deviennent un langage contemporain inspiré
-                  des héritages d'Afrique de l'Ouest.
-                </p>
-              </Reveal>
-              <Reveal delay={0.2}>
-                {/* La signature géographique : la maison est à un endroit, pas nulle part. */}
-                <p className="label-caps shrink-0 text-gold-400">
-                  05°20' N · 004°02' W
-                  <span aria-hidden className="mx-2 text-cream-100/40">
-                    ·
-                  </span>
-                  {BIJOUX.length} pièces numérotées
-                </p>
-              </Reveal>
-            </div>
+            <Reveal delay={0.15}>
+              <p className="max-w-xl text-body-lg text-cream-100/75">
+                Un passeport culturel façonné à la main par des artisans ivoiriens.
+                Bronze, laiton et argent deviennent un langage contemporain inspiré
+                des héritages d'Afrique de l'Ouest.
+              </p>
+            </Reveal>
           </div>
         </Container>
       </Section>
+
+      {/* Le ruban prend la couleur de la forêt : il relie la photo du hero au
+          chapitre des mots sans créer une nouvelle rupture de fond. */}
+      <div className="bg-forest-950">
+        <AfricanPatternRibbon tone="dark" />
+      </div>
 
       <ColonneMots />
 
@@ -155,9 +139,6 @@ export default function ShopPage() {
           <div className="flex flex-wrap items-center justify-between gap-6 px-4 pb-[22px] sm:px-6">
             <h2 className="label-caps text-ink-500">Sélection</h2>
             <div className="flex items-center gap-2">
-              <Button href="#galerie" variant="ghost-dark" magnetic={false}>
-                Voir les {BIJOUX.length} pièces
-              </Button>
               <button
                 type="button"
                 onClick={() => defiler(-1)}
@@ -187,7 +168,11 @@ export default function ShopPage() {
                 delay={Math.min(index, 4) * 0.06}
                 className="w-[calc(50vw-1px)] shrink-0 snap-start sm:w-[calc(25vw-1px)]"
               >
-                <BijouCard bijou={bijou} />
+                <BijouCard
+                  bijou={bijou}
+                  image={VISUEL_TEST_CARTE}
+                  imageAlt={ALT_TEST_CARTE}
+                />
               </Reveal>
             ))}
           </div>
@@ -203,60 +188,35 @@ export default function ShopPage() {
         </Container>
       </Section>
 
-      {/* La section ne porte plus de titre : `FiltresCatalogue`, juste au-dessus,
-          annonce déjà « Les N pièces » avec le même `Eyebrow num="02"` — deux fois la
-          même annonce sur deux sections voisines. Le lookbook se suffit à lui-même. */}
+      {/* La galerie est indépendante des fiches : elle ne rejoue pas les visuels
+          des pièces. Son titre, son cadrage et ses légendes vivent dans
+          `LookbookPleinEcran` ; la page ne fait que lui passer `GALERIE_SHOP`. */}
       <Section tone="light" className="bg-sand-100" padded={false} container={false}>
         {/* Hors du Container : il est en `max-w-7xl` + `lg:px-16 xl:px-20`, donc un
             enfant ne peut jamais être bord à bord. Le lookbook doit sortir du
             conteneur, pas tenter de le compenser à la marge. */}
         <div id="galerie" className="scroll-mt-24">
-          <LookbookPleinEcran
-            pieces={BIJOUX}
-            onOuvrir={(piece) => setVisionneuse(BIJOUX.indexOf(piece))}
-          />
+          <LookbookPleinEcran images={GALERIE_SHOP} onOuvrir={setGalerieIndex} />
         </div>
       </Section>
 
-      <SectionPortes pieces={reste} />
+      {/* La maquette « Livres » occupe la place laissée par la section « porté »
+          (Ce que la pièce devient sur vous) : mot géant clay, filet, rangée
+          d'en-tête, quatre couvertures bord à bord et pastille « Tout voir »
+          flottante. Données fictives suffixées, dans `livres.ts`. */}
+      <SectionLivres />
 
       <CitationEncadree />
 
-      <BandeParallaxe />
+      {/* La citation est le dernier bloc : sans cet intervalle ivoire, le divider
+          arrondi du footer sombre disparaîtrait dedans. La marge reste propre à
+          la boutique, pas au footer global. */}
+      <div aria-hidden className="h-20 bg-sand-50 sm:h-24" />
 
-      <BlocSuivant />
-
-      <Section tone="light">
-        <Container>
-          <Reveal className="border-t border-sand-200 pt-12">
-            <p className="label-caps text-clay-600">Bientôt sur la marketplace</p>
-            <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {['Jeux', 'Souvenirs', 'À porter', 'À offrir'].map((category) => (
-                <li
-                  key={category}
-                  className="label-caps rounded-full border border-sand-200 py-3 text-center text-ink-500"
-                >
-                  {category}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-10 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-              <p className="max-w-md text-body text-ink-500">
-                Fabrication artisanale en Côte d’Ivoire, séries limitées. Précommandes et
-                livraison internationale : écrivez-nous.
-              </p>
-              <Button to="/contact" variant="dark">
-                Précommander une pièce
-              </Button>
-            </div>
-          </Reveal>
-        </Container>
-      </Section>
-
-      <BijouLightbox
-        pieces={BIJOUX}
-        index={visionneuse}
-        onChangeIndex={setVisionneuse}
+      <GalerieLightbox
+        images={GALERIE_SHOP}
+        index={galerieIndex}
+        onChangeIndex={setGalerieIndex}
       />
     </>
   )

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { CONTACT_MOTIFS } from '@/data/content'
+import { CONTACT_MOTIFS, UNIVERS } from '@/data/content'
 import { SITE } from '@/data/site'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
@@ -94,8 +94,7 @@ function ContactForm() {
       <div role="alert" aria-live="assertive" className="min-h-6">
         {status === 'error' ? (
           <p className="text-caption font-semibold text-clay-700">
-            L’envoi a échoué. Vérifiez la configuration du formulaire ou écrivez à{' '}
-            {SITE.email}.
+            L’envoi n’a pas abouti. Écrivez-nous à {SITE.email}.
           </p>
         ) : null}
       </div>
@@ -125,7 +124,8 @@ export default function ContactPage() {
           </h1>
           <p className="max-w-2xl text-body-lg text-ink-500">
             Partenariats, productions, conférences, presse, projections et collaborations de
-            marque.
+            marque. Décris ton projet en quelques lignes : la réponse vient d'une personne,
+            pas d'un formulaire.
           </p>
         </div>
 
@@ -157,11 +157,45 @@ export default function ContactPage() {
                 <p className="label-caps mt-3 text-ink-500">{SITE.localisation}</p>
               </div>
             </Reveal>
+
+            <Reveal delay={0.25}>
+              <div className="border-t border-sand-200 pt-6">
+                <p className="label-caps text-ink-500">Délai de réponse</p>
+                <p className="mt-2 max-w-md text-body text-ink-700">
+                  Chaque demande reçoit une réponse humaine sous 24 heures ouvrées. Si le
+                  projet n'est pas le bon, on le dit, et on oriente vers quelqu'un pour qui
+                  il l'est.
+                </p>
+              </div>
+            </Reveal>
           </div>
 
           <Reveal delay={0.1} className="lg:col-span-7">
             <ContactForm />
           </Reveal>
+        </div>
+
+        {/* Les six univers, repris de « Travailler avec Prince » : ils disent ce que
+            la maison sait faire, le formulaire au-dessus dit comment la contacter.
+            Césure majeure `mt-24` (échelle maison). */}
+        <div className="mt-24 space-y-10">
+          <div className="space-y-2">
+            <Eyebrow>Les univers</Eyebrow>
+            <h2 className="font-display uppercase text-display-lg">
+              Six maisons dans la maison
+              <span aria-hidden className="text-clay-500">.</span>
+            </h2>
+          </div>
+
+          <ul className="grid gap-10 lg:grid-cols-2">
+            {UNIVERS.map((univers) => (
+              <li key={univers.numero} className="space-y-3 border-t border-sand-200 pt-6">
+                <p className="label-caps text-clay-600">{univers.numero}</p>
+                <h3 className="font-display uppercase text-heading-sm">{univers.nom}</h3>
+                <p className="text-body text-ink-500">{univers.pitch}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </Container>
     </Section>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500">
+  <rect width="1200" height="1500" fill="#1C140D"/>
+  <path d="M600 320c160 0 290 130 290 290v500H310V610c0-160 130-290 290-290z" fill="none" stroke="#D9A441" stroke-width="6"/>
+  <circle cx="600" cy="640" r="60" fill="#C96F2E" opacity="0.85"/>
+  <text x="600" y="1380" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" letter-spacing="10" fill="#E4DAC6" opacity="0.5">PHOTOGRAPHIE DE PORTÉ</text>
+  <text x="600" y="1430" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" letter-spacing="14" fill="#E4DAC6" opacity="0.5">À VENIR</text>
+</svg>

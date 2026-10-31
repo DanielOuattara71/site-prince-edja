@@ -7,7 +7,7 @@ export const GALLERY: GalleryItem[] = [
     to: '/xplore/le-dernier',
     ratio: '4/3',
     speed: 5,
-    label: '01 · Bouaké',
+    label: 'Bouaké',
   },
   {
     src: `${import.meta.env.BASE_URL}images/episodes/tai.jpg`,
@@ -15,7 +15,7 @@ export const GALLERY: GalleryItem[] = [
     to: '/xplore/la-foret-debout',
     ratio: '4/3',
     speed: 8,
-    label: '04 · Taï',
+    label: 'Taï',
   },
   {
     src: `${import.meta.env.BASE_URL}images/boutique/agadez.jpg`,
@@ -31,7 +31,7 @@ export const GALLERY: GalleryItem[] = [
     to: '/xplore/le-fleuve',
     ratio: '16/10',
     speed: 6,
-    label: '05 · Tiassalé',
+    label: 'Tiassalé',
   },
   {
     src: `${import.meta.env.BASE_URL}images/a-propos/portrait-edja.jpg`,
@@ -47,7 +47,7 @@ export const GALLERY: GalleryItem[] = [
     to: '/xplore/la-cote-vive',
     ratio: '21/9',
     speed: 5,
-    label: '02 · Sassandra',
+    label: 'Sassandra',
   },
 ]
 

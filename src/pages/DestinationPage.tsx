@@ -88,7 +88,7 @@ export default function DestinationPage() {
       <Section tone="light">
         <Container className="space-y-10">
           <div className="space-y-2">
-            <Eyebrow num="01">Le lieu</Eyebrow>
+            <Eyebrow>Le lieu</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Ce que le territoire raconte
               <span aria-hidden className="text-clay-500">.</span>
@@ -117,7 +117,7 @@ export default function DestinationPage() {
         <Section tone="light" className="bg-sand-150">
           <Container className="space-y-10">
             <div className="space-y-2">
-              <Eyebrow num="02">Passerelle</Eyebrow>
+              <Eyebrow>Passerelle</Eyebrow>
               <h2 className="font-display uppercase text-display-lg">
                 Objets liés à l’étape
                 <span aria-hidden className="text-clay-500">.</span>
@@ -148,6 +148,7 @@ export default function DestinationPage() {
       )}
 
       <BlocNewsletter />
+
     </>
   )
 }

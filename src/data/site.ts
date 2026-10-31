@@ -18,7 +18,6 @@ const DARK_TOP_PREFIXES = [
   '/taste-and-travel',
   '/histoires',
   '/archive-afrique',
-  '/travailler-ensemble',
 ]
 
 export function isDarkTop(pathname: string): boolean {

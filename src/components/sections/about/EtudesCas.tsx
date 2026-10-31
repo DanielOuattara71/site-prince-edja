@@ -18,7 +18,7 @@ export function EtudesCas() {
     <Section tone="light" className="scroll-mt-32" id="etudes-de-cas">
       <Container className="space-y-12">
         <div className="space-y-2">
-          <Eyebrow num="06">Études de cas</Eyebrow>
+          <Eyebrow>Études de cas</Eyebrow>
           <h2 className="font-display uppercase text-display-lg">
             Un projet, de bout en bout<span aria-hidden className="text-clay-500">.</span>
           </h2>

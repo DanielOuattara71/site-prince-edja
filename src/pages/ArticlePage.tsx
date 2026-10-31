@@ -7,10 +7,10 @@ import { Stagger } from '@/components/motion/Stagger'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
-import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 import { useJsonLd } from '@/hooks/useSeo'
 import { ArticleCard } from '@/components/cards/ArticleCard'
 import { formatDate } from '@/lib/format'
+import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>()
@@ -112,7 +112,7 @@ export default function ArticlePage() {
         <Section tone="light" className="bg-sand-150">
           <Container className="space-y-10">
             <div className="space-y-2">
-              <Eyebrow num="01">À lire ensuite</Eyebrow>
+              <Eyebrow>À lire ensuite</Eyebrow>
               <h2 className="font-display uppercase text-display-lg">
                 Articles liés<span aria-hidden className="text-clay-500">.</span>
               </h2>
@@ -130,6 +130,7 @@ export default function ArticlePage() {
       )}
 
       <BlocNewsletter />
+
     </>
   )
 }

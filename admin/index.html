@@ -1,13 +1,16 @@
 <!doctype html>
 <html lang="fr">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
-    <title>Admin — Prince Edja</title>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <!-- Espace privé : exclu des moteurs de recherche (le serveur pose aussi X-Robots-Tag). -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="same-origin" />
+    <meta name="theme-color" content="#0F1F14" />
+    <title>Administration · Prince Edja</title>
   </head>
   <body>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

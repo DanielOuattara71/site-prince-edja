@@ -6,6 +6,7 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { LazyImage } from '@/components/media/LazyImage'
+import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 
 /**
  * Citation encadrée, avec visuel carré.
@@ -16,11 +17,22 @@ import { LazyImage } from '@/components/media/LazyImage'
  */
 export function CitationEncadree() {
   return (
-    <Section tone="light" className="bg-sand-100">
+    <Section tone="light" className="relative isolate overflow-hidden bg-sand-100">
+      {/* Le motif symétrique reste au-dessus du portrait, dans la marge haute :
+          il donne une texture au silence de la citation sans passer derrière le
+          visage. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <AfricanPattern
+          motif="symetrique-04"
+          opacite={0.04}
+          className="-right-20 -top-10 hidden h-72 w-72 lg:block"
+        />
+      </div>
+
       <Container>
         <figure className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
           <div className="space-y-6">
-            <Eyebrow num="03">Ce qu'on en dit</Eyebrow>
+            <Eyebrow>Ce qu'on en dit</Eyebrow>
             <blockquote className="font-quote text-heading-sm italic leading-snug text-ink-900 sm:text-heading-md">
               {GALLERY_QUOTE.texte}
             </blockquote>
@@ -74,7 +86,7 @@ export function BandeParallaxe() {
         range={6}
         className="absolute inset-0 h-[125%] w-full"
       />
-      <div aria-hidden className="overlay-cinema-forest absolute inset-0" />
+      <div aria-hidden className="overlay-cinema absolute inset-0" />
     </div>
   )
 }
@@ -85,6 +97,10 @@ export function BandeParallaxe() {
  * Le motif vient de Realevate : image pleine largeur en parallaxe, voile, puis un petit
  * label, un grand titre et une description. Il fait circuler vers la série X'PLORE :
  * la boutique n'est pas une impasse.
+ *
+ * Les voiles sont les **neutres** nuit (`overlay-cinema`, `overlay-hero-scrim`), pas
+ * leurs pendants forêt : la demande de la maison est un bloc sans fond vert — le
+ * vert de marque reste au hero et aux surfaces forest, la photo ici parle seule.
  */
 export function BlocSuivant() {
   const premier = EPISODES[0]
@@ -98,8 +114,8 @@ export function BlocSuivant() {
           range={7}
           className="absolute inset-0 h-[125%] w-full"
         />
-        <div aria-hidden className="overlay-cinema-forest absolute inset-0" />
-        <div aria-hidden className="overlay-hero-scrim-forest absolute inset-0" />
+        <div aria-hidden className="overlay-cinema absolute inset-0" />
+        <div aria-hidden className="overlay-hero-scrim absolute inset-0" />
 
         <Container className="relative flex h-full flex-col justify-end pb-10 lg:pb-14">
           <div className="space-y-4">

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+<title id="title">Motif linéaire géométrique 05</title>
+<g fill="none" stroke="#4B3018" stroke-width="8" stroke-linecap="square" stroke-linejoin="round">
+  <path d="M42 32 H158 M42 52 H88 M112 52 H158 M42 72 H72 M128 72 H158"/>
+  <path d="M42 84 H158 V116 H42 Z"/>
+  <path d="M62 84 V116 M88 84 V116 M112 84 V116 M138 84 V116"/>
+  <path d="M42 128 H72 M128 128 H158 M42 148 H88 M112 148 H158 M42 168 H158"/>
+</g>
+</svg>

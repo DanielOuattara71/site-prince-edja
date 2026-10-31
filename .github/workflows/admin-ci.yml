@@ -1,0 +1,65 @@
+name: Admin — contrôles
+
+# Intégration continue de l'espace d'administration (admin/). Indépendante du
+# déploiement du site public (deploy.yml), qu'elle ne déclenche ni ne modifie.
+on:
+  push:
+    paths:
+      - 'admin/**'
+      - 'src/styles/globals.css'
+      - '.github/workflows/admin-ci.yml'
+  pull_request:
+    paths:
+      - 'admin/**'
+      - 'src/styles/globals.css'
+      - '.github/workflows/admin-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: admin
+
+jobs:
+  controles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Récupération du dépôt
+        uses: actions/checkout@v4
+
+      - name: Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+
+      - name: Installation (versions figées par le fichier de verrouillage)
+        run: npm ci
+
+      - name: Typage
+        run: npm run typecheck
+
+      - name: Lint (oxlint, jsx-a11y)
+        run: npm run lint
+
+      - name: Format
+        run: npm run format:check
+
+      # Inclut le contrôle des jetons : ils doivent rester identiques à ceux de
+      # src/styles/globals.css du site public.
+      - name: Tests
+        run: npm test
+
+      # `build` enchaîne verifier-dist : aucune trace de MSW, d'exemple ou de
+      # compte d'essai, aucune variable VITE_* hors VITE_API_URL.
+      - name: Build de production et contrôle de dist
+        run: npm run build

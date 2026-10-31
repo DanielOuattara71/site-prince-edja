@@ -1,10 +1,8 @@
 import { Link } from 'react-router'
-import { ArrowUpRight } from 'lucide-react'
 import { FOOTER_NAV } from '@/data/navigation'
 import { SITE } from '@/data/site'
 import { useLocalTime } from '@/hooks/useLocalTime'
 import { Container } from '@/components/layout/Container'
-import { RoundedDivider } from '@/components/layout/RoundedDivider'
 import { Button } from '@/components/ui/Button'
 import { useLangue } from '@/i18n/contexteLangue'
 import { LangueSwitcher } from '@/components/layout/LangueSwitcher'
@@ -17,7 +15,6 @@ export function Footer() {
 
   return (
     <>
-      <RoundedDivider />
       <footer className="grain bg-night-900 text-cream-100">
         <Container className="pt-20 pb-10 lg:pt-28">
           <div className="flex flex-col justify-between gap-10 md:flex-row md:items-end">
@@ -27,7 +24,7 @@ export function Footer() {
                 Parlons du prochain récit<span aria-hidden className="text-clay-500">.</span>
               </h2>
             </div>
-            <Button to="/travailler-ensemble" variant="primary">
+            <Button to="/contact" variant="primary">
               Travailler avec Prince
             </Button>
           </div>
@@ -76,13 +73,9 @@ export function Footer() {
             <p className="label-caps text-cream-100/40">{SITE.devise}</p>
             <a
               href={`mailto:${SITE.email}`}
-              className="group inline-flex min-h-11 items-center gap-2 text-caption text-cream-100/60 underline-offset-4 hover:text-cream-100 hover:underline"
+              className="text-caption text-cream-100/60 underline-offset-4 hover:text-cream-100 hover:underline"
             >
               {SITE.email}
-              <ArrowUpRight
-                aria-hidden
-                className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-              />
             </a>
             <p className="label-caps text-cream-100/40">
               © {year} {SITE.name} · Version 1.0

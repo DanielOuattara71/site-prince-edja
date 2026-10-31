@@ -21,7 +21,7 @@ export default function ArchivePage() {
     <>
       <Section tone="dark" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
         <Container className="space-y-6">
-          <Eyebrow num="02" tone="dark">
+          <Eyebrow tone="dark">
             Archive d’Afrique
           </Eyebrow>
           <h1 className="font-display uppercase text-display-lg text-cream-100">
@@ -41,7 +41,7 @@ export default function ArchivePage() {
         <Container className="space-y-10">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-2">
-              <Eyebrow num="01">La bibliothèque</Eyebrow>
+              <Eyebrow>La bibliothèque</Eyebrow>
               <h2 className="font-display uppercase text-display-lg">
                 Naviguer par<span aria-hidden className="text-clay-500">.</span>
               </h2>

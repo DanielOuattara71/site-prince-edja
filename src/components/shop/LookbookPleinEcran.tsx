@@ -1,21 +1,22 @@
 import { useMemo } from 'react'
-import type { Bijou } from '@/types'
-import { visuelPiece } from '@/lib/visuels'
+import type { GalerieImage } from '@/types'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+import { srcsetContenu } from '@/lib/visuels'
 
 interface Props {
-  pieces: Bijou[]
-  onOuvrir: (bijou: Bijou) => void
+  images: GalerieImage[]
+  onOuvrir: (index: number) => void
 }
 
 /** Alternance des rangées : une pleine largeur, puis deux moitiés, et ainsi de suite. */
-function construireRangees(pieces: Bijou[]): Bijou[][] {
-  const rangees: Bijou[][] = []
+function construireRangees(images: GalerieImage[]): GalerieImage[][] {
+  const rangees: GalerieImage[][] = []
   let index = 0
   let pleine = true
 
-  while (index < pieces.length) {
+  while (index < images.length) {
     const taille = pleine ? 1 : 2
-    rangees.push(pieces.slice(index, index + taille))
+    rangees.push(images.slice(index, index + taille))
     index += taille
     pleine = !pleine
   }
@@ -24,61 +25,71 @@ function construireRangees(pieces: Bijou[]): Bijou[][] {
 }
 
 /**
- * Lookbook plein écran.
+ * Galerie éditoriale de la boutique.
  *
- * Le parti pris est celui de Somewhere : les visuels se touchent, bord à bord, sans
- * marge ni arrondi ni légende. La collection est le sujet : un cadre, un espace ou une
- * étiquette entre deux pièces rappellerait qu'on regarde un catalogue plutôt qu'un
- * lookbook. Le seul texte est l'horodatage en tête, et il dit où l'on est.
+ * Elle est indépendante des fiches produit : `images` ne contient pas les visuels
+ * des pièces, et un clic n'ouvre pas une fiche. Le regard porte sur les gestes,
+ * les symboles et les détails qui entourent la collection.
  *
- * L'alternance pleine largeur / deux moitiés donne le rythme : uniforme, la grille
- * redevient une planche-contact.
+ * Le parti pris reste celui de Somewhere : les visuels se touchent, bord à bord,
+ * sans cadre ni arrondi. L'alternance pleine largeur / deux moitiés donne le
+ * rythme ; le titre et la légende n'apparaissent qu'au survol ou au focus.
  */
-export function LookbookPleinEcran({ pieces, onOuvrir }: Props) {
-  const rangees = useMemo(() => construireRangees(pieces), [pieces])
+export function LookbookPleinEcran({ images, onOuvrir }: Props) {
+  const rangees = useMemo(() => construireRangees(images), [images])
 
   return (
-    <section
-      aria-label="Lookbook de la collection"
-      data-curseur="galerie"
-      className="bg-sand-100 px-4 pt-4 sm:px-6 sm:pt-6"
-    >
-      {/* Pas de bandeau horodaté ni de compteur : le titre de la galerie au-dessus dit
-          déjà combien de pièces il y a, et la date changerait à chaque visite sans
-          rien apprendre. */}
-      {/* `gap-2` et non `gap-1` : deux vignettes jointives à 4 px se touchent, et le
-          doigt ne sait plus laquelle il vise. */}
-      <div className="grid grid-cols-2 gap-2 pt-1.5 sm:gap-2 sm:pt-2">
+    <section aria-label="Galerie de la maison" className="bg-sand-100">
+      <div className="px-4 pt-12 sm:px-6 sm:pt-16">
+        <Eyebrow>La galerie</Eyebrow>
+        <h2 className="mt-4 font-display uppercase text-display-lg">
+          Regard
+          <span aria-hidden className="text-clay-500">.</span>
+        </h2>
+      </div>
+
+      <div
+        data-curseur="galerie"
+        className="grid grid-cols-2 gap-2 px-4 pt-10 sm:px-6 sm:pt-12"
+      >
         {rangees.map((rangee) =>
-          rangee.map((bijou) => (
-            <button
-              key={bijou.slug}
-              type="button"
-              onClick={() => onOuvrir(bijou)}
-              aria-label={`Examiner ${bijou.nom} en plein écran`}
-              className={
-                'group relative block overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600 ' +
-                (rangee.length === 1 ? 'col-span-2 aspect-4/3 sm:aspect-16/9' : 'aspect-4/5')
-              }
-            >
-              <img
-                src={visuelPiece(bijou.slug)}
-                alt={`Bijou ${bijou.nom}, inspiré de la culture ${bijou.culture}`}
-                loading="lazy"
-                decoding="async"
-                className="h-full w-full object-cover transition-transform duration-(--d-reveal) ease-expo group-hover:scale-[1.03]"
-              />
-              {/* Aucune légende : le nom n'apparaît qu'au survol, et sans cadre. */}
-              <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-night-900/80 to-transparent px-4 pb-3 pt-8 opacity-0 transition-opacity duration-(--d-base) group-hover:opacity-100 group-focus-visible:opacity-100">
-                <span className="block text-left font-display text-heading-sm uppercase text-cream-100">
-                  {bijou.nom}
+          rangee.map((image) => {
+            const index = images.indexOf(image)
+
+            return (
+              <button
+                key={image.src}
+                type="button"
+                onClick={() => onOuvrir(index)}
+                aria-label={`Agrandir ${image.titre} en plein écran`}
+                className={
+                  'group relative block overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600 ' +
+                  (rangee.length === 1 ? 'col-span-2 aspect-16/9 sm:aspect-[21/9]' : 'aspect-square')
+                }
+              >
+                <img
+                  src={image.src}
+                  srcSet={srcsetContenu(image.src)}
+                  sizes={rangee.length === 1 ? '100vw' : '(max-width: 640px) 50vw, 50vw'}
+                  alt={image.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-(--d-reveal) ease-expo group-hover:scale-[1.03]"
+                />
+                {/* Aucune légende permanente : le titre apparaît au survol, et sans cadre. */}
+                <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-night-900/80 to-transparent px-4 pb-3 pt-8 opacity-0 transition-opacity duration-(--d-base) group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <span className="block text-left font-display text-heading-sm uppercase text-cream-100">
+                    {image.titre}
+                  </span>
+                  {image.legende && (
+                    <span className="label-caps block text-left text-cream-100/70">
+                      {image.legende}
+                    </span>
+                  )}
                 </span>
-                <span className="label-caps block text-left text-cream-100/70">
-                  N° {bijou.numero} · {bijou.culture}
-                </span>
-              </span>
-            </button>
-          )),
+              </button>
+            )
+          }),
         )}
       </div>
     </section>

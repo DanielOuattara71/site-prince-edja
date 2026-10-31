@@ -8,6 +8,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { ArticleCard } from '@/components/cards/ArticleCard'
+import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 export default function JournalPage() {
@@ -30,10 +31,24 @@ export default function JournalPage() {
 
   return (
     <>
-      <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
+      <Section
+        tone="light"
+        padded={false}
+        className="relative isolate overflow-hidden pt-32 pb-20 lg:pt-44 lg:pb-28"
+      >
+        {/* Le journal est une page de lecture : les anneaux restent dans la marge
+            droite du titre, à 5 %, loin des textes et de la une. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <AfricanPattern
+            motif="circulaire-03"
+            opacite={0.05}
+            className="-right-24 -top-24 hidden h-80 w-80 lg:block"
+          />
+        </div>
+
         <Container>
           <div className="max-w-3xl space-y-6">
-            <Eyebrow num="01">Le journal</Eyebrow>
+            <Eyebrow>Le journal</Eyebrow>
             <h1 className="font-display uppercase text-display-lg">
               Idées & récits<span aria-hidden className="text-clay-500">.</span>
             </h1>
@@ -85,7 +100,14 @@ export default function JournalPage() {
               ))}
             </div>
 
-            <Stagger className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Remontée à chaque changement de filtre : Stagger ne révèle ses enfants
+                qu'une seule fois (whileInView + once). Sans remontée, les emplacements
+                qui réapparaissent après un filtre héritent de `hidden` (opacity: 0)
+                et restent à jamais invisibles. */}
+            <Stagger
+              key={filtre ?? 'tous-les-articles'}
+              className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3"
+            >
               {visibles.map((article) => (
                 <ArticleCard key={article.slug} article={article} />
               ))}
@@ -102,6 +124,7 @@ export default function JournalPage() {
       </Section>
 
       <BlocNewsletter />
+
     </>
   )
 }

@@ -1,0 +1,8 @@
+dist
+node_modules
+package-lock.json
+# Les jetons y sont copiés à l'identique du site public (contrôlé par jetons.test.ts) :
+# les reformater romprait la comparaison.
+src/styles/globals.css
+test-results
+playwright-report

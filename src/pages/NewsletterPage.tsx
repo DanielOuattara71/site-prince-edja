@@ -10,19 +10,16 @@ import { Button } from '@/components/ui/Button'
 
 export type VueNewsletter = 'confirmation' | 'preferences' | 'desinscription'
 
-const VUES: Record<VueNewsletter, { numero: string; titre: LibelleVue; description: CleTraduction }> = {
+const VUES: Record<VueNewsletter, { titre: LibelleVue; description: CleTraduction }> = {
   confirmation: {
-    numero: '01',
     titre: { fr: 'Inscription reçue', en: 'Subscription received' },
     description: 'newsletter.confirme',
   },
   preferences: {
-    numero: '02',
     titre: { fr: 'Préférences', en: 'Preferences' },
     description: 'newsletter.metaPreferences',
   },
   desinscription: {
-    numero: '03',
     titre: { fr: 'Désinscription', en: 'Unsubscribe' },
     description: 'newsletter.metaDesinscription',
   },
@@ -55,7 +52,7 @@ export default function NewsletterPage({ vue }: { vue: VueNewsletter }) {
     <Section tone="light" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
       <Container className="max-w-3xl space-y-8">
         <div className="space-y-4">
-          <Eyebrow num={VUES[vue].numero}>{t('newsletter.titre')}</Eyebrow>
+          <Eyebrow>{t('newsletter.titre')}</Eyebrow>
           <h1 className="font-display uppercase text-display-lg">
             {l(VUES[vue].titre)}
           </h1>

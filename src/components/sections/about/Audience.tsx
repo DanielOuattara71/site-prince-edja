@@ -18,7 +18,7 @@ export function Audience() {
     <Section tone="light" className="scroll-mt-32" id="audience">
       <Container className="space-y-12">
         <div className="space-y-2">
-          <Eyebrow num="04">L’audience</Eyebrow>
+          <Eyebrow>L’audience</Eyebrow>
           <h2 className="font-display uppercase text-display-lg">
             Qui écoute<span aria-hidden className="text-clay-500">.</span>
           </h2>

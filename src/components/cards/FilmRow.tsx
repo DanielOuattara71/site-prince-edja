@@ -1,6 +1,5 @@
 import type { MouseEventHandler } from 'react'
 import { Link } from 'react-router'
-import { ArrowUpRight } from 'lucide-react'
 import { LazyImage } from '@/components/media/LazyImage'
 import { srcsetContenu, SIZES_CARTE } from '@/lib/visuels'
 
@@ -55,10 +54,6 @@ export function FilmRow({
 
       <div className="flex flex-col items-end gap-2 self-center">
         <span className="label-caps text-cream-100/60">{lieu}</span>
-        <ArrowUpRight
-          aria-hidden
-          className="size-5 -translate-x-1 translate-y-1 text-gold-400 opacity-0 transition-all duration-(--d-base) ease-expo group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
-        />
       </div>
     </Link>
   )

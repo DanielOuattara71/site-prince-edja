@@ -8,6 +8,9 @@ import { cn } from '@/lib/cn'
 
 interface BijouCardProps {
   bijou: Bijou
+  /** Visuel de test, prioritaire sur `bijou.image`. À retirer en production. */
+  image?: string
+  imageAlt?: string
 }
 
 /**
@@ -25,7 +28,7 @@ interface BijouCardProps {
  * quand la donnée en porte, et la carte reste muette sur le prix tant qu'aucun
  * montant n'existe.
  */
-export function BijouCard({ bijou }: BijouCardProps) {
+export function BijouCard({ bijou, image, imageAlt }: BijouCardProps) {
   const { present, basculer } = useDemande()
   const { t } = useLangue()
   const commerce = bijou.commerce
@@ -35,15 +38,15 @@ export function BijouCard({ bijou }: BijouCardProps) {
   const promo = prix != null && ancienPrix != null && ancienPrix > prix
 
   return (
-    <article className="flex flex-col">
+    <article className="group flex flex-col">
       <Link
         to={`/boutique/${bijou.slug}`}
         className="block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600"
       >
         <div className="relative aspect-4/5 overflow-hidden">
           <img
-            src={bijou.image}
-            alt={`Bijou ${bijou.nom}, inspiré de la culture ${bijou.culture}`}
+            src={image ?? bijou.image}
+            alt={imageAlt ?? `Bijou ${bijou.nom}, inspiré de la culture ${bijou.culture}`}
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover transition-transform duration-(--d-reveal) ease-expo group-hover:scale-[1.03]"

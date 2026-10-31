@@ -1,0 +1,463 @@
+# Décisions — admin Prince Edja
+
+Chaque choix pris en cas d'incertitude ou d'écart au prompt (`docs/PROMPT-ADMIN-PRINCE-EDJA.md`
+à la racine du dépôt). Une décision = contexte, choix, conséquence, statut.
+
+**Préséance** : `docs/CONTRAT-API.md` › analyse conceptuelle › actions de l'administrateur et
+workflow › `docs/PROMPT-BACKEND-PRINCE-EDJA.md` › `docs/PROMPT-ADMIN-PRINCE-EDJA.md` › ce fichier.
+Une décision ne contredit jamais silencieusement un document de rang supérieur. Inventaire des
+sources : `docs/SOURCES-DE-REFERENCE.md`.
+
+**Statuts** :
+
+- **Arrêtée** : en vigueur.
+- **Métier à valider** : appliquée avec une valeur par défaut sûre, en attente d'une confirmation du
+  client (`docs/CONTRAT-API.md` § 20). La changer ne demande pas de réécriture.
+
+## Étape 0 — 30/10/2026
+
+### D-01 · Projet autonome dans `admin/` — Arrêtée
+
+- Projet npm indépendant (`admin/package.json`, son propre `package-lock.json`), sans workspace
+  partagé avec le site public.
+- Les deux applications évoluent et se déploient séparément. Le seul lien volontaire est le contrôle
+  des jetons (D-05).
+- L'admin n'accède qu'à l'API : ni base de données, ni stockage de fichiers. La forme des échanges
+  est fixée par `docs/CONTRAT-API.md` (D-13).
+
+### D-02 · Versions alignées, figées, publiées depuis 14 jours ou plus — Arrêtée
+
+- **Socle** : versions installées sur le site public (relevées par `npm ls`, pas devinées).
+- **Ajouts** : dernière version stable publiée depuis au moins 14 jours (garde contre un paquet
+  compromis retiré dans les jours qui suivent sa publication). Toutes figées (`save-exact`, fichier de
+  verrouillage).
+- **Exception Vite** : le site public est en 8.2.2, touchée par des failles de sévérité haute du
+  serveur de développement (GHSA-9jrq-w75r-8gcw, GHSA-rq7h-c2jc-7f22, GHSA-vfpm-58rq-9qcg et
+  `launch-editor`). L'admin prend **8.2.4**, même version mineure, corrigée. → Recommandation : monter
+  aussi le site public en 8.2.4.
+- **Zod** : 4.x. Le back end utilise la même version majeure ; c'est vérifié au démarrage du lot 0
+  (`docs/CONTRAT-API.md` § 19).
+- **Tiptap** : `@tiptap/starter-kit` 3.32.0 inclut déjà `@tiptap/extension-link` (vérifié dans son
+  `package.json`). La dépendance directe `@tiptap/extension-link` est redondante : elle sera retirée
+  à l'étape 3, et le lien sera configuré par StarterKit (D-21).
+
+### D-03 · Trois écarts d'outillage à la pile par défaut du prompt — Arrêtée
+
+| Prompt                                | Remplacé par                                                                   | Raison                                                                                                                                                                                                                                    |
+| ------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ESLint + `eslint-plugin-jsx-a11y`     | **oxlint** (plugins `react`, `typescript`, `jsx-a11y`, `import`)               | `eslint-plugin-jsx-a11y` n'est plus publié depuis oct. 2024 et ne supporte pas ESLint 10. oxlint embarque les règles jsx-a11y, est maintenu et c'est l'outil du site public.                                                              |
+| `@dnd-kit/core` + `@dnd-kit/sortable` | **`@dnd-kit/react` + `@dnd-kit/helpers` 0.5.1**                                | `core` et `sortable` n'ont plus de version depuis déc. 2024 ; la nouvelle ligne est la seule maintenue. Elle est en 0.x : version figée, et les boutons « monter / descendre » au clavier rendent l'ordre indépendant du glisser-déposer. |
+| `vitest-axe`                          | **`axe-core`** appelé directement (`src/test/axe.ts`) + `@axe-core/playwright` | `vitest-axe` est abandonné depuis 2022.                                                                                                                                                                                                   |
+
+### D-04 · Node 24 en CI, 22.12 ou plus requis — Arrêtée
+
+MSW 3 exige Node 22.12 ou plus. La CI de l'admin tourne en Node 24 (version locale, LTS). La CI du
+site public (Node 20) n'est pas modifiée.
+
+### D-05 · Jetons copiés à l'identique, et contrôlés — Arrêtée
+
+Le bloc `@theme` et la couche `:root` du site public sont copiés tels quels dans
+`src/styles/globals.css`. `src/test/jetons.test.ts` échoue si la copie diverge. La CI se déclenche
+aussi quand `src/styles/globals.css` du site public change. Ce fichier est exclu de Prettier pour
+que le formatage ne rompe pas la comparaison. Les ajouts propres à l'admin (base, focus, mouvement
+réduit, `label-caps`) viennent **après** le bloc copié.
+
+### D-06 · Adresses des écrans — Arrêtée
+
+Les adresses des **écrans** suivent la section 9 du prompt. Elles ne nomment pas les **ressources
+d'API**, qui suivent le contrat.
+
+| Section 6 du prompt                   | Écran retenu                                              | Ressource(s) d'API                             |
+| ------------------------------------- | --------------------------------------------------------- | ---------------------------------------------- |
+| `/recits`                             | `/articles`                                               | `articles`                                     |
+| `/boutique/pieces`                    | `/bijoux`                                                 | `bijoux` et ses variantes                      |
+| `/boutique/categories`                | `/categories`                                             | `categories`                                   |
+| `/taste-travel`                       | `/villes`                                                 | `villes`                                       |
+| `/identite`, `/parametres-techniques` | `/parametres`, onglets « Identité » et « Technique »      | `identite` **et** `parametres`, une par onglet |
+| `/restauration`                       | onglet « Historique » de chaque formulaire                | `versions/:ressource/:id`, `restauration`      |
+| — (section 9)                         | `/publication`                                            | `site/*`                                       |
+| `/galerie`                            | **`/galerie`, écran distinct** de `/medias`               | `galerie` (contenu) ; `medias` (fichiers)      |
+| `/audience-chiffres`                  | `/audience`                                               | `audience` (lignes par plateforme)             |
+| — (absent du prompt)                  | `/tags`, `/etudes-cas`, `/partenaires`, `/motifs-contact` | ressources du même nom (contrat, écart E-12)   |
+
+La galerie est un contenu éditorial (statut, ordre, traductions), pas un fichier : elle a son propre
+écran. Les cinq chiffres clés de l'accueil se modifient dans l'onglet « Identité » (`identite.stats`) ;
+les chiffres par plateforme, dans `/audience`.
+
+### D-07 · Chemin de base et variables d'environnement — Arrêtée
+
+- Seule variable client : `VITE_API_URL`. Le chemin de base se règle au build par `ADMIN_BASE`, lu
+  côté Node dans `vite.config.ts`, jamais exposé au bundle.
+- `scripts/verifier-dist.mjs` (lancé par `npm run build`) refuse toute autre `VITE_*`, dans `src`
+  comme dans `dist`.
+- La valeur relative de `.env.example` (`/admin/api/v1`) ne vaut qu'en développement (même origine,
+  MSW). En préproduction et en production, `VITE_API_URL` est l'URL **absolue** de l'API, et toutes
+  les requêtes partent avec `credentials: 'include'` (D-15).
+
+### D-08 · Le service worker MSW n'existe qu'en développement — Arrêtée (révisée à l'étape 1)
+
+- Le worker est servi par le plugin Vite de MSW (`msw/vite`, mode `worker-only`), chargé **seulement**
+  pour `vite serve`. Vérifié dans le code du plugin : en mode `worker-only`, il émettrait aussi le
+  worker dans le build. D'où le chargement conditionnel. Le dossier `public-dev/` prévu à l'étape 0
+  devient inutile.
+- Le faux serveur démarre par un import dynamique gardé par `import.meta.env.DEV` (`main.tsx`).
+  Au build, la branche disparaît : le bundle garde la même taille qu'à l'étape 0.
+- `verifier-dist` échoue si `dist` contient le worker, `setupWorker`, `__PE_EXEMPLE__` ou un compte
+  `@exemple.test`.
+- Les mocks servent au développement ; ils ne prouvent pas la compatibilité avec l'API réelle (D-14).
+
+### D-09 · `localStorage` et `sessionStorage` interdits par le lint — Arrêtée
+
+Règle oxlint `no-restricted-globals` en erreur dans `src`. Le jeton CSRF vit en mémoire seulement
+(D-16). Les seules préférences d'affichage autorisées passeront par un module unique (étape 3), seul
+point d'exception.
+
+### D-10 · Lint du site public — Arrêtée
+
+`admin/**` est ajouté aux `ignorePatterns` du `.oxlintrc.json` racine : sans cela, `npm run lint` du
+site public balayait l'admin avec sa propre configuration.
+
+### D-11 · Nettoyage — Arrêtée
+
+Le dossier `admin-custom/` ne contenait plus que son `node_modules` (fichiers suivis déjà supprimés
+dans la copie de travail) : retiré.
+
+### D-12 · Données réelles du site public — Arrêtée
+
+Le prompt annonce 8 entrées d'archive ; `src/data/archive.ts` en contient 7. Les jeux d'exemple
+suivent les données réelles.
+
+## Arbitrages avant l'étape 1 — 30/10/2026
+
+Arrêtés par le responsable technique sur mandat du client. Le rapport d'origine est
+`docs/RAPPORT-COMPATIBILITE-ADMIN-BACKEND.md` ; la discussion des options, dans
+`docs/PROPOSITION-RESOLUTION-ADMIN-BACKEND.md`.
+
+### D-13 · Gouvernance du contrat API (A-01) — Arrêtée
+
+- **Contexte** : le back end doit respecter `CONTRAT-API` « sans en changer une virgule » (PB:15),
+  alors que le prompt admin en faisait un livrable de fin de parcours (PA:551). Le workflow de bout en
+  bout (§ 8) prévoit que l'admin produit le contrat et que le back end en part.
+- **Choix** : `docs/CONTRAT-API.md` est rédigé **maintenant**, avant la couche `api/`. Il est tenu par
+  le responsable technique et validé par les responsables de l'admin et du back end. Il est versionné
+  (version sémantique), avec un journal des versions ; le back end référence une version étiquetée.
+- **Conséquence** : l'admin n'invente aucune route ni aucun champ absent du contrat. Un besoin nouveau
+  passe par une nouvelle version du contrat, avant tout code.
+
+### D-14 · Source unique des schémas et preuves de compatibilité — Arrêtée
+
+- Les schémas Zod de `admin/src/api/schemas/` sont écrits **depuis le contrat**, champ par champ.
+- Chaque jeu d'exemple MSW est validé par ces schémas dans un test : une fixture invalide fait
+  échouer la CI.
+- Dès que le back end publie son OpenAPI, l'admin vérifie en CI que ses schémas y sont conformes.
+- Avant chaque recette, les parcours Playwright tournent aussi contre l'API réelle de préproduction :
+  les tests sur MSW ne valent pas preuve d'intégration.
+
+### D-15 · Topologie, CORS et en-têtes — Arrêtée (hébergeurs : métier à valider, M-06)
+
+Admin sur `admin.<domaine>`, API sur `api.<domaine>`, même site : le cookie `SameSite=Lax` circule.
+L'origine de l'admin figure dans `ALLOWED_ORIGINS`. L'hébergement de l'admin pose
+`X-Robots-Tag: noindex`, une politique de sécurité du contenu (`connect-src` limité à l'API, aucun
+script tiers) et HSTS. Pas de recette sur un domaine tiers (`*.pages.dev`), où le cookie ne
+circulerait pas. Le choix des hébergeurs et du domaine attend le client ; il ne bloque pas avant le
+lot 5.
+
+### D-16 · Session et CSRF — Arrêtée
+
+- Jeton CSRF de `GET /auth/moi` gardé en mémoire ; joint à `POST`, `PATCH` et `DELETE`.
+- `403 CSRF_INVALIDE` : redemander `GET /auth/moi`, puis rejouer **une seule fois** la requête.
+- `401` : écran verrouillé sans perte du formulaire en cours ; reprise après reconnexion.
+- `403 MOT_DE_PASSE_A_CHANGER` : redirection vers `/changer-mot-de-passe`.
+- L'avertissement d'inactivité (2 minutes avant) se cale sur `Moi.session.expireLe`. Aucune durée
+  n'est codée en dur. Le brouillon automatique ne compte pas comme une activité de l'utilisateur.
+
+### D-17 · Traitement des erreurs — Arrêtée
+
+Un seul module (`api/client.ts`) traduit les réponses selon `docs/CONTRAT-API.md` § 4 : 401, 403
+(règle, `CSRF_INVALIDE`, `MOT_DE_PASSE_A_CHANGER`), 404 (y compris l'objet d'un autre créateur), 409
+`VERSION_PERIMEE` (recharger sans perdre la saisie), 422 (rattaché au `champ`, liste des manquants pour
+`RG-03`, usages pour `RG-08`), 429 (`Retry-After`), 5xx. Toute erreur inattendue affiche le
+`requeteId`.
+
+### D-18 · Statuts réels et états dérivés — Arrêtée
+
+Statuts échangés : `brouillon`, `en_relecture`, `publie`, `archive`. « Programmé » (= `publie` avec
+`publieLe` futur) et « À fournir » (= `champsAFournir` non vide) sont des pastilles **dérivées**,
+jamais envoyées comme statut. `PastilleStatut` garde ses cinq présentations.
+
+### D-19 · Circuit de publication (A-03) — Arrêtée
+
+- **Contexte** : le prompt admin montre « Publier » sur un brouillon (PA:344). L'analyse conceptuelle
+  (§ 9), le workflow (§ 3) et le prompt back end (PB:636) imposent le passage par la relecture.
+- **Choix** : on suit le diagramme de l'analyse.
+  - `brouillon → en_relecture` : éditeur, admin, super-admin.
+  - `en_relecture → publie` : admin et super-admin.
+  - Refus `en_relecture → brouillon` : admin, avec un **motif obligatoire**.
+  - `publie → brouillon` (dépublication) et `publie → archive` : admin.
+  - **`archive → brouillon` ajouté** (admin) : sans lui, un contenu archivé ne pourrait plus jamais
+    être corrigé.
+- **Pour l'admin qui publie son propre brouillon** : le bouton « Publier » enchaîne deux appels
+  (soumettre, puis publier). Le journal en garde deux actions. Si le second appel échoue, le contenu
+  reste `en_relecture` et l'erreur s'affiche.
+- **Écriture selon le statut** : un éditeur ne modifie qu'un brouillon ; un admin modifie aussi un
+  contenu en relecture ou publié (reconstruction). Un contenu archivé se désarchive avant toute
+  modification. Suppression : seulement un brouillon ou un archivé non utilisé.
+- **Pourquoi** : c'est le diagramme du document de rang le plus élevé, et il garde une trace de
+  relecture sans bloquer une équipe d'une personne (l'admin peut relire son propre contenu, M-07).
+- **Limite de la version 1** : pas de révision en brouillon d'un contenu publié.
+
+### D-20 · Médias — Arrêtée
+
+- Un fichier par requête ; l'envoi multiple enchaîne des requêtes successives, avec une progression
+  par fichier.
+- Les contrôles de type et de taille côté client sont une aide ; le refus du serveur
+  (`FICHIER_REFUSE`) fait foi.
+- Un média s'envoie **sans** texte alternatif ni crédit ; l'écran d'envoi propose ces champs, sans
+  les rendre obligatoires. Le média est alors « à fournir » et bloque la publication des contenus qui
+  l'utilisent, sauf s'il est décoratif. Le crédit n'est jamais exigé à l'envoi (non-invention).
+- Chaque média porte `createurId` (le créateur principal par défaut).
+- Supprimer un média utilisé affiche la liste des usages renvoyée par le `422 RG-08`.
+- Pas de recadrage dans cette version (M-05).
+
+### D-21 · Contenu riche — Arrêtée
+
+Tiptap n'active que la liste blanche du contrat (§ 9.1) : titres 2 à 4, gras, italique, listes,
+citation, lien, image, saut de ligne. Les extensions de StarterKit hors liste (souligné, barré, code,
+bloc de code, filet horizontal) sont **désactivées explicitement**. Le nœud `image` porte
+`{ mediaId }`, et seulement lui. Un lien n'accepte que `https:`, `http:`, `mailto:` ou une adresse
+relative.
+
+### D-22 · Écritures strictes — Arrêtée
+
+Un schéma d'entrée strict, distinct du schéma de lecture, par ressource. Aucun champ en lecture seule
+n'est envoyé. Tout `PATCH` porte la `version` lue. `pageSize` ne dépasse jamais 100 ; les sélecteurs
+(tags, créateurs, catégories, médias) cherchent côté serveur.
+
+### D-23 · Suivi de publication — Arrêtée
+
+Cinq moments affichés : enregistré, publié, reconstruction en attente, en cours, terminée (`reussie`,
+`echec`, dont `DELAI_DEPASSE`). Après une transition, le bandeau suit `publicationId` par
+`GET /site/publications/:id`, à intervalle croissant, et s'arrête à l'état final. Un échec n'annule
+jamais la publication : le message dit que le site n'est pas encore à jour, et propose
+`POST /site/reconstruire` à qui en a le droit.
+
+### D-24 · Pas d'écran sans route — Arrêtée
+
+Une fonction du prompt admin sans route au contrat n'est ni inventée ni simulée en production. Sont
+exclus de la version 1, faute de route : le recadrage d'image, l'envoi d'une réponse depuis l'admin
+(remplacé par un lien `mailto:`), l'envoi de lettres par segment, la langue de l'interface du profil,
+le mode « voir comme ». Ils reviendront par une version du contrat.
+
+### D-25 · Gestion des tags (A-12) — Arrêtée
+
+Écran `/tags` réservé aux admins. Les éditeurs choisissent dans `SelecteurTags`, sans créer à la volée :
+on évite les doublons de libellé. Un tag utilisé ne se supprime pas (`422 RG-08`, `PanneauUsages`).
+
+### D-26 · Règles côté client — Arrêtée
+
+Les contrôles de l'interface préviennent l'erreur, ils ne décident pas. Ce sont des fonctions pures
+nommées d'après la règle, et testées. Quand l'interface et le serveur divergent, le refus du serveur
+s'affiche, et l'écart est consigné comme anomalie.
+
+### D-27 · Modèle commercial des bijoux (A-02) — Arrêtée
+
+- **Contexte** : le prompt admin et le site mettent prix, matières et tailles sur le bijou (PA:232,
+  `CommerceBijou`). Le prompt back end les met sur la variante, mais admet un bijou sans variante en
+  mode « sur demande » (PB:679) : il n'y a alors aucun endroit où stocker un prix, ni aucune variante
+  à demander (RG-11).
+- **Choix** : on suit l'analyse conceptuelle (RG-10 : « un bijou a au moins une variante » ; MCD :
+  bijou 1,n variante ; une demande porte sur une variante).
+  - **Bijou (la pièce)** : récit, catégorie, créateur, images, `prixConfirme`, `edition`, `atelier`,
+    `village`, `poids`, `visible`.
+  - **Variante (l'unité demandée ou vendue)** : `reference`, `matiere`, `taille`, `prix`,
+    `ancienPrix`, `stock`, `disponible`, `ordre`.
+  - Tout bijou a au moins une variante. À la création, une variante par défaut, sans valeur, est créée
+    si aucune n'est fournie.
+  - `matieres` et `tailles` du bijou sont **déduites** des variantes (lecture seule).
+  - Prix affiché si et seulement si `prixConfirme` (admin seulement) **et** `prix` renseigné ; sinon
+    « sur demande ». Avec plusieurs prix, « à partir de ».
+  - Une demande de pièce cite **une ou plusieurs** variantes, ce que fait déjà la sélection du site.
+- **Pourquoi** : une seule forme, quel que soit le mode. Le passage à la vente en ligne rend
+  seulement `prix` et `stock` obligatoires, sans migration. Une pièce unique reste simple : une seule
+  variante.
+- **Conséquences** :
+  - le back end s'écarte de PB:679 (écart E-01 du contrat) ;
+  - l'admin présente la variante unique comme des champs de la fiche, et le tableau des variantes
+    seulement à partir de deux ;
+  - le site lira `variantes` au lieu de `commerce` ;
+  - la migration crée une variante par pièce (prix vide, stock vide, disponible).
+
+### D-28 · Modèle créateur : `slug` et `actif` (X-05) — Arrêtée
+
+- **`slug`** : conservé, obligatoire, unique, non traduit. Il sert l'adresse de la page publique du
+  créateur, que le cahier des charges demande (« page dédiée ») et que l'analyse prévoit
+  (`/createurs/:slug`). Généré depuis le nom ; **figé dès la première publication** (`SLUG_FIGE`), pour
+  ne jamais casser une adresse publiée.
+- **`actif`** : conservé et **distinct** du `statut`. Le `statut` dit si la page publique existe ;
+  `actif` dit si le créateur peut porter des produits. Désactiver dépublie ses bijoux et révoque ses
+  comptes vendeurs (RG-27). Le principal reste actif (RG-21). Tant que `multiVendeurs` est faux, tout
+  autre créateur reste inactif (`MULTI_VENDEURS_INACTIF`).
+- **Conséquences** : écran `/createurs` avec l'interrupteur « Actif » distinct de la `BarreStatut` ; le
+  `SelecteurCreateur` ne propose que les créateurs actifs.
+
+### D-29 · Messages, demandes, collaboration et abonnés — Arrêtée
+
+- **Messages** : un seul fil, typé `contact` ou `collaboration` (formulaire B2B : entreprise, pays,
+  type, calendrier, budget). Statut de traitement : `non_lu`, `lu`, `traite`, `archive`. Note interne.
+  La réponse passe par la messagerie de l'équipe (lien `mailto:`).
+- **Demandes** : statut `nouvelle → en_cours → conclue`, ou `annulee` ; note interne ; pas de
+  suppression.
+- **Abonnés** : `prenom` et `pays` ajoutés, demandés par le cahier des charges et déjà saisis par le
+  formulaire du site.
+- **Pourquoi** : le plan de développement (phase 4) et les actions de l'administrateur (§ 8) prévoient
+  ces quatre entrées ; aucune ne doit se perdre.
+
+### D-30 · Comptes (A-06) — Arrêtée
+
+Un compte est créé **sans mot de passe**. Le serveur envoie un lien de définition à usage unique,
+valable 72 h, consommé par `POST /auth/definir-mot-de-passe` (la même route que la réinitialisation et
+l'amorçage). L'écran de création ne demande donc aucun mot de passe. La jauge de robustesse est
+affichée là où le mot de passe se choisit : définition, changement. Un admin gère les comptes
+**éditeur** ; seul un super-admin gère les admins et les super-admins (analyse RG-16). Pas de
+suppression : désactivation.
+
+### D-31 · Langues actives — Métier à valider (M-01)
+
+`parametres.languesActives` vaut `["fr"]` par défaut : le contenu éditorial n'existe aujourd'hui
+qu'en français. `ChampTraduit` garde ses deux onglets ; l'anglais n'est exigé à la publication
+qu'une fois activé.
+
+### D-32 · Fonctions reportées — Arrêtée
+
+Recadrage d'image, réponse aux messages depuis l'admin, langue de l'interface du profil, envoi des
+lettres par segment, mode « voir comme », espace vendeur, vente en ligne. Le contrat les liste
+(§ 17, § 20). Aucun écran ne les simule.
+
+## Étape 2 — 30/10/2026
+
+### D-33 · Écrans à venir : visibles et honnêtes — Arrêtée
+
+Le menu liste dès maintenant tous les écrans de la section 9, filtrés par `peut()`. Un écran pas
+encore livré affiche « Cet écran sera livré à l'étape N », sans donnée ni action simulée. Les droits
+s'appliquent déjà : un éditeur sur `/comptes` voit « Accès refusé ».
+
+### D-34 · Tiroir de navigation : `<dialog>` natif — Arrêtée
+
+Sur mobile, le menu s'ouvre dans un `<dialog>` modal natif : piège de focus, fermeture sur Échap et
+fond inerte fournis par le navigateur, sans code maison. Le focus revient au bouton du menu à la
+fermeture. Le composant `BoiteDialogue` de l'étape 3 suivra le même principe.
+
+### D-35 · Déconnexion : le cache est vidé sauf la session — Arrêtée
+
+`queryClient.clear()` retirait aussi la requête de session à laquelle l'interface est abonnée : l'écran
+restait connecté. La déconnexion retire toutes les autres données, puis met la session à `null`.
+Couvert par le test « la déconnexion ramène à la connexion ».
+
+### D-36 · Formulaires : `useWatch` plutôt que `watch` — Arrêtée
+
+Le lint (React Compiler) signale `watch()` de React Hook Form comme incompatible ; `useWatch` le
+remplace pour la jauge de robustesse.
+
+### D-37 · Reporté à l'étape 3 — Arrêtée
+
+L'écran verrouillé sans perte du brouillon sur un `401`, et l'avertissement d'inactivité 2 minutes
+avant l'échéance (D-16), demandent les formulaires de contenu : ils arrivent avec les composants
+transverses (`AvertissementSortie`, `BoiteDialogue`). En attendant, un `401` ramène à la connexion
+en mémorisant la page. **Levée à l'étape 3 (D-38).**
+
+## Étape 3 — composants transverses — 30/10/2026
+
+### D-38 · Session tombée : l'écran se verrouille, la page reste montée — Arrêtée
+
+- Un `401` reçu **alors qu'une session était connue** pose `CLE_VERROU` dans le cache des
+  requêtes au lieu d'effacer la session. `RouteProtegee` ne redirige donc pas : la page et son
+  formulaire restent montés sous une boîte non fermable (`VerrouSession`). Le mot de passe suffit
+  pour reprendre (l'adresse est celle du compte) ; l'action interrompue est à relancer. Un `401`
+  sans session connue ramène toujours à la connexion.
+- L'avertissement d'inactivité (`AvertissementInactivite`) se cale sur `Moi.session.expireLe`,
+  deux minutes avant. « Rester connecté » relit `GET /auth/moi`, ce qui repousse l'échéance
+  glissante (§ 3.1). À l'échéance, l'écran se verrouille comme après un `401`.
+- Limite assumée : toute requête repousse l'échéance côté serveur, mais l'admin ne relit
+  `expireLe` qu'avec `GET /auth/moi`. L'avertissement peut donc venir **trop tôt**, jamais trop
+  tard. Le faux serveur applique désormais la durée glissante à chaque requête authentifiée.
+- Le verrou vit dans le cache : la déconnexion l'efface avec les autres données (D-35).
+
+### D-39 · Préférences d'affichage : un module, deux usages — Arrêtée
+
+`src/lib/preferences.ts` est le seul fichier exempté de la règle `no-restricted-globals` (D-09).
+Il ne stocke que des réglages d'affichage, préfixés `pe-admin:` et validés à la lecture : colonnes
+masquées d'un tableau, largeur de l'aperçu. Jamais un contenu, un brouillon ni un jeton. Un
+stockage refusé (navigation privée) rend la valeur par défaut, sans erreur.
+
+### D-40 · Éditeur riche — Arrêtée
+
+- Le nœud `image` est écrit pour l'admin : il ne porte que `mediaId`, s'affiche en relisant la
+  médiathèque, et une `<img>` collée sans `data-media-id` est écartée. `@tiptap/extension-image`
+  et `@tiptap/extension-link` (déjà fourni par StarterKit) sont désinstallés.
+- `normaliserCorps` retire les attributs de présentation que Tiptap ajoute (`target`, `rel`,
+  `class` des liens, `start: 1` des listes), puis revalide par `corpsRicheSchema` : la sortie est
+  exactement le JSON du contrat. Un document sans contenu vaut `null`, pas un paragraphe vide.
+- Le collage est nettoyé avant analyse (`script`, `style`, `iframe`, commentaires de Word) ; le
+  schéma de l'éditeur écarte ensuite ce qui sort de la liste blanche. Un test le vérifie sur du
+  HTML hostile (`javascript:`, souligné, code, titre 1, image extérieure).
+- L'éditeur est non contrôlé après le montage : pour charger un autre contenu, changer sa `key`.
+
+### D-41 · Composants des lots à venir : construits sur le contrat — Arrêtée
+
+`HistoriqueVersions` (lot 5) et `SelecteurCreateur` / `FiltreCreateur` (lot 2) suivent le
+contrat (§ 14.2, § 10.2). Le faux serveur les sert au plus juste : instantanés pris à chaque
+écriture journalisée, restauration des **articles** seulement, créateurs en lecture (le
+principal, et un créateur d'exemple **inactif**, comme l'exige le contrat tant que
+`multiVendeurs` est faux). `magasin.multiVendeurs` permet d'essayer le mode multi-vendeurs.
+
+### D-42 · Vitrine `/composants` : développement seulement — Arrêtée
+
+La route n'est déclarée que si `import.meta.env.DEV` ; au build, la branche et l'import
+disparaissent (contrôlé : `verifier-dist` passe, aucun module de l'éditeur ni de dnd-kit dans
+`dist`). Ses textes de démonstration restent dans le fichier, hors du dictionnaire : ce ne sont
+pas des libellés de l'interface livrée. Un test la rend et l'audite avec axe.
+
+### D-43 · Pastille « programmé » — Arrêtée
+
+La section 5 prévoit cinq pastilles ; RG-05 demande que le statut programmé soit **visible**. Une
+sixième pastille, `programme` (horloge, contour forêt), est dérivée d'un `publie` à date future
+(`etatAffiche`). Comme « à fournir », elle n'existe pas au serveur (D-18).
+
+### D-44 · Formulaires : l'`id` d'un champ est son chemin dans le contrat — Arrêtée
+
+`traductions.fr.titre`, `tagIds`, `createurId`… Le résumé d'erreurs (`ResumeErreurs`) mène au
+champ par cet `id`, et `rattacherErreursServeur` pose les erreurs d'un `422` (`VALIDATION`,
+`RG-03`, champ unique) sur les champs React Hook Form du même nom. Ce qui ne vise aucun champ du
+formulaire revient en bandeau.
+
+### D-45 · Barre de statut : l'écran fait les appels — Arrêtée
+
+`BarreStatut` n'appelle pas l'API : elle affiche le statut, la date programmée (fuseau
+d'Abidjan), l'état de l'enregistrement et les boutons que `peut()` autorise, puis émet l'action.
+Pour un admin, « Publier » depuis un brouillon est proposé : l'écran enchaîne soumettre puis
+publier, comme le contrat l'admet (§ 7.3).
+
+### D-46 · Tests : une zone d'alerte permanente, une attente de 5 s — Arrêtée
+
+Les notifications posent deux régions vivantes **dès le départ** (une région créée avec son
+contenu n'est pas annoncée). Il y a donc toujours un `role="alert"` vide dans la page : les tests
+cherchent l'alerte qui porte le message. Sous la charge de la suite complète, le premier
+chargement d'une page paresseuse dépasse parfois une seconde : l'attente de Testing Library passe
+à 5 s (`src/test/setup.ts`), et la durée maximale d'un test à 20 s (`vitest.config.ts`). Les
+dépassements observés touchaient des tests différents à chaque passage, jamais une assertion :
+c'est la charge (douze fichiers jsdom en parallèle), pas un défaut du code.
+
+## Point d'intégration I-0 — 30/10/2026
+
+### D-47 · Mode `api` et parcours de bout en bout contre la vraie API — Arrêtée
+
+- `npm run dev:api` lance l'admin **sans faux serveur** et relaie `/admin/api/v1` vers l'API
+  locale (`prince-edja-api`, port 3000). Aucun réglage nouveau côté client : c'est le _mode_ de
+  Vite qui décide (`import.meta.env.MODE`), et `VITE_API_URL` reste la seule variable `VITE_*`.
+- `npm run test:e2e` (Playwright, Chromium, bureau et mobile) se connecte à l'API réelle,
+  relit la session au rechargement, vérifie que rien n'est stocké dans le navigateur, se
+  déconnecte, et audite la page de connexion avec axe **contraste compris** (mesurable dans un
+  vrai navigateur, pas dans jsdom). Les identifiants viennent de `E2E_EMAIL` et
+  `E2E_MOT_DE_PASSE`, jamais du dépôt ; sans eux, les tests sont ignorés.
+- Résultat au 30/10 : 6 tests sur 6. Le dossier `e2e/` est exempté de la règle sur le stockage
+  navigateur : il le lit pour prouver qu'il reste vide.

@@ -8,36 +8,27 @@ import { Footer } from '@/components/layout/Footer'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { LoaderIntro } from '@/components/motion/LoaderIntro'
 import { CurseurGyeNyame } from '@/components/motion/CurseurGyeNyame'
+import { FenetreNewsletter } from '@/components/newsletter/FenetreNewsletter'
 import { PAGES_LEGALES } from '@/data/navigation'
 import { useLangue } from '@/i18n/contexteLangue'
-import { AdminLayout, AdminGuard } from '@/components/admin/AdminLayout'
 import { FournisseurDemande } from '@/lib/demande'
 import { BoutonDemande } from '@/components/shop/BoutonDemande'
 
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
 const HistoiresPage = lazy(() => import('@/pages/HistoiresPage'))
-const TravaillerEnsemblePage = lazy(() => import('@/pages/TravaillerEnsemblePage'))
+const ContactPage = lazy(() => import('@/pages/ContactPage'))
 const ArticlePage = lazy(() => import('@/pages/ArticlePage'))
 const NewsletterPage = lazy(() => import('@/pages/NewsletterPage'))
 const DestinationPage = lazy(() => import('@/pages/DestinationPage'))
 const ArchivePage = lazy(() => import('@/pages/ArchivePage'))
 const ObjetPage = lazy(() => import('@/pages/ObjetPage'))
 const LegalPage = lazy(() => import('@/pages/LegalPage'))
-const AdminLoginPage = lazy(() => import('@/pages/AdminLoginPage'))
-const AdminDashboard = lazy(() => import('@/pages/admin/Dashboard'))
-const AdminArticles = lazy(() => import('@/pages/admin/Articles'))
-const AdminEpisodes = lazy(() => import('@/pages/admin/Episodes'))
-const AdminDistinctions = lazy(() => import('@/pages/admin/Distinctions'))
-const AdminSite = lazy(() => import('@/pages/admin/Site'))
-const AdminMedia = lazy(() => import('@/pages/admin/Media'))
-const AdminGeneric = lazy(() => import('@/pages/admin/Generic'))
 const XplorePage = lazy(() => import('@/pages/XplorePage'))
 const EpisodeDetailPage = lazy(() => import('@/pages/EpisodeDetailPage'))
 const TasteTravelPage = lazy(() => import('@/pages/TasteTravelPage'))
 const ShopPage = lazy(() => import('@/pages/ShopPage'))
 const JournalPage = lazy(() => import('@/pages/JournalPage'))
 const PressPage = lazy(() => import('@/pages/PressPage'))
-const ContactPage = lazy(() => import('@/pages/ContactPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 function AnimatedOutlet() {
@@ -90,8 +81,8 @@ function SiteLayout() {
 
       <LoaderIntro />
 
-      {/* Curseur monté ici et non à la racine : il ne doit pas toucher à /admin,
-          qui garde son curseur natif. */}
+      {/* Curseur monté ici et non à la racine : il ne doit pas toucher aux surfaces
+          d'administration, qui vivent dans une application séparée. */}
       <CurseurGyeNyame />
 
       <Header />
@@ -112,13 +103,17 @@ function SiteLayout() {
       </FournisseurDemande>
 
       <Footer />
+
+      {/* Fenêtre d'inscription à la lettre du Griot : déclenchée une fois (~20 s
+          sur les pages de contenu), fermable, jamais avec une autre fenêtre. */}
+      <FenetreNewsletter />
     </>
   )
 }
 
 export default function App() {
   return (
-    <BrowserRouter basename="/site-prince-edja">
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route element={<SiteLayout />}>
           <Route index element={<HomePage />} />
@@ -180,10 +175,13 @@ export default function App() {
             element={<PressPage />}
           />
 
-          {/* Cible de l'action principale du header et du pied de page. */}
+          {/* L'ancienne page « Travailler avec Prince » : son contenu vit désormais
+              dans Contact (univers, motifs, délai de réponse). La route redirige
+              au lieu de disparaître — les CTA du header, du footer, du héros et
+              des épisodes gardent une cible vivante. */}
           <Route
             path="/travailler-ensemble"
-            element={<TravaillerEnsemblePage />}
+            element={<Navigate to="/contact" replace />}
           />
 
           <Route
@@ -201,33 +199,9 @@ export default function App() {
           <Route path="/newsletter/desinscription" element={<NewsletterPage vue="desinscription" />} />
 
           <Route
-            path="/admin"
-            element={<AdminLoginPage />}
-          />
-
-          <Route
             path="*"
             element={<NotFoundPage />}
           />
-        </Route>
-
-        {/* Admin codé : même app, même serveur (séparation au déploiement) */}
-        <Route
-          element={
-            <AdminGuard>
-              <AdminLayout />
-            </AdminGuard>
-          }
-        >
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/articles" element={<AdminArticles />} />
-          <Route path="/admin/episodes" element={<AdminEpisodes />} />
-          <Route path="/admin/distinctions" element={<AdminDistinctions />} />
-          <Route path="/admin/travel" element={<AdminGeneric title="Taste & Travel · Villes" />} />
-          <Route path="/admin/site" element={<AdminSite />} />
-          <Route path="/admin/media" element={<AdminMedia />} />
-          <Route path="/admin/presse" element={<AdminGeneric title="Presse" />} />
-          <Route path="/admin/a-propos" element={<AdminGeneric title="À propos · Milestones" />} />
         </Route>
       </Routes>
     </BrowserRouter>

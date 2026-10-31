@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+<title id="title">Motif symétrique entrelacé 04</title>
+<g fill="none" stroke="#4B3018" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M38 40 H82 L100 58 L118 40 H162 C162 66 148 83 127 94 L100 108 L73 94 C52 83 38 66 38 40 Z"/>
+  <path d="M53 52 H78 L100 73 L122 52 H147 C143 67 130 76 114 84 L100 91 L86 84 C70 76 57 67 53 52 Z"/>
+  <path d="M38 160 H82 L100 142 L118 160 H162 C162 134 148 117 127 106 L100 92 L73 106 C52 117 38 134 38 160 Z"/>
+  <path d="M53 148 H78 L100 127 L122 148 H147 C143 133 130 124 114 116 L100 109 L86 116 C70 124 57 133 53 148 Z"/>
+</g>
+</svg>

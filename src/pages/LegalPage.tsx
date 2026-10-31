@@ -42,7 +42,7 @@ export default function LegalPage() {
         <Breadcrumb />
 
         <div className="space-y-5">
-          <Eyebrow num={page.numero}>{page.famille}</Eyebrow>
+          <Eyebrow>{page.famille}</Eyebrow>
           <h1 className="font-display uppercase text-display-lg">{l(page.titre)}</h1>
           <p className="text-body-lg text-ink-500">{l(page.resume)}</p>
         </div>

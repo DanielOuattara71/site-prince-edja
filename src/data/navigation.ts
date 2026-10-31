@@ -94,7 +94,7 @@ export const NAV_PRINCIPALE: EntreeNav[] = [
 /** L'action principale. Une seule par écran : elle ne concurrence jamais les entrées. */
 export const CTA_PRINCIPAL: LienNav = {
   libelle: { fr: 'Travailler avec Prince', en: 'Work with Prince' },
-  to: '/travailler-ensemble',
+  to: '/contact',
 }
 
 export interface BlocFooter {
@@ -118,7 +118,7 @@ export const FOOTER_NAV: BlocFooter[] = [
       { libelle: { fr: 'Journal', en: 'Journal' }, to: '/journal' },
       {
         libelle: { fr: 'Travailler avec Prince', en: 'Work with Prince' },
-        to: '/travailler-ensemble',
+        to: '/contact',
       },
     ],
   },
@@ -219,7 +219,6 @@ export const LANGUES: { code: Langue; libelle: string; court: string }[] = [
 
 export interface PageLegale {
   chemin: string
-  numero: string
   famille: string
   titre: Libelle
   resume: Libelle
@@ -237,7 +236,6 @@ export interface PageLegale {
 export const PAGES_LEGALES: PageLegale[] = [
   {
     chemin: '/mentions-legales',
-    numero: '01',
     famille: 'Informations légales',
     titre: { fr: 'Mentions légales', en: 'Legal notice' },
     resume: {
@@ -254,7 +252,6 @@ export const PAGES_LEGALES: PageLegale[] = [
   },
   {
     chemin: '/confidentialite',
-    numero: '02',
     famille: 'Informations légales',
     titre: { fr: 'Confidentialité', en: 'Privacy policy' },
     resume: {
@@ -271,7 +268,6 @@ export const PAGES_LEGALES: PageLegale[] = [
   },
   {
     chemin: '/cookies',
-    numero: '03',
     famille: 'Informations légales',
     titre: { fr: 'Cookies', en: 'Cookies' },
     resume: {
@@ -287,7 +283,6 @@ export const PAGES_LEGALES: PageLegale[] = [
   },
   {
     chemin: '/cgv',
-    numero: '04',
     famille: 'Informations légales',
     titre: { fr: 'CGV', en: 'Terms of sale' },
     resume: {
@@ -304,7 +299,6 @@ export const PAGES_LEGALES: PageLegale[] = [
   },
   {
     chemin: '/retours',
-    numero: '05',
     famille: 'Informations légales',
     titre: { fr: 'Retours & échanges', en: 'Returns & exchanges' },
     resume: {

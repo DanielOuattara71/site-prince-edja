@@ -1,14 +1,13 @@
 import { Link } from 'react-router'
-import { ArrowUpRight } from 'lucide-react'
 import { GALLERY, GALLERY_QUOTE } from '@/data/gallery'
 import { cn } from '@/lib/cn'
-import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { LazyImage } from '@/components/media/LazyImage'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { ArrowLink } from '@/components/ui/ArrowLink'
 import { Button } from '@/components/ui/Button'
+import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 import type { GalleryItem } from '@/types'
 
 function GalleryCard({ item, className }: { item: GalleryItem; className?: string }) {
@@ -30,12 +29,6 @@ function GalleryCard({ item, className }: { item: GalleryItem; className?: strin
           {item.label}
         </span>
       )}
-      <span
-        aria-hidden
-        className="absolute bottom-4 right-4 z-10 flex size-10 translate-y-2 items-center justify-center rounded-full bg-cream-100 text-ink-900 opacity-0 transition-all duration-(--d-base) ease-expo group-hover:translate-y-0 group-hover:opacity-100"
-      >
-        <ArrowUpRight className="size-4" />
-      </span>
     </Link>
   )
 }
@@ -45,10 +38,13 @@ export function FeaturedGallery() {
 
   return (
     <section aria-label="Galerie" data-curseur="galerie" className="section-y bg-sand-50">
-      <Container>
+      {/* La galerie est pleine largeur : elle sort du `Container` (max-w-7xl) pour
+          gagner le viewport, cadrée par les mêmes marges que les rangées bord à
+          bord de la boutique (px-4 sm:px-6). Titre, grille et pastille partagent
+          ces marges pour que les bords gauches restent alignés. */}
+      <div className="mx-auto max-w-[80rem] px-4 sm:px-6">
         <SectionHeading
           eyebrow="Carnet de route"
-          num="02"
           title={
             <>
               Chaque image est une route
@@ -57,10 +53,22 @@ export function FeaturedGallery() {
           }
           lead="Films, bijoux, portraits : un aperçu du voyage en images. Cliquez pour suivre la route."
         />
+      </div>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-12">
+      <div className="mx-auto mt-14 grid max-w-[80rem] gap-6 px-4 sm:px-6 lg:grid-cols-12">
           <Reveal className="lg:col-span-5">
-            <div className="grain flex h-full flex-col gap-8 rounded-xl bg-night-900 p-8 text-cream-100 lg:p-10">
+            <div className="grain relative flex h-full flex-col gap-8 overflow-hidden rounded-xl bg-night-900 p-8 text-cream-100 lg:p-10">
+              {/*
+                Motif circulaire fourni, posé en crème très atténuée dans le coin libre
+                de la carte. `-z-10` : dans la carte (qui est déjà une pile isolée via
+                `grain`), il passe derrière le texte et le grain reste au-dessus.
+              */}
+              <AfricanPattern
+                motif="circulaire-03"
+                couleur="var(--color-cream-100)"
+                opacite={0.07}
+                className="-right-6 -top-6 -z-10 h-28 w-28 lg:h-36 lg:w-36"
+              />
               <p className="label-caps text-gold-400">Revue de presse</p>
               <blockquote className="flex-1 font-quote italic leading-snug text-heading-sm">
                 {GALLERY_QUOTE.texte}
@@ -107,19 +115,18 @@ export function FeaturedGallery() {
           <Reveal className="lg:col-span-12">
             <GalleryCard item={itemWide} />
           </Reveal>
-        </div>
+      </div>
 
-        <Reveal className="relative z-10 mx-auto -mt-14 max-w-xl">
-          <div className="flex flex-col items-center justify-between gap-4 rounded-xl bg-sand-100 p-4 pl-8 border border-sand-200 sm:flex-row sm:rounded-full">
-            <p className="text-button font-semibold text-ink-900">
-              Un projet, une histoire à raconter ?
-            </p>
-            <Button to="/contact" variant="primary" magnetic={false}>
-              Parlons-en
-            </Button>
-          </div>
-        </Reveal>
-      </Container>
+      <Reveal className="relative z-10 mx-auto -mt-14 max-w-[80rem] px-4 sm:px-6">
+        <div className="mx-auto flex max-w-xl flex-col items-center justify-between gap-4 rounded-xl bg-sand-100 p-4 pl-8 border border-sand-200 sm:flex-row sm:rounded-full">
+          <p className="text-button font-semibold text-ink-900">
+            Un projet, une histoire à raconter ?
+          </p>
+          <Button to="/contact" variant="primary" magnetic={false}>
+            Parlons-en
+          </Button>
+        </div>
+      </Reveal>
     </section>
   )
 }

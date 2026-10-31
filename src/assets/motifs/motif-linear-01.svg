@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+<title id="title">Motif linéaire vertical 01</title>
+<g fill="none" stroke="#4B3018" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M72 42 C72 16 128 16 128 42 C128 58 72 58 72 42 Z"/>
+  <path d="M55 73 C55 62 65 56 77 56 H123 C135 56 145 62 145 73 V153"/>
+  <path d="M55 76 V153"/>
+  <path d="M77 78 V153"/>
+  <path d="M100 78 V153"/>
+  <path d="M123 78 V153"/>
+</g>
+</svg>

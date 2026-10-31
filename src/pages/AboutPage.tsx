@@ -11,8 +11,9 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { Audience } from '@/components/sections/about/Audience'
 import { Offres } from '@/components/sections/about/Offres'
-import { EtudesCas } from '@/components/sections/about/EtudesCas'
 import { FormulaireB2B } from '@/components/about/FormulaireB2B'
+import { AfricanPatternRibbon } from '@/components/motifs/AfricanPatternRibbon'
+import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 
 /** Ce que le CDC attend dans la timeline et que les données ne portent pas encore. */
 const ETAPES_MANQUANTES = [
@@ -45,7 +46,6 @@ const SOMMAIRE = [
   { ancre: 'engagements', libelle: 'Ce que je défends' },
   { ancre: 'audience', libelle: 'Audience' },
   { ancre: 'offres', libelle: 'Offres' },
-  { ancre: 'etudes-de-cas', libelle: 'Études de cas' },
   { ancre: 'collaborer', libelle: 'Collaborer' },
 ]
 
@@ -62,7 +62,7 @@ export default function AboutPage() {
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="space-y-6 lg:col-span-7">
-              <Eyebrow num="01">Prince Edja</Eyebrow>
+              <Eyebrow>Prince Edja</Eyebrow>
               <h1 className="font-display uppercase text-display-lg">
                 Raconter l’Afrique depuis l’Afrique
                 <span aria-hidden className="text-clay-500">.</span>
@@ -85,7 +85,7 @@ export default function AboutPage() {
               </Reveal>
 
               <div className="flex flex-wrap gap-3 pt-2">
-                <Button to="/travailler-ensemble" variant="dark">
+                <Button to="/contact" variant="dark">
                   Travailler avec Prince
                 </Button>
                 <span className="inline-flex min-h-11 items-center rounded-md border border-sand-300 px-5 text-caption text-ink-500">
@@ -113,9 +113,9 @@ export default function AboutPage() {
             </Reveal>
           </div>
 
-          {/* Sommaire : la page réunit le parcours, l'audience, les offres, les études de
-              cas et le formulaire. Sans lui, une page aussi longue deviendrait un
-              défilement sans repère. */}
+          {/* Sommaire : la page réunit le parcours, l'audience, les offres et le
+              formulaire. Sans lui, une page aussi longue deviendrait un défilement
+              sans repère. */}
           <nav aria-label="Sommaire de la page" className="mt-16 border-t border-sand-200 pt-8">
             <ul className="flex flex-wrap gap-2">
               {SOMMAIRE.map((entree) => (
@@ -157,11 +157,15 @@ export default function AboutPage() {
         />
       </Section>
 
+      {/* Une couture entre le portrait et le parcours : le ruban reste la signature
+          de la page, le cauri viendra sceller les engagements plus bas. */}
+      <AfricanPatternRibbon />
+
       <Section tone="light" className="scroll-mt-32" id="parcours">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="space-y-8 lg:col-span-5">
-              <Eyebrow num="02">Le parcours</Eyebrow>
+              <Eyebrow>Le parcours</Eyebrow>
               <Reveal>
                 <h2 className="font-display uppercase text-display-lg">
                   Onze ans au service du récit<span aria-hidden className="text-clay-500">.</span>
@@ -204,10 +208,22 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      <Section tone="light" className="scroll-mt-32 bg-sand-150" id="engagements">
-        <Container className="space-y-8">
+      <Section
+        tone="light"
+        className="relative isolate scroll-mt-32 bg-sand-150"
+        id="engagements"
+      >
+        <Container className="relative space-y-8">
+          {/* Le cauri scelle les engagements : mémoire, transmission, image du
+              continent. Il se pose à droite du titre, au-dessus des cartes. */}
+          <AfricanPattern
+            motif="cauri-africain"
+            couleur="#A95625"
+            opacite={0.07}
+            className="-z-10 top-0 right-16 hidden h-24 w-32 lg:block xl:right-20 xl:h-32 xl:w-44"
+          />
           <div className="space-y-2">
-            <Eyebrow num="03">Ce que je défends</Eyebrow>
+            <Eyebrow>Ce que je défends</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Cinq engagements<span aria-hidden className="text-clay-500">.</span>
             </h2>
@@ -230,12 +246,11 @@ export default function AboutPage() {
 
       <Audience />
       <Offres />
-      <EtudesCas />
 
       <Section tone="light" className="scroll-mt-32 bg-sand-150" id="collaborer">
         <Container className="space-y-10">
           <div className="space-y-2">
-            <Eyebrow num="07">Collaborer</Eyebrow>
+            <Eyebrow>Collaborer</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Parlons de votre projet<span aria-hidden className="text-clay-500">.</span>
             </h2>

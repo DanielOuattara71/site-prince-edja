@@ -9,7 +9,7 @@ export function Offres() {
     <Section tone="light" className="scroll-mt-32 bg-sand-150" id="offres">
       <Container className="space-y-12">
         <div className="space-y-2">
-          <Eyebrow num="05">Les offres</Eyebrow>
+          <Eyebrow>Les offres</Eyebrow>
           <h2 className="font-display uppercase text-display-lg">
             Huit façons de collaborer<span aria-hidden className="text-clay-500">.</span>
           </h2>

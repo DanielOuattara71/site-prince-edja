@@ -176,3 +176,19 @@ export interface GalleryItem {
   label?: string
   external?: boolean
 }
+
+/**
+ * Image de la galerie éditoriale de la boutique.
+ *
+ * Elle est volontairement indépendante de `Bijou` : `src` n'est pas le visuel
+ * d'une pièce, et aucun `slug` ne la rattache à une fiche. Une image de galerie
+ * peut donc changer sans toucher au catalogue, et inversement.
+ */
+export interface GalerieImage {
+  src: string
+  alt: string
+  /** Titre court affiché au survol et dans la visionneuse. */
+  titre: string
+  /** Précision éditoriale, optionnelle. */
+  legende?: string
+}

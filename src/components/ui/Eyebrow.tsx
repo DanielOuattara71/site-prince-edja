@@ -3,6 +3,11 @@ import { cn } from '@/lib/cn'
 
 interface EyebrowProps {
   children: ReactNode
+  /**
+   * Identifiant de contenu uniquement (épisode, objet).
+   * La numérotation des sections a été retirée du site : ne pas s'en servir pour
+   * ordonner une suite de sections, aucun tiret de liaison ne l'accompagne plus.
+   */
   num?: string
   tone?: 'light' | 'dark'
   className?: string
@@ -30,7 +35,6 @@ export function Eyebrow({ children, num, tone = 'light', className }: EyebrowPro
           {num}
         </span>
       )}
-      {num && <span aria-hidden className="h-px w-6 bg-current opacity-50" />}
       <span>{children}</span>
     </p>
   )

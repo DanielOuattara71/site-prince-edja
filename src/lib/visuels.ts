@@ -43,6 +43,18 @@ export const visuelPorte = (slug: string): string =>
   `${import.meta.env.BASE_URL}images/boutique/portes/${slug}.jpg`
 
 /**
+ * Visuel de test unique des cartes produit.
+ *
+ * Il remplace temporairement les visuels template de toutes les cartes du rail et
+ * du catalogue, pour juger la page avec une vraie photographie. Les fiches produit
+ * et la section « Le porté » ne l'utilisent pas. À retirer dès que les photos de la
+ * collection sont livrées.
+ */
+export const VISUEL_TEST_CARTE = `${import.meta.env.BASE_URL}images/journal/raconter-pour-exister.jpg`
+export const ALT_TEST_CARTE =
+  'Visuel de test : Prince Edja portant des bagues et parures dorées.'
+
+/**
  * Photographie de couverture du hero.
  *
  * On réutilise le portrait déjà présent sur la page d'accueil (`SITE.heroImage`).

@@ -1,11 +1,11 @@
 import { motion, useReducedMotion } from 'motion/react'
-import { ArrowDown } from 'lucide-react'
 import { SITE } from '@/data/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { introDelay, EASE_EXPO } from '@/lib/motion'
 import { Container } from '@/components/layout/Container'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { TextRevealLines } from '@/components/motion/TextRevealLines'
+import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 import { Button } from '@/components/ui/Button'
 
 export function Hero() {
@@ -44,6 +44,18 @@ export function Hero() {
         <div className="overlay-hero-warm absolute inset-0 opacity-25" />
         <div className="overlay-hero-scrim absolute inset-0 opacity-90" />
       </div>
+
+      {/*
+        Motif fourni, posé après la photo pour rester visible : un motif placé avant
+        elle passe dessous et disparaît. Il reste sous le contenu (`z-10` sur le
+        Container), en crème très atténuée sur le fond nuit.
+      */}
+      <AfricanPattern
+        motif="lineaire-05"
+        couleur="var(--color-cream-100)"
+        opacite={0.07}
+        className="right-0 top-16 hidden h-28 w-28 sm:block lg:top-20 lg:h-40 lg:w-40"
+      />
 
       {/* Filigrane GRIOT 2.0 */}
       <div
@@ -87,23 +99,12 @@ export function Hero() {
             <Button to="/a-propos" variant="primary">
               {t('hero.ctaHistoire')}
             </Button>
-            <Button to="/travailler-ensemble" variant="ghost-light">
+            <Button to="/contact" variant="ghost-light">
               {t('hero.ctaTravailler')}
             </Button>
           </motion.div>
         </div>
       </Container>
-
-      {!reducedMotion && (
-        <motion.span
-          aria-hidden
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut', delay: base }}
-          className="absolute right-6 bottom-6 z-10 hidden md:block lg:right-10"
-        >
-          <ArrowDown className="size-5 text-cream-100/60" />
-        </motion.span>
-      )}
     </section>
   )
 }

@@ -7,6 +7,7 @@ const SVG = {
   carre: 'public/images/placeholder-carre.svg',
   foret: 'public/images/placeholder-foret.svg',
   fleuve: 'public/images/placeholder-fleuve.svg',
+  porte: 'public/images/placeholder-porte.svg',
 }
 
 const OUT = [
@@ -35,6 +36,16 @@ const OUT = [
   ['boutique/mambo.jpg', 'carre', 1200, 1600],
   ['boutique/okoro.jpg', 'carre', 1200, 1600],
   ['boutique/kowe.jpg', 'carre', 1200, 1600],
+  // Portés de la section « Ce que la pièce devient sur vous » (ShopPage : BIJOUX.slice(3)).
+  // oba.jpg et mambo.jpg portent des VRAIES photos (ressources/photos_retouchees) —
+  // régénérer ces lignes les écraserait par des assiettes.
+  ['boutique/portes/oba.jpg', 'porte', 1200, 1500],
+  ['boutique/portes/baoule.jpg', 'porte', 1200, 1500],
+  ['boutique/portes/nka.jpg', 'porte', 1200, 1500],
+  ['boutique/portes/baobabe.jpg', 'porte', 1200, 1500],
+  ['boutique/portes/mambo.jpg', 'porte', 1200, 1500],
+  ['boutique/portes/okoro.jpg', 'porte', 1200, 1500],
+  ['boutique/portes/kowe.jpg', 'porte', 1200, 1500],
   ['journal/afrique-multitude-de-mondes.jpg', 'paysage', 1600, 900],
   ['journal/citoyens-premiers-ambassadeurs.jpg', 'paysage', 1600, 900],
   ['journal/griot-moderne.jpg', 'carre', 1600, 900],

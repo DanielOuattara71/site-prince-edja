@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion, useMotionValueEvent, useReducedMotion, useScroll } from 'motion/react'
+import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 import { DUR, EASE_EXPO } from '@/lib/motion'
 
 interface Mot {
@@ -83,6 +84,28 @@ export function ColonneMots() {
     return (
       <section className="relative overflow-hidden bg-forest-950 py-20 text-cream-100 lg:py-28">
         <Filigrane />
+        {/* Motifs fournis, crème très atténuée sur la forêt : les coins se
+            répondent, derrière le contenu (z-10). */}
+        <AfricanPattern
+          motif="linear-01"
+          couleur="var(--color-cream-100)"
+          opacite={0.07}
+          className="-right-24 -top-24 h-80 w-80"
+        />
+        <AfricanPattern
+          motif="spiral-02"
+          couleur="var(--color-cream-100)"
+          opacite={0.05}
+          className="-bottom-24 -left-24 h-80 w-80"
+        />
+        {/* Le cauri se pose en sceau, entier dans le coin bas-droit : la règle
+            du projet en fait une signature, pas une texture. */}
+        <AfricanPattern
+          motif="cauri-africain"
+          couleur="var(--color-cream-100)"
+          opacite={0.12}
+          className="right-6 bottom-6 h-20 w-28 sm:h-24 sm:w-32 xl:h-32 xl:w-44"
+        />
         <div className="relative z-10 mx-auto max-w-6xl px-6">
           <dl className="grid gap-8 sm:grid-cols-2">
             {MOTS.map((entree) => (
@@ -103,9 +126,29 @@ export function ColonneMots() {
     // 240vh et non 320 : quatre mots tenaient quatre écrans de défilement, la page
     // boutique en comptait onze. Le geste reste, la fatigue en moins.
     <div ref={conteneur} className="relative h-[240vh] bg-forest-950 text-cream-100">
-      {/* La trame est posée sur le bloc collant, pas sur le conteneur de 240vh : elle
-          accompagne ainsi la partie visible pendant tout le défilement. */}
-      <div className="motif-tisse sticky top-0 flex h-svh items-center overflow-hidden">
+      <div className="sticky top-0 flex h-svh items-center overflow-hidden">
+        {/* Motifs fournis aux deux coins, crème très atténuée sur la forêt :
+            même grammaire que le bandeau de l'accueil, derrière le contenu
+            (z-10 sur la colonne) et même accrochage dans les deux variantes. */}
+        <AfricanPattern
+          motif="linear-01"
+          couleur="var(--color-cream-100)"
+          opacite={0.07}
+          className="-right-28 -top-28 h-96 w-96"
+        />
+        <AfricanPattern
+          motif="spiral-02"
+          couleur="var(--color-cream-100)"
+          opacite={0.05}
+          className="-bottom-28 -left-28 h-96 w-96"
+        />
+        {/* Le cauri, sceau entier : signature du bloc, coin bas-droit. */}
+        <AfricanPattern
+          motif="cauri-africain"
+          couleur="var(--color-cream-100)"
+          opacite={0.12}
+          className="right-6 bottom-6 h-20 w-28 sm:right-8 sm:bottom-8 sm:h-24 sm:w-32 xl:right-12 xl:bottom-12 xl:h-32 xl:w-44"
+        />
         <Filigrane />
 
         <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-start gap-10 px-6 lg:flex-row lg:items-center lg:gap-20">
@@ -139,17 +182,6 @@ export function ColonneMots() {
               transition={{ duration: DUR.reveal, ease: EASE_EXPO, delay: 0.2 }}
               className="space-y-5"
             >
-              <div className="flex items-center gap-4">
-                <span
-                  className={'label-caps text-gold-400 tracking-[0.25em]'}
-                >
-                  {String(actif + 1).padStart(2, '0')} /{' '}
-                  {String(MOTS.length).padStart(2, '0')}
-                </span>
-                {/* Le trait doré de 48 px : il donne une assise au compteur. */}
-                <span aria-hidden className={'h-px w-12 bg-gold-400'} />
-              </div>
-
               <motion.p
                 key={actif}
                 initial={{ opacity: 0, y: 12 }}

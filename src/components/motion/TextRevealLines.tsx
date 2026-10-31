@@ -30,8 +30,7 @@ export function TextRevealLines({ lines, as = 'p', delay = 0, className }: TextR
         <span key={line} aria-hidden className="block overflow-hidden pb-[0.14em]">
           <motion.span
             initial={{ y: '112%' }}
-            whileInView={{ y: '0%' }}
-            viewport={{ once: true, amount: 0.6 }}
+            animate={{ y: '0%' }}
             transition={{
               duration: 0.85,
               ease: EASE_EXPO,

@@ -58,6 +58,8 @@ Aucun test, aucun pre-commit hook.
 - Motion : `--d-fast` 250 ms, `--d-base` 450 ms, `--d-reveal` 750 ms. `prefers-reduced-motion` coupe boucles et parallaxes, pose les révélations d'emblée. Le grain est une texture statique : il reste.
 - 16 utilitaires maison en racine de `globals.css` (`label-caps`, `section-y`, `grain`, overlays…). `@utility` ne peut **pas** être imbriqué dans Tailwind v4 : un `@utility` mal fermé casse le build entier.
 - **Trame de tissage** (`motif-tisse`) : inspiration formelle du tissage ouest-africain, **sans aucun symbole nommé** — un motif porteur de sens ne devient pas une texture. Réservée aux surfaces de marque de la boutique (`forest-950`, `night-900`) : héros, `ColonneMots`, lightbox. Jamais sur sable (tache), jamais sur une photo de pièce. Opacité 5 % et `z-index: 0` : le `::after` est positionné, il passe donc **au-dessus** de tout contenu sans `z-index` — les surfaces qui l'acceptent posent `relative z-10` sur leur contenu.
+- **Motifs africains fournis** (`src/components/motifs/AfricanPattern.tsx`) : les six SVG de `src/assets/motifs/` sont importés en `?raw`, nettoyés au chargement (déclaration XML, titres et descriptions retirés, trait et aplat passés en `currentColor`), puis rendus en ligne. Cinq sont des dessins linéaires carrés ; `cauri-africain` est une silhouette pleine au format paysage, utilisée comme **sceau** (À propos, engagements) et non dans le ruban. Le composant est décoratif par défaut (`absolute`, `pointer-events-none`, `aria-hidden`) et prend `motif`, `couleur`, `opacite` — 0,04–0,10 en fond, ~0,18 pour un accent derrière la mascotte. Les fichiers restent la source unique : on ne redessine pas un motif à la main. Tout calque décoratif passe **derrière** le contenu : `isolate` + `-z-10` sur la section, ou `relative z-10` sur le contenu ; dans une carte déjà isolée (`grain`), `-z-10` suffit.
+- **Ruban de motifs** (`src/components/motifs/AfricanPatternRibbon.tsx`) : une tuile SVG compose les cinq motifs (échelle, rotation de la spirale, accent ochre sur le motif symétrique), encodée en data URI et répétée en CSS (`background-repeat: repeat-x`, `background-size: auto 100%`). `tone="light|dark"` pour l'ivoire ou la nuit/forêt. Hauteur 56 px desktop, 44 px mobile avec une tuile simplifiée à quatre motifs (le bloc tissé, trop fin à cette échelle, est réservé au desktop). Aucun DOM dupliqué, aucun débordement, aucun élément focusable. Placé sur l'accueil (sous le bandeau nom), À propos (avant le parcours) et la boutique (sous le hero) — volontairement pas sur toutes les pages.
 - **Carte du parcours** (`/xplore`, section « La carte ») : `CarteParcours` pilote **Leaflet à la main** (`useRef` + `useEffect`), sans wrapper React — la carte est initialisée une fois, redessinée quand les étapes changent, détruite par `map.remove()` au démontage. Chargée en `lazy()` : Leaflet ne pèse que sur cette page.
   - **Fond vectoriel, pas de tuiles.** Ni OpenStreetMap ni CARTO ne fournissent de tuiles `@2x` gratuites (400 chez l'une, 256 px chez l'autre) : sur écran retina, une tuile pique du flou dès qu'on zoome. La Côte d'Ivoire est donc **tracée en vecteur** depuis `src/data/geo/cote-ivoire.json` (Natural Earth 10m, domaine public, arrondi à 3 décimales) : net à tout zoom, 23 Ko, et **zéro dépendance réseau**. L'attribution « Frontières © Natural Earth » doit rester affichée.
   - **Toutes les étapes sont à l'ouest** : la frontière orientale du pays s'arrête à 2,5 °O, et Adiaké, la plus orientale, est à 3,3 °O. Une ancienne convention « positif = ouest » l'avait placée de l'autre côté du méridien — donc hors du pays.
@@ -71,30 +73,27 @@ Aucun test, aucun pre-commit hook.
 
 ## Lint / Format
 - **oxlint**, plugins `react` + `typescript` + `oxc`. `react/rules-of-hooks: error`, `react/only-export-components: warn (allowConstantExport)`.
-- ⚠️ `npm run lint` n'ignore rien : il balaie aussi `admin-custom/`, un **projet npm séparé** (6 des 15 warnings viennent de là). Ne pas les corriger dans une tâche sur le site.
+- `.oxlintrc.json` ignore `admin/**` : l'admin a son propre lint (`npm run lint` **dans `admin/`**, aucun avertissement toléré).
 - Prettier (`printWidth: 100`, `singleQuote: true`, `trailingComma: all`) — pas de script npm.
 - Le repo utilise le pattern « ajustement d'état pendant le rendu » (`if (precedent !== actuel) setEtat(...)`) plutôt qu'un `useEffect` de remise à zéro. Un effet de reset déclenche `react(set-state-in-effect)` et un rendu visible.
 
 ## Env & assets
-- `VITE_WEB3FORMS_ACCESS_KEY` (formulaire de contact), `VITE_ADMIN_USER` / `VITE_ADMIN_PASS` (défaut `admin`/`admin`), `VITE_ADMIN_CUSTOM_URL` (défaut `http://localhost:5175`).
+- `VITE_WEB3FORMS_ACCESS_KEY` (formulaire de contact, en attendant `POST /public/api/v1/contact`). Plus aucune variable `VITE_ADMIN_*` : l'ancien admin est supprimé.
 - `.env` / `.env.local` sont gitignorés.
 - Images de remplacement dans `public/images/`, générées par `scripts/placeholders.mjs`. **`sharp` est une devDependency** depuis l'optimisation (88 Mo → 6,6 Mo) : les photos livrées en PNG de plusieurs Mo doivent passer par `npm run images <dossier>`.
 - Les PNG ne servent plus qu'à ce qui a besoin de transparence (logo, curseur) ; le contenu est en JPEG, avec deux largeurs pour le hero (`SITE.heroSrcSet`).
 
-## Trois surfaces d'administration
-| Surface | Rôle | Commande |
-|---|---|---|
-| `src/pages/admin` + `src/components/admin` | admin codé intégré à l'app principale | `npm run dev`, routes `/admin/*` |
-| `admin/` | Decap CMS, projet séparé | `npm run dev` **dans `admin/`**, port 5174 |
-| `admin-custom/` | admin React séparé, port 5175 | `npm run dev` **dans `admin-custom/`** |
-**L'auth admin est décorative** : `AdminGuard` lit `sessionStorage['pe_admin_auth'] === '1'`, et `AdminLoginPage` compare en dur aux variables d'env tout en **affichant les identifiants attendus dans le message d'erreur**. Ce n'est pas une barrière de sécurité.
+## Administration et back end
+- **Une seule surface d'admin** : `admin/`, projet npm autonome (React, Vite, TanStack Query, MSW en développement), port 5180. Les trois anciennes surfaces (`/admin` intégré, Decap CMS, `admin-custom/`) sont supprimées. Décisions : `admin/docs/DECISIONS.md`.
+- **`docs/CONTRAT-API.md` fait foi** entre l'admin et le back end (`prince-edja-api`, dépôt séparé, pas encore créé). Aucun code ne précède la version du contrat qui le décrit.
+- Sources (analyse conceptuelle, plan, actions de l'admin, workflow) : `docs/SOURCES-DE-REFERENCE.md` — elles vivent **hors du dépôt**. Ordre de développement : `docs/PLAN-DE-LANCEMENT.md`.
+- ⚠️ Le site lit encore `src/data/*` en direct. La couche d'accès (plan, chantier S1) doit adopter les formes du contrat : un bijou a des **variantes** (prix, matière, taille), plus de `commerce` ; les liens internes sont des `CibleInterne`, plus des chaînes libres.
 
 ## Gotchas
-- `Eyebrow` (`src/components/ui/Eyebrow.tsx`) est le marqueur de section de cette branche, avec `num` et `tone`.
+- `Eyebrow` (`src/components/ui/Eyebrow.tsx`) est le marqueur de section de cette branche, avec `tone` et, pour un identifiant de contenu (épisode, objet), `num`. La numérotation des sections et son tiret ont été retirés.
 - `StatItem` (`src/components/ui/StatItem.tsx`) est **thémé clair** (`text-ink-900`) et prend `value`/`suffix`/`label` en props, pas un objet. Ne pas l'utiliser sur un fond `night-*`.
 - `ParallaxImage` n'a pas de prop `speed` : l'amplitude se règle par `range` (pourcentage). `priority` force le chargement immédiat.
 - `LazyImage` rend une `<figure>` avec `aspect-ratio` : pas besoin de wrapper.
 - Sous WSL, les assets touchés depuis Windows basculent en `100755`. `git config core.fileMode false` est déjà posé ici ; sans lui, un commit embarque des dizaines de changements de permission.
-- `admin/config.yml` (Decap) vise `version_3` **et** un repo `prince-edja/site` qui n'existe pas (le vrai est `DanielOuattara71/site-prince-edja`) → à réaligner avant toute édition de contenu via Decap.
 - `src/components/brand/Embleme.tsx` est **exporté mais importé nulle part** : le loader utilise `MaskEmblem`, l'onglet le favicon. Brique morte à supprimer ou à brancher dans le header.
 - `dist/` est la sortie de build (gitignorée).

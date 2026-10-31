@@ -104,7 +104,7 @@ export default function EpisodeDetailPage() {
       <Section tone="light">
         <Container className="space-y-8">
           <div className="space-y-2">
-            <Eyebrow num="01">Territoire</Eyebrow>
+            <Eyebrow>Territoire</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               {episode.lieu}
               <span aria-hidden className="text-clay-500">.</span>
@@ -121,7 +121,7 @@ export default function EpisodeDetailPage() {
             <Reveal>
               <div className="flex flex-col items-start justify-between gap-6 rounded-xl border border-sand-200 bg-sand-50 p-8 sm:flex-row sm:items-center">
                 <div className="space-y-2">
-                  <Eyebrow num="02">Carnet</Eyebrow>
+                  <Eyebrow>Carnet</Eyebrow>
                   <h2 className="font-display uppercase text-heading-md">
                     Le guide de l’étape
                   </h2>
@@ -138,7 +138,7 @@ export default function EpisodeDetailPage() {
       <Section tone="light">
         <Container className="space-y-8">
           <div className="space-y-2">
-            <Eyebrow num="03">Ce projet</Eyebrow>
+            <Eyebrow>Ce projet</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Le voir, le programmer, le soutenir
               <span aria-hidden className="text-clay-500">.</span>
@@ -146,7 +146,7 @@ export default function EpisodeDetailPage() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button to="/travailler-ensemble" variant="primary">
+            <Button to="/contact" variant="primary">
               Programmer le film
             </Button>
             <Button
@@ -156,7 +156,7 @@ export default function EpisodeDetailPage() {
             >
               Demander le dossier
             </Button>
-            <Button to="/travailler-ensemble" variant="ghost-dark">
+            <Button to="/contact" variant="ghost-dark">
               Sponsoriser
             </Button>
             <Button to="/contact" variant="ghost-dark">
@@ -173,13 +173,13 @@ export default function EpisodeDetailPage() {
         </Container>
       </Section>
 
+      <BlocNewsletter />
+
       {episode.guide && (
         <p className="sr-only">
           <Link to="/xplore">{t('nav.etiquette')}</Link>
         </p>
       )}
-
-      <BlocNewsletter />
     </>
   )
 }
