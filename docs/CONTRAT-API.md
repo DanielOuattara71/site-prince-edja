@@ -1,6 +1,6 @@
 # CONTRAT-API — Prince EDJA
 
-> **Version 1.1.0 · 30/10/2026 · ARRÊTÉE.**
+> **Version 1.3.0 · 01/11/2026 · ARRÊTÉE.**
 > Contrat de la face d'administration (`/admin/api/v1`) entre l'interface d'admin (`admin/`) et
 > le back end (`prince-edja-api`). La face publique figure en annexe (§ 18), à titre de
 > référence pour le back end et le site.
@@ -499,6 +499,8 @@ page inexistante (actions § 4). À la publication, si la cible est un contenu n
 
 L'indicateur `aFournir` du site n'est pas stocké : c'est `champsAFournir` (A-15).
 
+Tris : `ordre`, `titre`, `modifieLe` (v1.2.0).
+
 ### 9.4 `villes` — Taste & Travel
 | Champ | Type | Règle |
 |---|---|---|
@@ -508,13 +510,14 @@ L'indicateur `aFournir` du site n'est pas stocké : c'est `champsAFournir` (A-15
 | `traductions[l].nom` | `string` | P |
 | `traductions[l].intention` | `string` (≤ 300) | P |
 
-Pas de slug : les villes ne sont pas des pages. Source : `TravelCity`.
+Pas de slug : les villes ne sont pas des pages. Source : `TravelCity`. Tris : `ordre`, `titre`,
+`modifieLe` (v1.2.0).
 
 ### 9.5 `destinations` — étapes de la carte X'PLORE
 | Champ | Type | Règle |
 |---|---|---|
-| `latitude` | `number` (−90 à 90, degrés signés) | P |
-| `longitude` | `number` (−180 à 180, **négative à l'ouest**) | P |
+| `latitude` | `number \| null` (−90 à 90, degrés signés) | P ; vide en brouillon (v1.2.0) |
+| `longitude` | `number \| null` (−180 à 180, **négative à l'ouest**) | P ; vide en brouillon (v1.2.0) |
 | `episodeId` | `string \| null` | O |
 | `guideMediaId` | `string \| null` | O |
 | `imageId` | `string \| null` | O |
@@ -523,7 +526,7 @@ Pas de slug : les villes ne sont pas des pages. Source : `TravelCity`.
 | `traductions[l].nom` | `string` | P |
 | `traductions[l].texte` | `string \| null` | C |
 
-Contrôle `COORDONNEES_HORS_PAYS` : si le tag pays est la Côte d'Ivoire, la latitude doit être comprise
+Contrôle `COORDONNEES_HORS_PAYS` : si le tag pays est la Côte d'Ivoire (tag `pays` de code `cote-d-ivoire`, v1.2.0), la latitude doit être comprise
 entre 4,2 et 10,8 et la longitude entre −8,7 et −2,4. *Motif : l'erreur de signe passée sur Adiaké
 (actions § 7).*
 
@@ -544,7 +547,7 @@ entre 4,2 et 10,8 et la longitude entre −8,7 et −2,4. *Motif : l'erreur de s
 | Champ | Type | Règle |
 |---|---|---|
 | `nature` | `'distinction' \| 'fonction_officielle'` | P |
-| `annee` | `DatePartielle` | P (source et date obligatoires, PA:370) |
+| `annee` | `DatePartielle \| null` | P (source et date obligatoires, PA:370) ; vide en brouillon (v1.3.0) |
 | `organisme` | `string \| null` | C |
 | `lien` | `string \| null` (`https:`) | C |
 | `imageId` | `string \| null` | O |
@@ -556,8 +559,8 @@ entre 4,2 et 10,8 et la longitude entre −8,7 et −2,4. *Motif : l'erreur de s
 | Champ | Type | Règle |
 |---|---|---|
 | `source` | `string` | P |
-| `datePublication` | `DatePartielle` | P |
-| `lien` | `string` (`https:`) | P (« lien source obligatoire », actions § 10) |
+| `datePublication` | `DatePartielle \| null` | P ; vide en brouillon (v1.3.0) |
+| `lien` | `string \| null` (`https:`) | P (« lien source obligatoire », actions § 10) ; vide en brouillon (v1.3.0) |
 | `avatarId` | `string \| null` | O ; logo ou visuel du média |
 | `aLaUne` | `boolean` | Une seule parution peut l'être : en passer une à `true` remet les autres à `false`. Remplace `GALLERY_QUOTE`. |
 | `ordre` | `number` | Ordonnable (bande défilante) |
@@ -582,7 +585,7 @@ entre 4,2 et 10,8 et la longitude entre −8,7 et −2,4. *Motif : l'erreur de s
 Filtre : `emplacement`. *Une image de galerie est un contenu ; le fichier vit dans `medias`.*
 
 ### 9.10 `univers` — six piliers de l'accueil
-Champs : `numero` (`string`, P) ; `cible` (`CibleInterne`, P) ; `ordre` ; `traductions[l].nom` (P) ;
+Champs : `numero` (`string`, P) ; `cible` (`CibleInterne | null`, P ; vide en brouillon, v1.3.0) ; `ordre` ; `traductions[l].nom` (P) ;
 `traductions[l].pitch` (P).
 
 ### 9.11 `jalons` — parcours « À propos »
@@ -631,6 +634,7 @@ type ClePage = 'accueil' | 'a-propos' | 'histoires' | 'xplore' | 'taste-and-trav
 
 Les **clés de bloc** autorisées par page sont déclarées par les données de départ, à partir des textes
 écrits dans les composants du site (inventaire : actions § 2). Une clé inconnue → `422 VALIDATION`.
+Tant que l'inventaire n'est pas fourni, aucune clé n'est déclarée : `blocs` vaut `{}` (v1.3.0).
 
 ### 9.16 `pages-legales`
 Ensemble fermé : `mentions-legales`, `confidentialite`, `cookies`, `cgv`, `retours`.
@@ -1170,3 +1174,5 @@ développement : la valeur par défaut est sûre et modifiable sans rupture.
 |---|---|---|---|
 | 1.0.0 | 30/10/2026 | Première version : arbitrages A-01 à A-17 et X-05 (voir `admin/docs/DECISIONS.md`) | Responsable technique, au titre de l'admin et du back end (mandat du 30/10/2026) |
 | 1.1.0 | 30/10/2026 | `CibleInterne` gagne `{ type: 'page-legale', cle }` : le pied de page du site renvoie vers les cinq pages légales, que les cibles de la 1.0.0 ne pouvaient pas désigner. Relevé par le back end en écrivant les données de départ (étape 2). Mineure : ajout d'une valeur en lecture. | Responsable technique |
+| 1.2.0 | 01/11/2026 | Relevé en écrivant l'admin (D-64, D-65) et le back end (B-46) : `destinations.latitude` et `longitude` deviennent `number \| null` (une destination se crée en brouillon avant ses coordonnées, toujours exigées à la publication) ; le tag pays de la Côte d'Ivoire a le code `cote-d-ivoire` ; `projets` et `villes` acceptent `tri=ordre` (et `titre`). Mineure : une valeur ajoutée en lecture, un tri ajouté. | Responsable technique |
+| 1.3.0 | 01/11/2026 | Relevé en écrivant le lot 3 (B-48, D-67) : `distinctions.annee`, `presse.datePublication`, `presse.lien` et `univers.cible` acceptent `null` en brouillon, toujours exigés à la publication ; les pages n'ont aucune clé de bloc tant que l'inventaire n'est pas fourni. Mineure : des valeurs ajoutées en lecture. | Responsable technique |

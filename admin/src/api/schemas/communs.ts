@@ -153,3 +153,62 @@ export const manquantsSchema = z.object({
     z.object({ champ: z.string(), langue: langueSchema.optional(), message: z.string() }),
   ),
 })
+
+/** Pages fixes (§ 9.15) et pages légales (§ 9.16) : ensembles fermés. */
+export const CLES_PAGE = [
+  'accueil',
+  'a-propos',
+  'histoires',
+  'xplore',
+  'taste-and-travel',
+  'boutique',
+  'journal',
+  'presse',
+  'contact',
+  'archive-afrique',
+  'newsletter',
+] as const
+export type ClePage = (typeof CLES_PAGE)[number]
+export const CLES_PAGE_LEGALE = [
+  'mentions-legales',
+  'confidentialite',
+  'cookies',
+  'cgv',
+  'retours',
+] as const
+export const RESSOURCES_LIABLES = [
+  'articles',
+  'episodes',
+  'projets',
+  'destinations',
+  'bijoux',
+  'archive',
+] as const
+export type RessourceLiable = (typeof RESSOURCES_LIABLES)[number]
+
+/**
+ * Lien interne vers une cible du site (§ 6), sans adresse écrite à la main : un lien ne peut plus
+ * pointer vers une page inexistante. Lecture tolérante, écriture stricte (D-22).
+ */
+export const cibleInterneSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('page'), cle: z.enum(CLES_PAGE) }),
+  z.object({ type: z.literal('page-legale'), cle: z.enum(CLES_PAGE_LEGALE) }),
+  z.object({ type: z.literal('contenu'), ressource: z.enum(RESSOURCES_LIABLES), id: idSchema }),
+  z.object({ type: z.literal('ancre'), cle: z.enum(CLES_PAGE), ancre: z.string().min(1).max(80) }),
+])
+export type CibleInterne = z.infer<typeof cibleInterneSchema>
+
+export const cibleInterneEcriture = z.discriminatedUnion('type', [
+  z.strictObject({ type: z.literal('page'), cle: z.enum(CLES_PAGE) }),
+  z.strictObject({ type: z.literal('page-legale'), cle: z.enum(CLES_PAGE_LEGALE) }),
+  z.strictObject({
+    type: z.literal('contenu'),
+    ressource: z.enum(RESSOURCES_LIABLES),
+    id: idSchema,
+  }),
+  z.strictObject({
+    type: z.literal('ancre'),
+    cle: z.enum(CLES_PAGE),
+    ancre: z.string().trim().min(1).max(80),
+  }),
+])

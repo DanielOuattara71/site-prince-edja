@@ -68,33 +68,36 @@ export function EditeurRiche({
   const [lienOuvert, setLienOuvert] = useState(false)
   const [mediatheque, setMediatheque] = useState(false)
 
+  // La zone éditable porte le libellé, l'aide et l'erreur, comme un champ ordinaire. Son `id`
+  // est le chemin du champ : le résumé d'erreurs y mène. Posés dès la création, puis tenus à jour.
+  const attributs = {
+    id: idChamp,
+    role: 'textbox',
+    'aria-multiline': 'true',
+    'aria-labelledby': `${idChamp}-libelle`,
+    ...(decrit ? { 'aria-describedby': decrit } : {}),
+    ...(erreur ? { 'aria-invalid': 'true' } : {}),
+    class: 'min-h-48 px-4 py-3 focus:outline-none',
+  }
+
   const editeur = useEditor({
     extensions: EXTENSIONS,
     // Le corps du contrat est un sous-ensemble du JSON de Tiptap (seuls les `undefined`
     // explicites diffèrent sous `exactOptionalPropertyTypes`).
     content: (valeur ?? '') as Content,
-    editorProps: { transformPastedHTML: nettoyerCollage },
+    editorProps: { transformPastedHTML: nettoyerCollage, attributes: attributs },
     onUpdate: ({ editor }) => surChangeCourant.current(normaliserCorps(editor.getJSON())),
   })
 
-  // La zone éditable porte le libellé, l'aide et l'erreur, comme un champ ordinaire. Son `id`
-  // est le chemin du champ : le résumé d'erreurs y mène.
+  const cleAttributs = JSON.stringify(attributs)
   useEffect(() => {
     editeur?.setOptions({
       editorProps: {
         transformPastedHTML: nettoyerCollage,
-        attributes: {
-          id: idChamp,
-          role: 'textbox',
-          'aria-multiline': 'true',
-          'aria-labelledby': `${idChamp}-libelle`,
-          ...(decrit ? { 'aria-describedby': decrit } : {}),
-          ...(erreur ? { 'aria-invalid': 'true' } : {}),
-          class: 'min-h-48 px-4 py-3 focus:outline-none',
-        },
+        attributes: JSON.parse(cleAttributs) as Record<string, string>,
       },
     })
-  }, [editeur, idChamp, decrit, erreur])
+  }, [editeur, cleAttributs])
 
   return (
     <div className="space-y-1.5">

@@ -3,6 +3,10 @@ import { magasin } from '@/api/mocks/magasin'
 import { API, erreur } from '@/api/mocks/reponses'
 import { handlersArticles } from '@/api/mocks/handlers/articles'
 import { handlersAuth } from '@/api/mocks/handlers/auth'
+import { handlersBijoux } from '@/api/mocks/handlers/bijoux'
+import { handlersCategories } from '@/api/mocks/handlers/categories'
+import { handlersEditorial } from '@/api/mocks/handlers/editorial'
+import { handlersEditorialLot3 } from '@/api/mocks/handlers/editorial-lot3'
 import { handlersCreateurs } from '@/api/mocks/handlers/createurs'
 import { handlersMedias } from '@/api/mocks/handlers/medias'
 import { handlersSite } from '@/api/mocks/handlers/site'
@@ -34,4 +38,8 @@ export const handlers = [
   ...handlersSite,
   ...handlersVersions,
   ...handlersCreateurs,
+  ...handlersCategories,
+  ...handlersBijoux,
+  ...handlersEditorial,
+  ...handlersEditorialLot3,
 ]

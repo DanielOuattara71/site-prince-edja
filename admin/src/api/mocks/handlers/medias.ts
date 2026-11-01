@@ -78,8 +78,14 @@ export const handlersMedias = [
     const garde = autoriser(request, 'creer', 'medias')
     if (!garde.ok) return garde.reponse
     const formulaire = await request.formData().catch(() => null)
-    const fichier = formulaire?.get('fichier')
-    if (!(fichier instanceof File)) {
+    const brut = formulaire?.get('fichier')
+    // Pas `instanceof File` : en test, le fichier vient d'un autre environnement (jsdom) que
+    // le `File` du serveur simulé. On reconnaît un fichier à sa forme.
+    const fichier =
+      brut && typeof brut === 'object' && 'arrayBuffer' in brut && 'name' in brut
+        ? (brut as File)
+        : null
+    if (!fichier) {
       return erreur(422, 'VALIDATION', 'Aucun fichier reçu.', { champ: 'fichier' })
     }
     // Le vrai serveur lit le type dans le contenu ; le faux se fie à l'en-tête.

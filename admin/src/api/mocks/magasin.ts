@@ -1,4 +1,6 @@
 import type { Article } from '@/api/schemas/articles'
+import type { Bijou, Categorie } from '@/api/schemas/boutique'
+import type { Destination, Episode, Projet, Ville } from '@/api/schemas/editorial'
 import type { Compte, CompteResume, Langue } from '@/api/schemas/communs'
 import type { Media } from '@/api/schemas/medias'
 import type { EntreeJournal, Publication } from '@/api/schemas/site'
@@ -6,6 +8,26 @@ import type { Tag } from '@/api/schemas/tags'
 import type { EntreeVersion } from '@/api/schemas/versions'
 import {
   articlesInitiaux,
+  bijouxInitiaux,
+  archiveInitiale,
+  categoriesInitiales,
+  distinctionsInitiales,
+  jalonsInitiaux,
+  offresInitiales,
+  pagesInitiales,
+  presseInitiale,
+  universInitiaux,
+  type Archive,
+  type Distinction,
+  type Jalon,
+  type Offre,
+  type PageFixe,
+  type Presse,
+  type Univers,
+  destinationsInitiales,
+  episodesInitiaux,
+  projetsInitiaux,
+  villesInitiales,
   comptesInitiaux,
   createursInitiaux,
   mediasInitiaux,
@@ -35,12 +57,29 @@ export interface Magasin {
   medias: Media[]
   tags: Tag[]
   createurs: CreateurEssai[]
+  categories: Categorie[]
+  bijoux: Bijou[]
+  episodes: Episode[]
+  projets: Projet[]
+  villes: Ville[]
+  destinations: Destination[]
+  archive: Archive[]
+  distinctions: Distinction[]
+  presse: Presse[]
+  univers: Univers[]
+  jalons: Jalon[]
+  offres: Offre[]
+  pages: PageFixe[]
+  /** Variantes citées par une demande de pièce (RG-11) : les demandes arrivent au lot 4. */
+  variantesCitees: string[]
   publications: Publication[]
   journal: EntreeJournal[]
   versions: VersionStockee[]
   languesActives: Langue[]
   /** Réglage `parametres.multiVendeurs` (§ 13.3), faux par défaut. */
   multiVendeurs: boolean
+  /** Réglage `parametres.boutiqueEnLigne` (§ 13.3), faux par défaut. */
+  boutiqueEnLigne: boolean
   /** Latence simulée en millisecondes (`null` = aucune, pour les tests). */
   latence: [number, number] | null
   /** Probabilité d'un échec `500` simulé, entre 0 et 1. */
@@ -71,18 +110,35 @@ function etatInitial(): Magasin {
   const articles = articlesInitiaux()
   const medias = mediasInitiaux()
   const tags = tagsInitiaux()
+  const createurs = createursInitiaux()
+  const bijoux = bijouxInitiaux()
   return {
     comptes: comptesInitiaux(),
     session: null,
     articles,
     medias,
     tags,
-    createurs: createursInitiaux(),
+    createurs,
+    categories: categoriesInitiales(),
+    bijoux,
+    episodes: episodesInitiaux(),
+    projets: projetsInitiaux(),
+    villes: villesInitiales(),
+    destinations: destinationsInitiales(),
+    archive: archiveInitiale(),
+    distinctions: distinctionsInitiales(),
+    presse: presseInitiale(),
+    univers: universInitiaux(),
+    jalons: jalonsInitiaux(),
+    offres: offresInitiales(),
+    pages: pagesInitiales(),
+    variantesCitees: [],
     publications: [],
     journal: [],
-    versions: versionsInitiales({ articles, medias, tags }),
+    versions: versionsInitiales({ articles, medias, tags, createurs, bijoux }),
     languesActives: ['fr'],
     multiVendeurs: false,
+    boutiqueEnLigne: false,
     latence: null,
     tauxEchec: 0,
     decalageHorloge: 0,

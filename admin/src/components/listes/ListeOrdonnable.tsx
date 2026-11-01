@@ -21,7 +21,7 @@ export function ListeOrdonnable<T>({
   elements,
   cle,
   nom,
-  rendu,
+  renderLigne,
   surOrdre,
   desactivee = false,
 }: {
@@ -30,7 +30,8 @@ export function ListeOrdonnable<T>({
   cle: (element: T) => string
   /** Nom court de l'élément, lu dans les annonces et les boutons. */
   nom: (element: T) => string
-  rendu?: (element: T) => ReactNode
+  /** Contenu d’une ligne (nom de prop « render… » : rendu à la demande, pas un composant). */
+  renderLigne?: (element: T) => ReactNode
   surOrdre: (elements: T[]) => void
   desactivee?: boolean
 }) {
@@ -102,7 +103,7 @@ export function ListeOrdonnable<T>({
               }}
               surDeplacer={(sens) => deplacer(index, sens)}
             >
-              {rendu ? rendu(element) : nom(element)}
+              {renderLigne ? renderLigne(element) : nom(element)}
             </ElementOrdonnable>
           ))}
         </ol>

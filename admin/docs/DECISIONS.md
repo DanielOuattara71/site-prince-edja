@@ -461,3 +461,238 @@ c'est la charge (douze fichiers jsdom en parallèle), pas un défaut du code.
   `E2E_MOT_DE_PASSE`, jamais du dépôt ; sans eux, les tests sont ignorés.
 - Résultat au 30/10 : 6 tests sur 6. Le dossier `e2e/` est exempté de la règle sur le stockage
   navigateur : il le lit pour prouver qu'il reste vide.
+
+## Étape 4 — gabarits et articles — 01/11/2026
+
+### D-48 · Gabarit de liste : l'état vit dans l'adresse — Arrêtée
+
+`ListePage` (`features/gabarits/`) porte recherche, filtres (statut, traduction, tag, « à
+fournir »), tri et pagination **côté serveur** dans les paramètres de l'adresse : une liste
+filtrée se partage par un lien et survit au retour arrière. Les actions groupées sont filtrées par
+`peut()` et passent par une confirmation qui dit combien d'éléments sont touchés ; elles
+s'exécutent une à une, et chaque refus (version, RG-08, statut) est signalé par son objet.
+
+### D-49 · Gabarit de formulaire : cycle de vie commun — Arrêtée
+
+`useCycleContenu` (`features/gabarits/cycle.ts`) orchestre les transitions pour toute famille :
+enregistrement préalable des modifications (on publie ce qu'on voit), « Publier » depuis un
+brouillon qui enchaîne soumettre puis publier, liste cliquable des manques d'un `422 RG-03`,
+suivi de la reconstruction (`SuiviPublication`, RG-19), refus avec motif (`DialogueRefus`). La
+barre de statut est collée **en haut**, sous l'en-tête (section 9).
+
+### D-50 · Une traduction écrite est complète — Arrêtée
+
+Le formulaire envoie toujours tous les champs d'une langue saisie (contrat § 8, B-22 du back
+end) ; une langue vidée qui existait part en `null`. Le faux serveur suit désormais la même
+règle (il fusionnait champ par champ). Le slug suit le titre tant qu'il n'a pas été modifié à la
+main ; un doublon (RG-04) propose la variante renvoyée par le serveur.
+
+### D-51 · Brouillon automatique — Arrêtée
+
+Toutes les 30 s, un **brouillon** modifié, valide et modifiable par l'utilisateur est enregistré
+sans notification ; l'indicateur de la barre de statut l'affiche. Un contenu en relecture ou
+publié n'est jamais enregistré automatiquement : il ne change que par une action explicite.
+
+### D-52 · Un article créé garde son éditeur — Arrêtée
+
+Après le premier enregistrement, l'adresse passe de `/articles/nouveau` à `/articles/:id` **sans
+remonter l'éditeur**. Le remontage faisait atterrir une action lancée juste après
+l'enregistrement sur un composant démonté (la liste des manques se perdait). La navigation part
+d'un effet, après le rendu où le formulaire est redevenu propre : sinon l'avertissement de sortie
+la bloquait.
+
+### D-53 · Crédit saisissable dans le sélecteur de médias — Arrêtée
+
+Le serveur exige un crédit sur tout média d'un contenu publié (RG-03, RG-08). Le sélecteur le
+propose donc à côté du texte alternatif, **facultatif** : saisi s'il est connu, jamais inventé ;
+vide, l'image reste « à fournir ». Sans cela, un éditeur ne pouvait pas mener un article jusqu'à
+la publication sans passer par la médiathèque.
+
+### D-54 · Critère G2 vérifié contre l'API réelle — Arrêtée
+
+`e2e/g2-article.spec.ts` (Playwright, bureau) : un éditeur crée un brouillon, envoie et décrit une
+image, choisit un tag de format, soumet ; un admin publie ; le journal porte `creation`,
+`transition:en_relecture` et `transition:publie` ; la reconstruction est suivie jusqu'à son
+résultat. Réussi le 01/11/2026 contre `prince-edja-api` (étapes 3 à 5 et 9). Les comptes sont
+fournis par l'environnement (`E2E_EDITEUR_*`, `E2E_ADMIN_*`).
+
+## Étape 5 — médiathèque — 01/11/2026
+
+### D-55 · Médiathèque : grille, envoi multiple, fiche — Arrêtée
+
+- `/medias` : grille, recherche, filtres dans l'adresse (type, « à fournir », non utilisés,
+  créateur en multi-vendeurs). L'envoi multiple enchaîne un appel par fichier (contrat § 11.2)
+  et rend compte fichier par fichier ; un média envoyé sans description reste « à fournir ».
+- `/medias/:id` : texte alternatif et légende en FR et EN, crédit, image décorative,
+  déclinaisons, usages. Supprimer un média utilisé est refusé (RG-08) et la liste des usages
+  explique pourquoi ; sinon il disparaît tout de suite et ses fichiers partent après 24 h (B-31).
+- **Pas de recadrage** : le contrat ne le prévoit pas dans cette version (§ 11.3).
+
+### D-56 · Tests : limites de jsdom et charge de la suite — Arrêtée
+
+- jsdom ne sait pas transmettre un `FormData` (fichier compris) au `fetch` de Node : le test de
+  l'envoi multiple simule l'appel et vérifie l'écran ; l'envoi réel est vérifié en navigateur
+  contre l'API (e2e G2, D-54). Le faux serveur reconnaît un fichier à sa forme, plus par
+  `instanceof File` (deux environnements, deux classes `File`).
+- Le premier chargement de l'éditeur riche dépasse plusieurs secondes sous la charge de la suite :
+  attente de Testing Library à 10 s, et 40 s pour le parcours de rédaction complet.
+- Un test du faux serveur attendait l'état exact « en attente » juste après une publication ; le
+  faux serveur passe « en cours » après une seconde réelle. Il vérifie désormais « pas encore
+  terminée ».
+
+## Étape 6 — boutique (créateurs, bijoux, catégories) — 01/11/2026
+
+### D-57 · Gabarit de formulaire extrait des articles — Arrêtée
+
+Le formulaire d'article portait tout le gabarit (enregistrement manuel et automatique, refus du
+serveur rattachés aux champs, cycle de vie, aperçu, historique, avertissement de sortie). Il est
+extrait en trois pièces, sans changement de comportement (les 9 tests des articles passent tels
+quels) :
+
+- `useEditeurContenu` (`features/gabarits/useEditeurContenu.ts`) : le contrôleur ;
+- `GabaritFormulaire` et `ActionsLaterales` (`features/gabarits/editeur.tsx`) : la mise en page ;
+- `PageFormulaire` : la lecture de `:id` et la conservation de l'éditeur après création (D-52).
+
+Chaque famille ne fournit que ses champs, ses conversions (`valeurs.ts`) et son aperçu. Une
+écriture annexe qui ne change pas la version du contenu (variante d'un bijou) passe par
+`rafraichir`, qui met la fiche à jour **sans** effacer une saisie en cours.
+`ListePage` accepte des filtres propres (`filtres`, `filtreCreateur`) et peut masquer le filtre
+par tag.
+
+### D-58 · Variantes visibles dans tous les modes — Arrêtée
+
+Le prompt (section 9) ne montrait le bloc des variantes qu'en vente en ligne. Le contrat (A-02,
+§ 10.3), qui prime, fait de la variante l'unité demandée **dans tous les modes** : elle porte la
+référence, la matière, la taille et la disponibilité, même « sur demande ». Le bloc est donc
+toujours là ; seul le **stock** n'apparaît qu'avec `boutiqueEnLigne`. Le prix se saisit sur la
+variante, mais le site l'affiche seulement une fois confirmé par un admin (`prixConfirme`) :
+l'aperçu affiche « sur demande » jusque-là, « à partir de » le plus bas s'il y en a plusieurs.
+Les montants se saisissent en entiers (FCFA) ; vide = non communiqué.
+
+### D-59 · Créateurs et catégories : écrans d'admin — Arrêtée
+
+- Les deux entrées du menu exigent `modifier` (section 9 : « Créateurs, admin et super-admin ») ;
+  un éditeur lit les créateurs et les catégories par les sélecteurs, sans accéder aux écrans.
+- Le principal porte « Plateforme » ; son interrupteur `actif` est verrouillé et aucun bouton de
+  suppression n'est proposé (RG-21). Un créateur qui a des produits propose **Désactiver**, avec
+  la conséquence écrite (ses produits sont dépubliés, RG-27) ; sinon **Supprimer**.
+- L'adresse d'un créateur est figée dès sa première publication (`SLUG_FIGE`). Le contrat
+  n'expose pas cette date : l'écran verrouille le champ dès que le créateur n'est plus un
+  brouillon jamais publié, et le serveur reste juge (`422 SLUG_FIGE` rattaché au champ).
+- La commission n'apparaît qu'en multi-vendeurs, jamais préremplie.
+- Les catégories : une liste ordonnable (glisser-déposer et clavier), un dialogue de saisie, le
+  compteur de bijoux publiés et la mention « masquée sur le site » (RG-09).
+
+### D-60 · Accessibilité et formulaires : deux pièges trouvés en e2e — Arrêtée
+
+- **Pas de formulaire imbriqué.** Le dialogue d'une variante, rendu dans le `<form>` du bijou,
+  déclenchait l'envoi natif du formulaire parent : la page se rechargeait et la variante n'était
+  jamais écrite. jsdom ne le montrait pas ; le navigateur, si. Le bloc des variantes est rendu
+  hors du `<form>` du bijou, et sa soumission arrête la propagation.
+- **Nom accessible d'un bouton** : un complément `sr-only` précédé d'une espace (« Modifier » +
+  « 01-1 ») donnait « Modifier01-1 ». Les boutons répétés par ligne portent un `aria-label`
+  complet.
+- `ListeOrdonnable` : la prop de rendu s'appelle `renderLigne` (une prop `render…` est une
+  fonction de rendu, pas un composant défini pendant le rendu, pour `no-unstable-nested-components`).
+
+### D-61 · Boutique simulée — Arrêtée
+
+Le faux serveur reprend les règles du back end (B-39 à B-45) : variante vide par défaut, référence
+« {numéro}-{rang} », RG-09, RG-10, RG-11, RG-20, RG-21, RG-27, `SLUG_FIGE`,
+`MULTI_VENDEURS_INACTIF`, vente en ligne. Les demandes de pièce n'existent qu'au lot 4 :
+`magasin.variantesCitees` simule une variante citée (RG-11) en attendant. Le cycle de vie simulé
+est commun (`mocks/cycle.ts`) ; celui des articles, déjà couvert, reste en place. L'e2e
+`boutique.spec.ts` rejoue le parcours contre l'API réelle.
+
+## Étape 6, fin — épisodes, projets, villes, destinations — 01/11/2026
+
+### D-62 · Formulaires déclaratifs — Arrêtée
+
+Onze familles restent après la boutique (lots 2 et 3), presque toutes faites de textes traduits,
+d'une image, de tags et de quelques champs propres. Plutôt qu'un formulaire écrit à la main par
+famille, chacune **décrit** ses champs (`SpecRessource`, `features/gabarits/declaratif.ts`) :
+
+- types de champ : texte, nombre, choix, image, PDF, tags, adresse `https`, date partielle,
+  relation (épisode, destination), lien interne (`CibleInterne`) ;
+- les valeurs du formulaire, la validation avant envoi (messages en français, chemins = ids), les
+  conversions vers le contrat, la mise en page, l'aperçu et la liste en découlent
+  (`EcransDeclaratifs.tsx`, `champs.tsx`) ;
+- conversions communes : un texte de crédibilité vide part à `null`, un nombre vide à `null`
+  (jamais `0`), une langue vidée qui existait à `null`.
+
+Les familles au comportement riche (articles, bijoux, créateurs, médias) gardent leur écran sur le
+même gabarit (D-57). Les épisodes, projets, villes et destinations ne sont que leur description
+(`features/editorial/specs.ts`).
+
+### D-63 · Ressources simulées par une fabrique — Arrêtée
+
+`mocks/ressource-simulee.ts` produit, pour une description, les routes du gabarit (§ 8) : liste
+filtrée et triée, lecture, création, modification, suppression, transitions (`mocks/cycle.ts`),
+ordre. RG-03, RG-04, versions et journal y sont écrits une fois ; chaque famille n'ajoute que ses
+exigences, ses champs de crédibilité et ses règles propres (numéro d'épisode unique, PDF exigé
+pour un guide, cible publiée, coordonnées).
+
+### D-64 · Destinations : coordonnées vides en brouillon, contrôle du pays — Arrêtée (contrat 1.2.0)
+
+- Le contrat type `latitude` et `longitude` en `number` et les marque **P**. L'admin les lit
+  `number | null` : une destination se crée en brouillon avant d'avoir ses coordonnées, qui se
+  saisissent et ne se devinent jamais. À aligner dans le contrat et le back end (lot 2 éditorial).
+- `COORDONNEES_HORS_PAYS` se déclenche quand un tag `pays` de code `cote-d-ivoire` est posé. Ce
+  code est une hypothèse de l'admin : le back end doit retenir le même dans ses données de départ.
+- L'aide du champ rappelle que la longitude est **négative à l'ouest** (erreur passée sur Adiaké).
+
+### D-65 · Ordre d'affichage et charge des tests — Arrêtée
+
+- Les familles ordonnables (projets, villes) ont un panneau « Changer l'ordre d'affichage » sur
+  leur liste : liste complète lue avec `tri=ordre`, réglée au glisser-déposer ou au clavier, envoyée
+  entière (`PATCH /{r}/ordre`). `tri=ordre` n'est pas écrit au contrat pour ces ressources : à
+  ajouter avec le lot 2 éditorial du back end.
+- La suite dépasse 170 tests jsdom : quatre fichiers au plus en parallèle (`maxWorkers`), attente de
+  Testing Library à 20 s, 45 s par test. Au-delà, la machine saturait et des attentes expiraient au
+  hasard ; trois exécutions de suite passent ensuite à l'identique.
+
+### D-66 · Contrat 1.2.0 et e2e du lot 2 éditorial — Arrêtée
+
+Les trois écarts relevés en D-64 et D-65 sont entrés au contrat (1.2.0, § 9.3 à 9.5, § 21) et
+sont servis par le back end (B-46, B-47). `e2e/recits.spec.ts` crée un épisode et une destination
+par les formulaires déclaratifs contre l'API réelle.
+
+## Étape 7 — distinctions, presse, archive, univers, jalons, offres, pages — 01/11/2026
+
+### D-67 · Trois types de champ de plus, et les ensembles fermés — Arrêtée
+
+Le gabarit déclaratif (D-62) gagne :
+
+- `booleen` : interrupteur (parution à la une) ;
+- `sources` : liste structurée (libellé, adresse facultative, type) pour l'archive. Le bloc est
+  **mis en évidence** (bordure terracotta) et dit, tant qu'il est vide, que l'entrée ne pourra pas
+  être publiée ;
+- `blocs` : textes d'une page fixe par clé de bloc. Ils vivent dans chaque traduction
+  (`traductions[l].blocs`, § 9.15) ; le formulaire les tient à part puis les y replace à l'envoi.
+  Les clés sont **celles que le serveur renvoie** : l'écran n'en ajoute ni n'en retire aucune
+  (une clé inconnue → `422`).
+
+Une description peut être un **ensemble fermé** (`fermee`, pages) : ni bouton de création, ni
+suppression groupée, ni route `nouveau`. `colonneIdentifiant` remplace `colonneNumero` : numéro,
+clé de page, période, ou média de la parution.
+
+### D-68 · Règles visibles de l'étape 7 — Arrêtée
+
+- **Archive** : une entrée sans source n'est pas publiable (règle du CDC) — refus `RG-03` sur
+  `sources`. Une source orale peut n'avoir aucune adresse ; une autre sans adresse est « à fournir ».
+- **Presse** : source, date et lien exigés à la publication ; une seule parution à la une (en
+  passer une à la une retire les autres, côté serveur).
+- **Distinctions** : la date est exigée à la publication (« source et date obligatoires ») ;
+  organisme et lien sont de crédibilité.
+- **Univers** : un lien interne est exigé, vers un contenu publié.
+- **Offres** : aucun tarif n'est stocké ; l'aide du texte le rappelle.
+- **Pages** : onze pages, une par clé, créées par les données de départ.
+- Le manifeste et la signature du héros (« confirmation explicite ») relèvent de l'étape 8 avec
+  l'identité du site : ici, ce ne sont que des blocs de texte de la page d'accueil.
+
+### D-69 · Lot 3 branché sur l'API réelle (contrat 1.3.0) — Arrêtée
+
+Le back end sert les sept familles de l'étape 7 (B-48). `e2e/recits.spec.ts` crée une entrée
+d'archive avec sa source et lit les onze pages contre l'API. Les pages réelles n'ont aucune clé de
+bloc tant que l'inventaire manque (Q-45 du back end) : l'écran l'affiche (« aucun texte
+modulable ») ; le faux serveur en simule trois pour tester l'édition.

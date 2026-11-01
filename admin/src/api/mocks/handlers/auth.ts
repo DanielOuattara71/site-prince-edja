@@ -24,7 +24,7 @@ function moi() {
     csrf: session.csrf,
     session: { expireLe: new Date(session.expireLe).toISOString() },
     reglages: {
-      boutiqueEnLigne: false,
+      boutiqueEnLigne: magasin.boutiqueEnLigne,
       multiVendeurs: magasin.multiVendeurs,
       languesActives: magasin.languesActives,
     },

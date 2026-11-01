@@ -35,9 +35,14 @@ export function creerRessource<Lecture, Resume, Entree, Modification>(
   return {
     nom,
 
-    lister(parametres: ParametresListe = {}, signal?: AbortSignal): Promise<Page<Resume>> {
+    /** `filtres` : les filtres propres à la ressource (`categorie`, `actif`…), tels quels. */
+    lister(
+      parametres: ParametresListe = {},
+      signal?: AbortSignal,
+      filtres: Record<string, string | undefined> = {},
+    ): Promise<Page<Resume>> {
       return requete(base, {
-        query: parametresListeSchema.parse(parametres),
+        query: { ...parametresListeSchema.parse(parametres), ...filtres },
         schema: pageSchema(schemas.resume),
         ...(signal ? { signal } : {}),
       })

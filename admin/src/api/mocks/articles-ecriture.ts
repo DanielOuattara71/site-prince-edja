@@ -9,7 +9,10 @@ import { enrichirArticle, slugifier, slugPris, suggestionSlug } from '@/api/mock
 type TraductionStockee = NonNullable<Article['traductions']['fr']>
 type TraductionsEcrites = NonNullable<EntreeArticle['traductions']>
 
-/** Applique les traductions écrites : `null` supprime la langue, un objet la complète. */
+/**
+ * Applique les traductions écrites : `null` supprime la langue ; un objet **remplace** la
+ * traduction entière (contrat § 8, B-22 du back end). Seul le slug omis est conservé.
+ */
 export function fusionnerTraductions(
   existantes: Article['traductions'],
   ecrites: TraductionsEcrites | undefined,
@@ -26,13 +29,10 @@ export function fusionnerTraductions(
     const fusionnee: TraductionStockee = {
       slug: ecrite.slug ?? avant?.slug ?? slugifier(ecrite.titre),
       titre: ecrite.titre,
-      extrait: ecrite.extrait ?? avant?.extrait ?? '',
-      corps: ecrite.corps === undefined ? (avant?.corps ?? null) : ecrite.corps,
-      seoTitre: ecrite.seoTitre === undefined ? (avant?.seoTitre ?? null) : ecrite.seoTitre,
-      seoDescription:
-        ecrite.seoDescription === undefined
-          ? (avant?.seoDescription ?? null)
-          : ecrite.seoDescription,
+      extrait: ecrite.extrait ?? '',
+      corps: ecrite.corps ?? null,
+      seoTitre: ecrite.seoTitre ?? null,
+      seoDescription: ecrite.seoDescription ?? null,
     }
     resultat[langue] = fusionnee
   }

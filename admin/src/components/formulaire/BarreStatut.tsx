@@ -10,7 +10,7 @@ import { formaterDateHeure } from '@/lib/dates'
 import { ACTIONS_DEPUIS, etatAffiche, type ActionStatut } from '@/lib/statuts'
 
 /**
- * Barre collée en bas d'un formulaire de contenu (section 10) : statut courant, date de
+ * Barre collée en haut d'un formulaire de contenu, sous l'en-tête (sections 9 et 10) : statut courant, date de
  * publication programmée (fuseau d'Abidjan, RG-05), état de l'enregistrement, et les seuls
  * boutons que `peut()` autorise (RG-01, RG-02). L'éditeur voit « Soumettre à relecture »,
  * jamais « Publier ». Les appels sont faits par l'écran, qui reçoit l'action choisie.
@@ -76,7 +76,7 @@ export function BarreStatut({
   const IconeEnregistrement = ICONE_ENREGISTREMENT[enregistrement]
 
   return (
-    <div className="sticky bottom-0 z-20 -mx-4 mt-8 border-t border-sand-200 bg-sand-50/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+    <div className="sticky top-16 z-20 -mx-4 border-b border-sand-200 bg-sand-50/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <PastilleStatut etat={etat} />

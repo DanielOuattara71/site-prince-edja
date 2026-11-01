@@ -49,6 +49,7 @@ export function SelecteurMedia({
   const [selection, setSelection] = useState<Media | null>(null)
   const [alts, setAlts] = useState<Partial<Record<Langue, string>>>({})
   const [decoratif, setDecoratif] = useState(false)
+  const [credit, setCredit] = useState('')
   const [ouverteVue, setOuverteVue] = useState(ouverte)
   // Chaque ouverture repart d'un choix vide (ajustement pendant le rendu, sans effet).
   if (ouverteVue !== ouverte) {
@@ -75,6 +76,7 @@ export function SelecteurMedia({
     setSelection(media)
     setDecoratif(media.decoratif)
     setAlts({})
+    setCredit('')
   }
 
   const envoi = useMutation({
@@ -90,14 +92,19 @@ export function SelecteurMedia({
       ? actives.filter((langue) => !selection.traductions[langue]?.texteAlt.trim())
       : []
   const saisiesCompletes = manquantes.every((langue) => Boolean(alts[langue]?.trim()))
+  // Le crédit est exigé à la publication (RG-03, RG-08), pas au choix : saisi s'il est connu,
+  // jamais inventé ; vide, il restera « à fournir ».
+  const creditManquant = selection !== null && !selection.credit
   const aCompleter =
-    selection !== null && (manquantes.length > 0 || decoratif !== selection.decoratif)
+    selection !== null &&
+    (manquantes.length > 0 || decoratif !== selection.decoratif || Boolean(credit.trim()))
 
   const completion = useMutation({
     mutationFn: (media: Media) =>
       medias.modifier(media.id, {
         version: media.version,
         decoratif,
+        ...(credit.trim() ? { credit: credit.trim() } : {}),
         ...(manquantes.length > 0
           ? {
               traductions: Object.fromEntries(
@@ -218,7 +225,7 @@ export function SelecteurMedia({
         </ul>
       )}
 
-      {selection && (manquantes.length > 0 || decoratif) ? (
+      {selection && (manquantes.length > 0 || decoratif || creditManquant) ? (
         <fieldset className="space-y-3 rounded-md border border-dashed border-clay-600 p-4">
           <legend className="px-1 text-body font-semibold text-ink-900">
             {t('media.aCompleter')}
@@ -241,6 +248,15 @@ export function SelecteurMedia({
               onChange={(evenement) => setAlts({ ...alts, [langue]: evenement.target.value })}
             />
           ))}
+          {creditManquant ? (
+            <Champ
+              libelle={t('media.credit')}
+              aide={t('media.creditAide')}
+              maxLength={200}
+              value={credit}
+              onChange={(evenement) => setCredit(evenement.target.value)}
+            />
+          ) : null}
           {completion.isError ? (
             <Alerte ton="erreur">{messageErreur(completion.error)}</Alerte>
           ) : null}

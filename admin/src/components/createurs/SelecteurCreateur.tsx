@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { cles } from '@/api/cles'
-import { createurs } from '@/api/endpoints/versions'
+import { createurs } from '@/api/endpoints/boutique'
 import { useSession } from '@/auth/contexte-session'
 import { Champ } from '@/components/ui/Champ'
 import { EtatErreur } from '@/components/ui/Etats'

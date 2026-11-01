@@ -83,7 +83,7 @@ export function EnteteArticle({
 }: {
   titre: string
   extrait?: string | null | undefined
-  meta?: string
+  meta?: string | undefined
 }) {
   return (
     <header className="space-y-4">

@@ -33,7 +33,11 @@ export interface Manquant {
 }
 
 /** Exigences de publication d'un média utilisé (RG-03, RG-08, § 7.5). */
-function manquesMedia(media: Media | undefined, champ: string, langues: Langue[]): Manquant[] {
+export function manquesMedia(
+  media: Media | undefined,
+  champ: string,
+  langues: Langue[],
+): Manquant[] {
   if (!media) return [{ champ, message: 'Le média cité n’existe plus.' }]
   const manques: Manquant[] = []
   if (!media.decoratif) {
@@ -85,7 +89,7 @@ export function aUnTagDeFormat(tagIds: string[]): boolean {
   return tagIds.some((id) => magasin.tags.find((tag) => tag.id === id)?.type === 'format')
 }
 
-function trouverMedia(id: string): Media | undefined {
+export function trouverMedia(id: string): Media | undefined {
   return magasin.medias.find((media) => media.id === id)
 }
 
@@ -126,19 +130,47 @@ export function usagesMedia(id: string): Usage[] {
       }
     }
   }
+  for (const bijou of magasin.bijoux) {
+    const titre = bijou.traductions.fr?.nom ?? bijou.traductions.en?.nom ?? ''
+    const base = { ressource: 'bijoux', id: bijou.id, titre, statut: bijou.statut }
+    if (bijou.imageId === id) usages.push({ ...base, champ: 'imageId' })
+    if (bijou.galerieMediaIds.includes(id)) usages.push({ ...base, champ: 'galerieMediaIds' })
+  }
+  for (const createur of magasin.createurs) {
+    if (createur.photoId === id) {
+      usages.push({
+        ressource: 'createurs',
+        id: createur.id,
+        titre: createur.nom,
+        champ: 'photoId',
+        statut: createur.statut,
+      })
+    }
+  }
   return usages
 }
 
 export function usagesTag(id: string): Usage[] {
-  return magasin.articles
-    .filter((article) => article.tagIds.includes(id))
-    .map((article) => ({
-      ressource: 'articles',
-      id: article.id,
-      titre: article.traductions.fr?.titre ?? article.traductions.en?.titre ?? '',
-      champ: 'tagIds',
-      statut: article.statut,
-    }))
+  return [
+    ...magasin.articles
+      .filter((article) => article.tagIds.includes(id))
+      .map((article) => ({
+        ressource: 'articles',
+        id: article.id,
+        titre: article.traductions.fr?.titre ?? article.traductions.en?.titre ?? '',
+        champ: 'tagIds',
+        statut: article.statut,
+      })),
+    ...magasin.bijoux
+      .filter((bijou) => bijou.tagIds.includes(id))
+      .map((bijou) => ({
+        ressource: 'bijoux',
+        id: bijou.id,
+        titre: bijou.traductions.fr?.nom ?? bijou.traductions.en?.nom ?? '',
+        champ: 'tagIds',
+        statut: bijou.statut,
+      })),
+  ]
 }
 
 /** Slug depuis un titre : minuscules, sans accent, mots séparés par des tirets. */

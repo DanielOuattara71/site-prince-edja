@@ -44,7 +44,8 @@ describe('accès', () => {
     rendre('/articles')
     await seConnecterParLeFormulaire('editeur@exemple.test', MOT_DE_PASSE_ESSAI)
     expect(await titre('Articles')).toBeTruthy()
-    expect(screen.getByText(/étape 4/)).toBeTruthy()
+    // Écran livré à l'étape 4 : la vraie liste, plus « en préparation ».
+    expect(await screen.findByRole('link', { name: 'Nouvel article' })).toBeTruthy()
   })
 })
 

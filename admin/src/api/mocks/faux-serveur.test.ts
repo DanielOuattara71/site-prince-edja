@@ -55,7 +55,9 @@ describe('faux serveur — cycle de vie (§ 7)', () => {
     expect(contenu.statut).toBe('publie')
     expect(contenu.publieLe).not.toBeNull()
     expect(publicationId).not.toBeNull()
-    expect((await site.publication(publicationId ?? '')).etat).toBe('en_attente')
+    // Pas encore terminée. L'état exact dépend du temps réel écoulé (en attente pendant 1 s, puis
+    // en cours) : sous la charge de la suite complète, la seconde peut déjà être passée.
+    expect(['en_attente', 'en_cours']).toContain((await site.publication(publicationId ?? '')).etat)
     avancer(5000)
     expect((await site.publication(publicationId ?? '')).etat).toBe('reussie')
     const lignes = await journal.lister({ entiteId: article.id })

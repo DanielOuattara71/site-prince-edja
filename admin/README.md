@@ -5,13 +5,11 @@ propre adresse, qui parle à l'API `/admin/api/v1`. La forme des échanges est f
 [`docs/CONTRAT-API.md`](../docs/CONTRAT-API.md) (à la racine du dépôt), qui fait foi. Tant que
 le back end n'existe pas, l'API est simulée par MSW.
 
-> État : **étape 3** — composants transverses : primitives de formulaire, onglets, champ
-> traduit, barre de statut, éditeur riche (Tiptap, liste blanche du contrat), sélecteur de
-> médias, liste ordonnable, sélecteur de tags, tableau de données, boîtes de dialogue,
-> notifications, avertissement de sortie, historique des versions, usages, « à fournir »,
-> aperçu du site, sélecteur de créateur, écran verrouillé sur `401` et avertissement
-> d'inactivité. Les écrans de contenu arrivent à partir de l'étape 4 ; d'ici là, ils affichent
-> leur étape de livraison.
+> État : **étape 7** — distinctions, presse, archive (sources exigées), univers, jalons, offres, pages fixes ; **étape 6** — boutique (créateurs, bijoux et variantes, catégories), épisodes, projets, villes, destinations (formulaires déclaratifs) ; médiathèque ; articles de bout en bout sur les gabarits de liste et de formulaire
+> (filtres dans l'adresse, actions groupées, brouillon automatique, aperçu avec articles liés,
+> historique, circuit soumettre → publier → suivi de reconstruction). Critère G2 du lot 1 vérifié
+> contre l'API réelle (`npm run test:e2e`). Composants transverses : étape 3 ; les autres écrans
+> affichent leur étape de livraison.
 >
 > En développement, **`/composants`** montre chaque composant sur le faux serveur. Cette page
 > n'existe pas dans le build.

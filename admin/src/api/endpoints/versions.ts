@@ -1,12 +1,5 @@
 import { z } from 'zod'
 import { requete } from '@/api/client'
-import { pageSchema } from '@/api/schemas/communs'
-import {
-  createurPrincipalSchema,
-  resumeCreateurSchema,
-  type CreateurPrincipal,
-  type ResumeCreateur,
-} from '@/api/schemas/createurs'
 import {
   demandeRestaurationSchema,
   entreeVersionSchema,
@@ -16,9 +9,8 @@ import {
   type Instantane,
   type RessourceVersionnee,
 } from '@/api/schemas/versions'
-import type { Page } from '@/api/schemas/communs'
 
-/** Versions (§ 14.2) et lecture des créateurs (§ 10.2), pour les composants transverses. */
+/** Versions et restauration (§ 14.2), pour les composants transverses. */
 
 export const versions = {
   lister(ressource: RessourceVersionnee, id: string): Promise<EntreeVersion[]> {
@@ -34,18 +26,5 @@ export const versions = {
       corps: demandeRestaurationSchema.parse(demande),
       schema: z.unknown(),
     })
-  },
-}
-
-export const createurs = {
-  /** Créateurs publiés et actifs : ceux auxquels un produit peut être rattaché (RG-20, RG-27). */
-  listerSelectionnables(q?: string): Promise<Page<ResumeCreateur>> {
-    return requete('/createurs', {
-      query: { statut: 'publie', actif: true, pageSize: 100, ...(q ? { q } : {}) },
-      schema: pageSchema(resumeCreateurSchema),
-    })
-  },
-  principal(): Promise<CreateurPrincipal> {
-    return requete('/createurs/principal', { schema: createurPrincipalSchema })
   },
 }
