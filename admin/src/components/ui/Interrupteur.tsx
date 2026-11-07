@@ -17,8 +17,11 @@ export function Interrupteur({
   aide,
   desactive = false,
   className,
+  libelleCourt,
 }: {
   libelle: string
+  /** Libellé affiché quand le nom complet est trop long (le nom complet reste lu). */
+  libelleCourt?: string
   actif: boolean
   surChange: (actif: boolean) => void
   aide?: ReactNode
@@ -30,7 +33,14 @@ export function Interrupteur({
     <div className={cn('space-y-1', className)}>
       <div className="flex min-h-11 items-center justify-between gap-4">
         <span id={`${id}-libelle`} className="text-body font-semibold text-ink-900">
-          {libelle}
+          {libelleCourt ? (
+            <>
+              <span aria-hidden>{libelleCourt}</span>
+              <span className="sr-only">{libelle}</span>
+            </>
+          ) : (
+            libelle
+          )}
         </span>
         <button
           type="button"
@@ -51,7 +61,7 @@ export function Interrupteur({
           >
             <span
               className={cn(
-                'absolute top-0.5 size-4.5 rounded-full bg-sand-50 shadow transition-transform duration-(--d-fast) ease-(--ease-expo)',
+                'absolute top-0.5 left-0 size-4.5 rounded-full bg-sand-50 shadow transition-transform duration-(--d-fast) ease-(--ease-expo)',
                 actif ? 'translate-x-5.5' : 'translate-x-0.5',
               )}
             />

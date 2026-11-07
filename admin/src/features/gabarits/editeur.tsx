@@ -7,7 +7,9 @@ import { estErreurApi } from '@/api/erreurs'
 import type { RessourceVersionnee } from '@/api/schemas/versions'
 import { AvertissementSortie } from '@/components/formulaire/AvertissementSortie'
 import { BarreStatut } from '@/components/formulaire/BarreStatut'
+import { languesCitees } from '@/components/formulaire/langue-formulaire'
 import { ResumeErreurs } from '@/components/formulaire/ResumeErreurs'
+import { FournisseurLangue } from '@/components/formulaire/SelecteurLangue'
 import { FilAriane } from '@/components/layout/FilAriane'
 import { TitrePage } from '@/components/layout/TitrePage'
 import { Alerte } from '@/components/ui/Alerte'
@@ -18,6 +20,8 @@ import { IndicateurAFournir } from '@/components/ui/IndicateurAFournir'
 import { Onglets } from '@/components/ui/Onglets'
 import { Squelette } from '@/components/ui/Squelette'
 import { HistoriqueVersions } from '@/components/versions/HistoriqueVersions'
+import { DialogueConflit } from '@/features/gabarits/DialogueConflit'
+import { textesDe } from '@/features/gabarits/textes-saisis'
 import { DialogueRefus } from '@/features/gabarits/DialogueRefus'
 import { SuiviPublication } from '@/features/gabarits/SuiviPublication'
 import type { ContenuEditable, Editeur } from '@/features/gabarits/useEditeurContenu'
@@ -102,7 +106,12 @@ export function ActionsLaterales<C extends ContenuEditable, V extends FieldValue
         />
       ) : null}
       {contenu ? (
-        <IndicateurAFournir champs={contenu.champsAFournir} libelles={libelles} detail />
+        <IndicateurAFournir
+          champs={contenu.champsAFournir}
+          libelles={libelles}
+          detail
+          versChamp={(chemin) => chemin}
+        />
       ) : null}
       {modifiable ? (
         <Bouton type="submit" variante="secondaire" disabled={enregistrant} className="w-full">
@@ -132,6 +141,7 @@ export function GabaritFormulaire<C extends ContenuEditable, V extends FieldValu
   versChamp = (champ) => champ,
   avant,
   libelleOnglets = t('contenu.onglets'),
+  parent,
 }: {
   editeur: Editeur<C, V>
   titreListe: string
@@ -148,6 +158,8 @@ export function GabaritFormulaire<C extends ContenuEditable, V extends FieldValu
   /** Bloc affiché entre la barre de statut et les onglets. */
   avant?: ReactNode
   libelleOnglets?: string
+  /** Écran parent dans le fil d'Ariane (le hub Projets). */
+  parent?: { libelle: string; chemin: string }
 }) {
   const { contenu, cycle, formulaire: form } = editeur
   const resume = [
@@ -159,13 +171,20 @@ export function GabaritFormulaire<C extends ContenuEditable, V extends FieldValu
   return (
     <section className="space-y-6">
       <div>
-        <FilAriane elements={[{ libelle: titreListe, chemin: cheminListe }, { libelle: titre }]} />
+        <FilAriane
+          elements={[
+            ...(parent ? [parent] : []),
+            { libelle: titreListe, chemin: cheminListe },
+            { libelle: titre },
+          ]}
+        />
         <TitrePage titre={titre}>{titre}</TitrePage>
       </div>
       <BarreStatut
         ressource={editeur.ressource}
         contenu={contenu}
         enregistrement={editeur.etatEnregistrement}
+        enregistreA={editeur.enregistreA}
         surEnregistrer={() => void editeur.soumettre()}
         surAction={editeur.action}
         actionEnCours={editeur.enregistrant ? 'enregistrer' : cycle.enCours}
@@ -179,33 +198,44 @@ export function GabaritFormulaire<C extends ContenuEditable, V extends FieldValu
       ) : null}
       <ResumeErreurs erreurs={resume} tentative={editeur.tentative} />
       {avant}
-      <Onglets
-        libelle={libelleOnglets}
-        onglets={[
-          { id: 'contenu', libelle: t('article.contenu'), contenu: formulaire },
-          ...(apercu ? [{ id: 'apercu', libelle: t('article.apercu'), contenu: apercu }] : []),
-          ...(contenu && versionnee
-            ? [
-                {
-                  id: 'historique',
-                  libelle: t('versions.titre'),
-                  contenu: (
-                    <HistoriqueVersions
-                      ressource={versionnee}
-                      id={contenu.id}
-                      actuel={contenu}
-                      versionCourante={contenu.version}
-                      titre={titre}
-                      libelles={libelles}
-                      surRestauration={(restaure) => editeur.appliquer(restaure as C)}
-                    />
-                  ),
-                },
-              ]
-            : []),
-        ]}
-      />
+      <FournisseurLangue
+        aCompleter={languesCitees(contenu?.champsAFournir ?? [])}
+        enErreur={languesCitees(resume.map((erreur) => erreur.champ))}
+      >
+        <Onglets
+          libelle={libelleOnglets}
+          onglets={[
+            { id: 'contenu', libelle: t('article.contenu'), contenu: formulaire },
+            ...(apercu ? [{ id: 'apercu', libelle: t('article.apercu'), contenu: apercu }] : []),
+            ...(contenu && versionnee
+              ? [
+                  {
+                    id: 'historique',
+                    libelle: t('versions.titre'),
+                    contenu: (
+                      <HistoriqueVersions
+                        ressource={versionnee}
+                        id={contenu.id}
+                        actuel={contenu}
+                        versionCourante={contenu.version}
+                        titre={titre}
+                        libelles={libelles}
+                        surRestauration={(restaure) => editeur.appliquer(restaure as C)}
+                      />
+                    ),
+                  },
+                ]
+              : []),
+          ]}
+        />
+      </FournisseurLangue>
       <AvertissementSortie actif={form.formState.isDirty && !editeur.enregistrant} />
+      <DialogueConflit
+        ouverte={editeur.conflit}
+        surRecharger={() => void editeur.recharger()}
+        surFermer={editeur.fermerConflit}
+        texte={() => textesDe(form.getValues())}
+      />
       <DialogueRefus
         ouverte={editeur.refus}
         titreContenu={titre}

@@ -1,7 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router'
-import { cles } from '@/api/cles'
-import { bijoux, categories } from '@/api/endpoints/boutique'
+import { bijoux } from '@/api/endpoints/boutique'
 import type { ResumeBijou } from '@/api/schemas/boutique'
 import { peut } from '@/auth/permissions'
 import type { Colonne } from '@/components/listes/TableauDonnees'
@@ -9,6 +7,7 @@ import { CLASSES_LIEN } from '@/components/ui/classes'
 import { IndicateurAFournir } from '@/components/ui/IndicateurAFournir'
 import { PastilleStatut } from '@/components/ui/PastilleStatut'
 import { ListePage } from '@/features/gabarits/ListePage'
+import { useCategories } from '@/features/categories/useCategories'
 import { t } from '@/i18n/fr'
 import { formaterDate } from '@/lib/dates'
 import { etatAffiche } from '@/lib/statuts'
@@ -68,11 +67,7 @@ function colonnesBijoux(nomsCategories: Map<string, string>): Colonne<ResumeBijo
 }
 
 export default function ListeBijoux() {
-  const listeCategories = useQuery({
-    queryKey: cles.categories(),
-    queryFn: () => categories.lister({ pageSize: 100 }),
-    staleTime: 60_000,
-  })
+  const listeCategories = useCategories('produit')
   const nomsCategories = new Map(
     (listeCategories.data?.items ?? []).map((c) => [
       c.id,

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router'
 import { useSession } from '@/auth/contexte-session'
 import { AvertissementInactivite, VerrouSession } from '@/auth/VerrouSession'
+import { BarreInferieure } from '@/components/layout/BarreInferieure'
 import { BarreLaterale } from '@/components/layout/BarreLaterale'
 import { LienEvitement } from '@/components/layout/LienEvitement'
 import { t, type CleTraduction } from '@/i18n/fr'
@@ -70,7 +71,7 @@ export function Coque() {
         </div>
         <div className="flex items-center gap-2">
           <Link
-            to="/changer-mot-de-passe"
+            to="/profil"
             className="hidden min-h-11 flex-col justify-center rounded-md px-3 text-right hover:bg-sand-100 sm:flex"
           >
             <span className="text-body font-semibold text-ink-900">{compte.nom}</span>
@@ -123,10 +124,11 @@ export function Coque() {
       <main
         id="contenu"
         tabIndex={-1}
-        className="px-4 py-6 focus:outline-none sm:px-6 lg:ml-64 lg:px-10"
+        className="px-4 pt-6 pb-24 focus:outline-none sm:px-6 lg:ml-64 lg:px-10 lg:pb-6"
       >
         <Outlet />
       </main>
+      <BarreInferieure compte={compte} plusOuvert={tiroir} surPlus={() => setTiroir(true)} />
       <AvertissementInactivite />
       <VerrouSession />
     </div>

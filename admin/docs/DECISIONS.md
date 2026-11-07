@@ -696,3 +696,118 @@ Le back end sert les sept familles de l'étape 7 (B-48). `e2e/recits.spec.ts` cr
 d'archive avec sa source et lit les onze pages contre l'API. Les pages réelles n'ont aucune clé de
 bloc tant que l'inventaire manque (Q-45 du back end) : l'écran l'affiche (« aucun texte
 modulable ») ; le faux serveur en simule trois pour tester l'édition.
+
+## Étape 9 — 03/11/2026
+
+### D-70 · Comptes, journal, publication, profil et tableau de bord — Arrêtée
+
+- **Comptes (E-11 du contrat, RG-16)** : l’admin gère les comptes **éditeur**, le super-admin gère les admins et super-admins ; le rôle `vendeur` reste indisponible tant que `multiVendeurs` est faux. L’écran ne propose pas ce que `peut()` refuse et le faux serveur répète les mêmes garde-fous (dernier super-admin, double saisie de l’e-mail pour changer un rôle).
+- **Pas de mot de passe à la création** : `POST /comptes` crée le compte et déclenche un lien de définition (72 h) ; la réinitialisation en déclenche un autre (1 h).
+- **Comptes non supprimés** : la suppression n’existe pas ; un compte se désactive.
+- **Journal** : lecture pour les admins, export CSV réservé au super-admin ; la connexion des tests écrit une entrée, les tests la remettent à zéro avant de vérifier l’état vide.
+- **Profil** : l’interface est en français ; l’anglais est affiché comme indisponible jusqu’à l’activation des libellés. Le lien depuis l’en-tête pointe vers `/profil`.
+- **Tableau de bord** : affiche les dix dernières modifications renvoyées par `GET /tableau-de-bord`, en liens vers les fiches qui existent ; les familles sans écran ne deviennent pas des liens morts. L’espace « Administration » n’apparaît que si `peut()` autorise la ressource.
+- **Faux serveur** : les mêmes exigences sont appliquées par MSW ; elles sont aussi vérifiées par `faux-serveur.test.ts`. Rien de tout cela ne se rend dans `dist` (`verifier-dist`).
+
+## Étape 10 — 05/11/2026
+
+### D-71 · Neuf écrans du lot 4 (§ 9.9, § 9.13 à 9.16, § 13.2 à 13.6) — Arrêtée
+
+L’étape 10 exigeait encore neuf écrans sans livraison : galerie, études de cas, partenaires, pages légales (§ 9) et chiffres d’audience, paramètres, navigation, textes d’interface et motifs de contact (§ 13). Ils sont livrés côté admin ; le back end ne sert encore que l’étape 10 (B-49 à B-52).
+
+- **Deux familles déclaratives de plus, pas de nouveau gabarit** : `SPEC_GALERIE`, `SPEC_ETUDES_CAS`, `SPEC_PARTENAIRES`, `SPEC_PAGES_LEGALES` sur le cadre de D-62, avec trois nouveautés du `SpecRessource` :
+  - un champ `corps` : texte long par langue écrit dans la traduction (comme les `blocs` de D-67), porté par les pages légales (§ 9.16) dont le corps est un HTML Tiptap validé par liste blanche (D-26) ;
+  - un champ `galerie` : galerie d’images propre à l’écran, réutilisant `PanneauGalerie` (§ 9.13), en reprise des études de cas ;
+  - un champ `relation` sur `offres` (§ 9.12) pour l’offre d’une étude de cas, et `titreFacultatif` / `groupeOrdre` pour la galerie (l’ordre se déclare par `emplacement`, un panneau d’ordre par groupe).
+- **Ensembles fermés** : les pages légales (§ 9.16) sont `fermee` comme les pages fixes (§ 9.15) — ni bouton de création, ni suppression, ni route « nouveau ».
+- **Chiffres d’audience (§ 13.2)** et **motifs de contact (§ 13.6)** : listes ordonnables sans cycle de vie, dialogue de saisie, dialogue de confirmation de suppression ; chiffres laissés `null` tant que la maison ne les fournit pas (vide ≠ zéro). Les deux écrans sont réservés aux admins, lecture incluse (RESSOURCES_ADMIN).
+- **Paramètres (§ 13.3)** : langues actives, destinataires (contact, collaboration, demandes), durées, vente en ligne — **toujours refusée**, et interrupteurs `multiVendeurs` / `boutiqueEnLigne` / `regroupementPublicationSecondes` réservés au super-admin, confirmés par l’e-mail retapé (RG-16). Un champ super-admin glissé dans une écriture admin se voit refuser tout avant validation (403 DROIT_INSUFFISANT, côté faux serveur).
+- **Navigation (§ 13.4)** : le document (menu, sous-entrées, CTA, pied de page, règle d’erreur du corps) est remplacé en entier à chaque enregistrement ; un seul niveau d’enfants. Le faux serveur écrit une version entière, jamais un patch partiel.
+- **Textes d’interface (§ 13.5)** : le dictionnaire appartient au site ; seules les clés connues sont modifiables, et chaque écriture passe la version de lecture.
+- **Faux serveur** : toute écriture journalise ; les réglages ouvrent en plus une publication `reglage`. Les jeux d’exemple (`IDS_LOT4.fXX`) couvrent les nouvelles familles, et `scripts/verifier-dist.mjs` les refuse dans le build.
+- **Tests** : quatre fichiers (`lot4.test.tsx`, `reglages.test.tsx`, `chiffres.test.tsx`, `motifs.test.tsx`). 211 tests au total (les écrans singletons sont aussi rendus en test avec axe) ; lint, typecheck, `verifier-dist` verts.
+
+## Mission de simplification (PROMPT-CORRECTION) — 06/11/2026
+
+### D-72 · C2 — Menu à neuf entrées, onglets, retraits — Arrêtée
+
+- `components/layout/navigation.ts` déclare **neuf entrées** (quatre blocs : Contenus, Boutique,
+  Public, Réglages), chacune avec ses onglets `{ libelle, chemin, ressource, action }`. Les routes sont
+  **générées depuis les onglets** : une adresse absente du menu n'a plus de route (« Page introuvable »).
+- Visibilité par `peut()` seulement. `visibilite` d'entrée : Projets (`projets`), Boîte de réception
+  (`messages`, ce qui la retire de l'espace vendeur, ECRANS § 0.5), Réglages (`parametres`, admin
+  d'après ADMIN-SIMPLIFIE § 2.8). Créateurs : action `creer` (masqué pour l'éditeur et le vendeur).
+- `GroupeEcrans` : barre d'onglets (liens, `aria-current`) au-dessus des écrans d'une entrée qui a au
+  moins deux onglets visibles. Journal et le hub Projets n'en ont pas.
+- Retraits (code conservé, tests en `skip`) : `docs/ELEMENTS-RETIRES.md`. `/journal` → `/activite`.
+
+### D-73 · C3 — Un seul sélecteur de langue, adresse dans « Avancé », vocabulaire — Arrêtée
+
+- `FournisseurLangue` (dans `GabaritFormulaire`) : un jeu « Français / Anglais » en haut ; pastille
+  « À compléter » ou « Erreur » par langue. `ChampTraduit` et `ParLangue` suivent la langue choisie ;
+  sans fournisseur, ils gardent leurs onglets (fiche média, démo).
+- Le résumé d'erreurs et la liste « Il manque » affichent la langue du champ puis ouvrent la section
+  repliée avant de donner le focus (`aller-au-champ.ts`).
+- U5 : dictionnaire nettoyé, test `i18n/vocabulaire.test.ts` qui échoue si « slug », « tag »,
+  « à fournir », « Traduction » ou « usage » reviennent.
+
+### D-74 · C4 — Listes — Arrêtée
+
+Recherche à la frappe (300 ms), trois filtres en vue (statut, catégorie ou type, langue), le reste
+sous « Plus de filtres » ; « Effacer les filtres » ; taille 20 / 50 / 100 (`?taille=`), la page 1
+n'est pas écrite dans l'adresse ; tout changement de filtre revient à la page 1. Étiquettes par
+formulaire : `lib/etiquettes.ts` (un bijou ou un livre ne propose pas le format).
+
+### D-75 · C5 — Sécurité du travail — Arrêtée
+
+« Enregistré à HH:MM » (heure d'Abidjan) ; fenêtre de conflit de version (« Recharger », « Copier
+mon texte ») à la place d'une notification ; liste « Il manque » cliquable ; un message par code
+d'erreur (`erreur.code.*`), jamais de code affiché (le suffixe « (RG-xx) » est retiré).
+
+### D-76 · E1 — Hub Projets, catégories à trois familles, Livres — Arrêtée (contrat 1.5.0 proposé)
+
+- Hub à `/projets` (libellés de la photo, « Template » inclus), liste à `/projets/liste?format=`,
+  création préremplie (`?format=`, `?projetId=`). Le template se **déduit du format**
+  (`lib/templates.ts`) : aucun champ « template ».
+- Formulaires déclaratifs étendus : `categorie`, `createur`, `variantes`, relation `projets`, aide et
+  alerte selon la valeur d'un choix, `complement` (épisodes d'un projet), colonnes, filtres par
+  catégorie et par relation, `principalApres`.
+- Article : la catégorie vient de la famille `article` ; on écrit `categorieId` **et** le nom
+  (`categorie`), que le back end actuel attend encore. Filtre de liste par nom.
+- Livres sur le gabarit déclaratif ; variantes en tableau dans le livre (proposition § 22.3).
+
+### D-77 · C6 — Médiathèque — Arrêtée (contrat 1.5.0 proposé)
+
+`/galerie` devient « Sur le site » : photos fixes (`/emplacements-photos`, ressource
+`emplacements-photos`, modification admin par défaut — E4), galeries de l'accueil et de la boutique
+ordonnables. Médiathèque : 40 par page, vignettes plus grandes, texte alternatif saisi dans la grille.
+Le faux serveur refuse de supprimer un média assigné à une photo fixe.
+
+### D-78 · C7 — Tableau de bord, mobile, accueil — Arrêtée
+
+Quatre blocs d'ECRANS § 1 (cartes « À faire » vers la liste filtrée, dernière publication,
+programmé, activité récente). Le bloc « Administration » existant est **conservé** (question ouverte).
+Barre inférieure mobile (Journal, Boutique, Boîte de réception, Plus). Message d'accueil en trois
+étapes, une fois par compte et par poste (préférence d'affichage, D-09).
+
+### D-79 · Interrupteur — correctif — Arrêtée
+
+Le curseur de l'interrupteur n'avait pas d'ancre `left` et sortait de sa piste de 22 px quand il était
+activé : `left-0` ajouté. Prop `libelleCourt` pour les lignes de liste.
+
+### D-80 · Templates de projet — Arrêtée (proposition validée par le client le 06/11/2026)
+
+- Trois templates, décrits **une seule fois** dans `lib/templates.ts` (blocs, blocs facultatifs,
+  projet de référence) : **Film** (X'PLORE avec épisodes, film unitaire sinon — la bascule suit les
+  épisodes), **Programme** (Taste & Travel), **Bibliothèque** (Archive d'Afrique). Un template unique
+  pour tous les épisodes.
+- L'admin **choisit** le template (cartes) ; le format le **propose** (« Utiliser »). Un projet sans
+  template prend celui de son format : rien ne change pour les projets existants.
+- Les champs propres à un template ne s'affichent que pour lui (`visibleSi`) ; masqués, ils gardent
+  leur valeur. Changer de template affiche ce qui apparaît et ce qui ne s'affichera plus : aucune
+  donnée n'est effacée. Blocs facultatifs : interrupteur « Afficher sur le site » (`blocsMasques`).
+- Pas d'aperçu des templates (décision du client).
+- Catégories de projets de départ : Film, Tourisme, Patrimoine. Les catégories affichées sur le site
+  et ses filtres viennent de celles créées dans l'admin (projets, articles, produits).
+- Hub : « Moteur de rendu public » montre les trois templates (compteur, lien vers la liste filtrée
+  `?template=`) et le template d'épisode ; « Nouveau projet » garde le template choisi.

@@ -1,14 +1,15 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CircleAlert, FileText, Search, Upload } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { medias, type ParametresMedias } from '@/api/endpoints/contenus'
-import { TYPES_MEDIA_ACCEPTES } from '@/api/schemas/medias'
+import { TYPES_MEDIA_ACCEPTES, type Media } from '@/api/schemas/medias'
 import { useSession } from '@/auth/contexte-session'
 import { peut } from '@/auth/permissions'
 import { FiltreCreateur } from '@/components/createurs/SelecteurCreateur'
 import { FilAriane } from '@/components/layout/FilAriane'
 import { TitrePage } from '@/components/layout/TitrePage'
+import { useNotifications } from '@/components/retours/contexte-notifications'
 import { Bouton } from '@/components/ui/Bouton'
 import { Case } from '@/components/ui/Case'
 import { Champ } from '@/components/ui/Champ'
@@ -26,7 +27,8 @@ import { messageErreur } from '@/lib/message-erreur'
  * multiple enchaîne les appels et rend compte fichier par fichier. Un média envoyé sans texte
  * alternatif ni crédit est accepté mais reste « à fournir » (E-05).
  */
-const PAGE = 24
+// Grille de 40 (ECRANS § 5.1).
+const PAGE = 40
 
 interface Envoi {
   nom: string
@@ -197,7 +199,7 @@ export default function Mediatheque() {
           </p>
           <ul
             aria-label={t('menu.medias')}
-            className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+            className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
           >
             {liste.data.items.map((media) => {
               const alt = media.traductions.fr?.texteAlt
@@ -234,11 +236,14 @@ export default function Mediatheque() {
                       )}
                     </span>
                   </Link>
+                  {image && !alt && !media.decoratif && peut(moi?.compte, 'modifier', 'medias') ? (
+                    <AltEnLigne media={media} />
+                  ) : null}
                   <div className="flex flex-wrap items-center gap-1 text-caption text-ink-700">
                     <IndicateurAFournir champs={media.champsAFournir} />
                     <span>
                       {media.usages > 0
-                        ? `${media.usages} ${t('mediatheque.usages')}`
+                        ? `${t('mediatheque.utiliseA')} ${media.usages} ${t('mediatheque.usages')}`
                         : t('mediatheque.nonUtilise')}
                     </span>
                   </div>
@@ -273,5 +278,50 @@ export default function Mediatheque() {
         </>
       )}
     </section>
+  )
+}
+
+/**
+ * Texte alternatif saisi dans la grille (U9) : sans ouvrir la fiche, pour une image qui n'en a pas.
+ * La légende existante est gardée telle quelle.
+ */
+function AltEnLigne({ media }: { media: Media }) {
+  const client = useQueryClient()
+  const notifier = useNotifications()
+  const [texte, setTexte] = useState('')
+  const enregistrer = useMutation({
+    mutationFn: () =>
+      medias.modifier(media.id, {
+        traductions: {
+          fr: { texteAlt: texte.trim(), legende: media.traductions.fr?.legende ?? null },
+        },
+        version: media.version,
+      }),
+    onSuccess: () => {
+      notifier.succes(t('formulaire.enregistre'))
+      void client.invalidateQueries({ queryKey: ['medias'] })
+    },
+    onError: (erreur) => notifier.erreur(messageErreur(erreur)),
+  })
+  return (
+    <form
+      noValidate
+      className="flex items-end gap-2"
+      onSubmit={(evenement) => {
+        evenement.preventDefault()
+        if (texte.trim()) enregistrer.mutate()
+      }}
+    >
+      <Champ
+        libelle={t('mediatheque.altEnLigne')}
+        value={texte}
+        maxLength={300}
+        onChange={(evenement) => setTexte(evenement.target.value)}
+        className="flex-1"
+      />
+      <Bouton type="submit" variante="secondaire" disabled={!texte.trim() || enregistrer.isPending}>
+        {t('formulaire.enregistrer')}
+      </Bouton>
+    </form>
   )
 }

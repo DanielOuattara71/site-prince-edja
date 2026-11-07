@@ -17,22 +17,26 @@ const echec = (promesse: Promise<unknown>) =>
   )
 
 describe('catégories (§ 10.1)', () => {
-  it('huit catégories ordonnées ; RG-09 : une catégorie qui contient un bijou reste', async () => {
+  it('huit catégories de produits ordonnées ; RG-31 : une catégorie utilisée reste', async () => {
     await connecter('admin')
-    const liste = await categories.lister({ pageSize: 100 })
+    const produits = () => categories.lister({ pageSize: 100 }, undefined, { famille: 'produit' })
+    const liste = await produits()
     expect(liste.total).toBe(8)
     expect(liste.items[0]?.nombreBijouxPublies).toBe(1)
     const premiere = await categories.lire(IDS_EXEMPLE.categorieBijoux)
-    expect((await echec(categories.supprimer(premiere.id, premiere.version)))?.code).toBe('RG-09')
+    expect((await echec(categories.supprimer(premiere.id, premiere.version)))?.code).toBe(
+      'CATEGORIE_UTILISEE',
+    )
     const ids = liste.items.map((c) => c.id)
     expect((await echec(categories.ordonner(ids.slice(1))))?.code).toBe('VALIDATION')
     await categories.ordonner([...ids].reverse())
-    expect((await categories.lister({ pageSize: 100 })).items[0]?.id).toBe(ids.at(-1))
+    expect((await produits()).items[0]?.id).toBe(ids.at(-1))
   })
 
   it('un éditeur lit les catégories mais ne les gère pas', async () => {
     await connecter('editeur')
-    expect((await categories.lister()).total).toBe(8)
+    expect((await categories.lister({}, undefined, { famille: 'produit' })).total).toBe(8)
+    expect((await categories.lister({}, undefined, { famille: 'article' })).total).toBe(8)
     const refus = await echec(categories.creer({ traductions: { fr: { nom: 'Exemple' } } }))
     expect(refus?.status).toBe(403)
   })

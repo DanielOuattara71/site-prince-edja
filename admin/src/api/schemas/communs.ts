@@ -83,6 +83,8 @@ export const resumeContenuSchema = z.object({
   languesPresentes: z.array(langueSchema),
   imageId: idSchema.nullable(),
   createurId: idSchema.optional(),
+  /** Nom de la catégorie d'un article (colonne et filtre de la liste, ECRANS § 2.1). */
+  categorie: z.string().nullable().optional(),
 })
 export type ResumeContenu = z.infer<typeof resumeContenuSchema>
 

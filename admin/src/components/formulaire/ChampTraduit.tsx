@@ -1,5 +1,6 @@
 import { LANGUES, type Langue } from '@/api/schemas/communs'
 import { useSession } from '@/auth/contexte-session'
+import { useLangueFormulaire } from '@/components/formulaire/langue-formulaire'
 import { Champ } from '@/components/ui/Champ'
 import { Onglets } from '@/components/ui/Onglets'
 import { ZoneTexte } from '@/components/ui/ZoneTexte'
@@ -53,6 +54,7 @@ export function ChampTraduit({
   maxLength?: number
 }) {
   const { moi } = useSession()
+  const contexte = useLangueFormulaire()
   const actives = moi?.reglages.languesActives ?? ['fr']
 
   const onglets = LANGUES.map((langue) => {
@@ -94,6 +96,12 @@ export function ChampTraduit({
       ),
     }
   })
+
+  // Formulaire à sélecteur unique (U2) : seul le champ de la langue choisie est affiché.
+  if (contexte) {
+    const choisi = onglets.find((o) => o.id === contexte.langue)
+    return <div className="space-y-1">{choisi?.contenu}</div>
+  }
 
   return (
     <fieldset className="space-y-1">

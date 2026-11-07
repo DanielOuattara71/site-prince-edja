@@ -21,4 +21,10 @@ export const cles = {
   createur: (id: string) => ['createurs', 'detail', id] as const,
   bijou: (id: string) => ['bijoux', 'detail', id] as const,
   categories: () => ['categories', 'liste'] as const,
+  /** Réglages (§ 13). */
+  chiffresAudience: () => ['audience', 'liste'] as const,
+  motifsContact: () => ['motifs-contact', 'liste'] as const,
+  parametres: () => ['parametres'] as const,
+  navigation: () => ['navigation'] as const,
+  textesInterface: () => ['textes-interface'] as const,
 }

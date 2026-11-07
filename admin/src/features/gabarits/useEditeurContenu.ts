@@ -12,6 +12,7 @@ import type { EtatEnregistrement } from '@/components/formulaire/BarreStatut'
 import { useNotifications } from '@/components/retours/contexte-notifications'
 import { useCycleContenu } from '@/features/gabarits/cycle'
 import { t } from '@/i18n/fr'
+import { maintenantIso } from '@/lib/dates'
 import { rattacherErreursServeur } from '@/lib/formulaires'
 import { messageErreur } from '@/lib/message-erreur'
 import type { ActionStatut } from '@/lib/statuts'
@@ -64,6 +65,10 @@ export function useEditeurContenu<C extends ContenuEditable, V extends FieldValu
   const notifier = useNotifications()
   const [contenu, setContenu] = useState<C | null>(initial)
   const [enregistrement, setEnregistrement] = useState<EtatEnregistrement>('enregistre')
+  /** Heure du dernier enregistrement réussi (U6). */
+  const [enregistreA, setEnregistreA] = useState<string | null>(null)
+  /** Conflit de version (409) : la fenêtre « Quelqu'un a modifié ce contenu » (ECRANS § 0.3). */
+  const [conflit, setConflit] = useState(false)
   const [enregistrant, setEnregistrant] = useState(false)
   const [suggestion, setSuggestion] = useState<{ champ: string; valeur: string } | null>(null)
   const [orphelines, setOrphelines] = useState<{ champ: string; message: string }[]>([])
@@ -116,6 +121,16 @@ export function useEditeurContenu<C extends ContenuEditable, V extends FieldValu
     client.setQueryData(cle(suivant.id), suivant)
   }
 
+  /** Conflit de version : reprend la version du serveur ; la saisie locale est remplacée. */
+  const recharger = async () => {
+    if (!contenu) return
+    await client.refetchQueries({ queryKey: cle(contenu.id), exact: true })
+    const frais = client.getQueryData<C>(cle(contenu.id))
+    if (frais) appliquer(frais)
+    setConflit(false)
+    setEnregistrement('enregistre')
+  }
+
   async function enregistrer(valeurs: V, silencieux = false): Promise<C | null> {
     setEnregistrant(true)
     setSuggestion(null)
@@ -127,6 +142,7 @@ export function useEditeurContenu<C extends ContenuEditable, V extends FieldValu
       appliquer(resultat)
       void client.invalidateQueries({ queryKey: [ressource, 'liste'] })
       setEnregistrement('enregistre')
+      setEnregistreA(maintenantIso())
       if (!silencieux) notifier.succes(t('formulaire.enregistre'))
       return resultat
     } catch (erreur) {
@@ -139,7 +155,7 @@ export function useEditeurContenu<C extends ContenuEditable, V extends FieldValu
         }
       }
       if (aLeCode(erreur, 'VERSION_PERIMEE')) {
-        notifier.erreur(t('formulaire.versionPerimee'))
+        setConflit(true)
       } else if (restantes.length > 0 || !estErreurApi(erreur) || erreur.status !== 422) {
         if (!silencieux) {
           notifier.erreur(
@@ -229,6 +245,10 @@ export function useEditeurContenu<C extends ContenuEditable, V extends FieldValu
     modifiable,
     admin: peut(compte, 'publier', ressource),
     etatEnregistrement,
+    enregistreA,
+    conflit,
+    fermerConflit: () => setConflit(false),
+    recharger,
     enregistrant,
     soumettre,
     suggestion,

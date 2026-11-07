@@ -1,100 +1,204 @@
-import type { Action, Ressource } from '@/auth/permissions'
+import {
+  Award,
+  Clapperboard,
+  Gem,
+  Images,
+  Inbox,
+  LayoutDashboard,
+  Newspaper,
+  Settings,
+  Wrench,
+  type LucideIcon,
+} from 'lucide-react'
+import { peut, type Action, type CompteDroits, type Ressource } from '@/auth/permissions'
 import { t, type CleTraduction } from '@/i18n/fr'
 
 /**
- * Menu de l'administration : une seule source pour la barre latérale, le tiroir mobile et
- * les routes. Chaque entrée déclare la ressource et l'action qui la rendent visibles :
- * le filtre passe par `peut()`, jamais par un test de rôle écrit ici (section 8).
+ * Menu de l'administration : neuf entrées, déclarées **ici seulement** (PROMPT-CORRECTION
+ * § 5.1, ECRANS-ADMIN § 0.1). La barre latérale, le tiroir mobile, la barre d'onglets
+ * (`GroupeEcrans`) et les routes lisent tous ce fichier.
  *
- * `etape` = étape du prompt admin qui livre l'écran ; avant elle, la route affiche
- * « écran en préparation ». Adresses : section 9 du prompt (décision D-06).
+ * Chaque onglet déclare la ressource et l'action qui le rendent visible : le filtre passe par
+ * `peut()`, jamais par un test de rôle écrit ici. Un onglet refusé n'est pas affiché ; une
+ * entrée sans onglet visible non plus. `visibilite` ajoute une condition propre à l'entrée
+ * (ex. la Boîte de réception reste hors de l'espace vendeur, ECRANS § 0.5).
+ *
+ * Les adresses des écrans ne changent pas : une entrée pointe vers son premier onglet visible.
  */
-export interface EntreeMenu {
+export interface Onglet {
   libelle: string
   chemin: string
   ressource: Ressource
   action: Action
-  etape: number
 }
 
-export interface GroupeMenu {
-  titre: string
-  entrees: EntreeMenu[]
+/** Quatre blocs du menu (U1) ; le tableau de bord est au-dessus, hors bloc. */
+export type BlocMenu = 'contenus' | 'boutique' | 'public' | 'reglages'
+
+export interface EntreeMenu {
+  cle: string
+  libelle: string
+  icone: LucideIcon
+  bloc: BlocMenu | null
+  onglets: Onglet[]
+  /** Faux pour une entrée sans barre d'onglets (Journal, hub Projets, tableau de bord). */
+  barreOnglets: boolean
+  visibilite?: { ressource: Ressource; action: Action }
 }
 
-function entree(
+const onglet = (
   cle: CleTraduction,
   chemin: string,
   ressource: Ressource,
-  etape: number,
   action: Action = 'lire',
-): EntreeMenu {
-  return { libelle: t(cle), chemin, ressource, action, etape }
-}
+): Onglet => ({ libelle: t(cle), chemin, ressource, action })
 
-export const MENU: GroupeMenu[] = [
+export const MENU: EntreeMenu[] = [
   {
-    titre: t('menu.groupe.contenus'),
-    entrees: [
-      entree('menu.articles', '/articles', 'articles', 4),
-      entree('menu.episodes', '/episodes', 'episodes', 6),
-      entree('menu.projets', '/projets', 'projets', 6),
-      entree('menu.villes', '/villes', 'villes', 6),
-      entree('menu.destinations', '/destinations', 'destinations', 6),
-      entree('menu.archive', '/archive', 'archive', 7),
-      entree('menu.distinctions', '/distinctions', 'distinctions', 7),
-      entree('menu.presse', '/presse', 'presse', 7),
-      entree('menu.galerie', '/galerie', 'galerie', 7),
-      entree('menu.univers', '/univers', 'univers', 7),
-      entree('menu.jalons', '/jalons', 'jalons', 7),
-      entree('menu.offres', '/offres', 'offres', 7),
-      entree('menu.etudesCas', '/etudes-cas', 'etudes-cas', 7),
-      entree('menu.partenaires', '/partenaires', 'partenaires', 7),
-      entree('menu.pages', '/pages', 'pages', 7),
+    cle: 'tableau-de-bord',
+    libelle: t('menu.tableauDeBord'),
+    icone: LayoutDashboard,
+    bloc: null,
+    barreOnglets: false,
+    onglets: [onglet('menu.tableauDeBord', '/', 'tableau-de-bord')],
+  },
+  {
+    cle: 'journal',
+    libelle: t('menu.journal'),
+    icone: Newspaper,
+    bloc: 'contenus',
+    barreOnglets: false,
+    onglets: [onglet('menu.articles', '/articles', 'articles')],
+  },
+  {
+    // Hub (ECRANS § 3.1) : pas de barre d'onglets, les listes s'ouvrent depuis les cartes.
+    cle: 'projets',
+    libelle: t('menu.projets'),
+    icone: Clapperboard,
+    bloc: 'contenus',
+    barreOnglets: false,
+    visibilite: { ressource: 'projets', action: 'lire' },
+    onglets: [
+      onglet('menu.projets', '/projets', 'projets'),
+      onglet('menu.episodes', '/episodes', 'episodes'),
+      onglet('menu.destinations', '/destinations', 'destinations'),
+      onglet('menu.guides', '/guides', 'medias'),
+      onglet('menu.villes', '/villes', 'villes'),
+      onglet('menu.archive', '/archive', 'archive'),
     ],
   },
   {
-    titre: t('menu.groupe.boutique'),
-    entrees: [
-      entree('menu.bijoux', '/bijoux', 'bijoux', 6),
-      entree('menu.categories', '/categories', 'categories', 6, 'modifier'),
-      entree('menu.createurs', '/createurs', 'createurs', 6, 'modifier'),
+    cle: 'boutique',
+    libelle: t('menu.boutique'),
+    icone: Gem,
+    bloc: 'boutique',
+    barreOnglets: true,
+    onglets: [
+      onglet('menu.bijoux', '/bijoux', 'bijoux'),
+      onglet('menu.livres', '/livres', 'livres'),
+      onglet('menu.categories', '/categories', 'categories', 'modifier'),
+      // `creer` : réservé aux admins ; masqué pour l'éditeur et le vendeur (ECRANS § 4).
+      onglet('menu.createurs', '/createurs', 'createurs', 'creer'),
     ],
   },
   {
-    titre: t('menu.groupe.bibliotheque'),
-    entrees: [
-      entree('menu.medias', '/medias', 'medias', 5),
-      entree('menu.tags', '/tags', 'tags', 7, 'creer'),
+    cle: 'mediatheque',
+    libelle: t('menu.mediatheque'),
+    icone: Images,
+    bloc: 'public',
+    barreOnglets: true,
+    onglets: [
+      onglet('menu.tousFichiers', '/medias', 'medias'),
+      onglet('menu.surLeSite', '/galerie', 'galerie'),
     ],
   },
   {
-    titre: t('menu.groupe.public'),
-    entrees: [
-      entree('menu.messages', '/messages', 'messages', 8),
-      entree('menu.demandes', '/demandes', 'demandes', 8),
-      entree('menu.abonnes', '/abonnes', 'abonnes', 8),
+    cle: 'preuves',
+    libelle: t('menu.preuves'),
+    icone: Award,
+    bloc: 'public',
+    barreOnglets: true,
+    onglets: [
+      onglet('menu.audience', '/audience', 'audience'),
+      onglet('menu.distinctions', '/distinctions', 'distinctions'),
+      onglet('menu.presse', '/presse', 'presse'),
+      onglet('menu.partenaires', '/partenaires', 'partenaires'),
     ],
   },
   {
-    titre: t('menu.groupe.reglages'),
-    entrees: [
-      entree('menu.parametres', '/parametres', 'parametres', 8),
-      entree('menu.audience', '/audience', 'audience', 8),
-      entree('menu.navigation', '/navigation', 'navigation', 8),
-      entree('menu.textesInterface', '/textes-interface', 'textes-interface', 8),
-      entree('menu.motifsContact', '/motifs-contact', 'motifs-contact', 8),
-      entree('menu.pagesLegales', '/pages-legales', 'pages-legales', 8, 'modifier'),
+    cle: 'reception',
+    libelle: t('menu.reception'),
+    icone: Inbox,
+    bloc: 'public',
+    barreOnglets: true,
+    visibilite: { ressource: 'messages', action: 'lire' },
+    onglets: [
+      onglet('menu.messages', '/messages', 'messages'),
+      onglet('menu.demandes', '/demandes', 'demandes'),
+      onglet('menu.abonnes', '/abonnes', 'abonnes'),
     ],
   },
   {
-    titre: t('menu.groupe.technique'),
-    entrees: [
-      entree('menu.publication', '/publication', 'site', 9, 'reconstruire'),
-      entree('menu.journal', '/journal', 'journal', 9),
-      entree('menu.comptes', '/comptes', 'comptes', 9),
+    cle: 'reglages',
+    libelle: t('menu.reglages'),
+    icone: Settings,
+    bloc: 'reglages',
+    barreOnglets: true,
+    visibilite: { ressource: 'parametres', action: 'lire' },
+    onglets: [
+      onglet('menu.parametres', '/parametres', 'parametres'),
+      onglet('menu.pagesLegales', '/pages-legales', 'pages-legales', 'modifier'),
+      onglet('menu.tags', '/tags', 'tags', 'creer'),
+    ],
+  },
+  {
+    cle: 'technique',
+    libelle: t('menu.technique'),
+    icone: Wrench,
+    bloc: 'reglages',
+    barreOnglets: true,
+    onglets: [
+      onglet('menu.publication', '/publication', 'site', 'reconstruire'),
+      onglet('menu.activite', '/activite', 'journal'),
+      onglet('menu.comptes', '/comptes', 'comptes'),
     ],
   },
 ]
 
-export const ENTREES_MENU: EntreeMenu[] = MENU.flatMap((groupe) => groupe.entrees)
+export const BLOCS: BlocMenu[] = ['contenus', 'boutique', 'public', 'reglages']
+
+/** Tous les onglets, à plat (routes, liens vers une ressource). */
+export const ONGLETS: Onglet[] = MENU.flatMap((entree) => entree.onglets)
+
+/** Onglet d'une ressource (lien « utilisé dans » de la médiathèque). */
+export function cheminDeRessource(ressource: string): string | undefined {
+  return ONGLETS.find((o) => o.ressource === ressource)?.chemin
+}
+
+export interface EntreeVisible extends EntreeMenu {
+  /** Onglets que ce compte peut ouvrir ; le premier donne l'adresse de l'entrée. */
+  visibles: Onglet[]
+  chemin: string
+}
+
+/** Entrées du menu que ce compte voit, avec leurs onglets visibles. */
+export function entreesVisibles(compte: CompteDroits | null | undefined): EntreeVisible[] {
+  return MENU.flatMap((entree) => {
+    if (entree.visibilite && !peut(compte, entree.visibilite.action, entree.visibilite.ressource))
+      return []
+    const visibles = entree.onglets.filter((o) => peut(compte, o.action, o.ressource))
+    const premier = visibles[0]
+    return premier ? [{ ...entree, visibles, chemin: premier.chemin }] : []
+  })
+}
+
+/** Un chemin appartient à un onglet s'il est cet onglet ou l'une de ses pages (`/bijoux/12`). */
+export function dansOnglet(chemin: string, pathname: string): boolean {
+  if (chemin === '/') return pathname === '/'
+  return pathname === chemin || pathname.startsWith(`${chemin}/`)
+}
+
+/** Entrée du menu qui contient cette adresse (pour surligner l'entrée et ses onglets). */
+export function entreeDe(pathname: string): EntreeMenu | undefined {
+  return MENU.find((entree) => entree.onglets.some((o) => dansOnglet(o.chemin, pathname)))
+}

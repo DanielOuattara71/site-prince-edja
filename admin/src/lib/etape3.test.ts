@@ -113,13 +113,13 @@ describe('formulaires', () => {
     ])
   })
 
-  it('un message d’erreur ne montre jamais de trace et rappelle le code RG', () => {
+  it('un message d’erreur ne montre jamais de trace ni de code (U13)', () => {
     expect(messageErreur(new Error('stack'))).not.toContain('stack')
     expect(
       messageErreur(
         new ErreurApi({ status: 422, code: 'RG-06', message: 'Tag de format manquant.' }),
       ),
-    ).toBe('Tag de format manquant. (RG-06)')
+    ).toBe('Tag de format manquant.')
     expect(
       messageErreur(
         new ErreurApi({ status: 500, code: 'ERREUR_INTERNE', message: 'détail interne' }),

@@ -133,20 +133,38 @@ describe('créateurs', () => {
 })
 
 describe('catégories', () => {
-  it('huit catégories, compteur de bijoux publiés, masquées sans bijou ; axe', async () => {
+  it('trois sections ; huit catégories de produits avec leur nombre d’éléments ; axe', async () => {
     const { container } = await ouvrir('admin', '/categories')
-    await titre('Catégories de la boutique')
-    const liste = await screen.findByRole('list', { name: 'Ordre des catégories' })
+    await titre('Catégories')
+    for (const section of ['Articles', 'Projets', 'Produits (bijoux et livres)'])
+      expect(screen.getByRole('heading', { level: 2, name: section })).toBeTruthy()
+    const liste = await screen.findByRole('list', {
+      name: 'Ordre des catégories — Produits (bijoux et livres)',
+    })
     expect(within(liste).getAllByRole('listitem')).toHaveLength(8)
-    expect(within(liste).getByText(/^1 bijou\(x\) publié\(s\)/)).toBeTruthy()
-    expect(within(liste).getAllByText('masquée sur le site')).toHaveLength(7)
+    expect(within(liste).getByText(/^2 élément\(s\)/)).toBeTruthy()
+    const articles = await screen.findByRole('list', { name: 'Ordre des catégories — Articles' })
+    expect(within(articles).getAllByRole('listitem')).toHaveLength(8)
+    // Catégories de projets de départ (décision du client) : Film, Tourisme, Patrimoine.
+    const projets = await screen.findByRole('list', { name: 'Ordre des catégories — Projets' })
+    expect(
+      within(projets)
+        .getAllByRole('listitem')
+        .map((li) => li.textContent),
+    ).toEqual([
+      expect.stringContaining('Film'),
+      expect.stringContaining('Tourisme'),
+      expect.stringContaining('Patrimoine'),
+    ])
     expect(within(liste).getByRole('button', { name: 'Modifier « Mode »' })).toBeTruthy()
     expect(await violationsGraves(container)).toEqual([])
   })
 
   it('l’admin crée une catégorie ; l’adresse suit le nom', async () => {
     await ouvrir('admin', '/categories')
-    fireEvent.click(await screen.findByRole('button', { name: /Nouvelle catégorie/ }))
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Ajouter — Produits (bijoux et livres)' }),
+    )
     const dialogue = await screen.findByRole('dialog', { name: 'Nouvelle catégorie' })
     fireEvent.change(within(dialogue).getByLabelText(/^Nom \(FR\)/), {
       target: { value: 'Exemple : Perles' },
@@ -155,7 +173,8 @@ describe('catégories', () => {
       'exemple-perles',
     )
     fireEvent.click(within(dialogue).getByRole('button', { name: 'Enregistrer' }))
-    await waitFor(() => expect(magasin.categories).toHaveLength(9))
+    await waitFor(() => expect(magasin.categories).toHaveLength(20))
+    expect(magasin.categories.at(-1)?.famille).toBe('produit')
     expect(await screen.findByText('Exemple : Perles')).toBeTruthy()
   })
 })

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Controller, useWatch } from 'react-hook-form'
 import { cles } from '@/api/cles'
-import { bijoux, categories } from '@/api/endpoints/boutique'
+import { bijoux } from '@/api/endpoints/boutique'
 import { medias } from '@/api/endpoints/contenus'
 import { prixAffiche, type Bijou } from '@/api/schemas/boutique'
 import { LANGUES, type Langue } from '@/api/schemas/communs'
@@ -11,12 +11,13 @@ import { useSession } from '@/auth/contexte-session'
 import { ApercuSite } from '@/components/apercu/ApercuSite'
 import { SelecteurCreateur } from '@/components/createurs/SelecteurCreateur'
 import { ChampTraduit } from '@/components/formulaire/ChampTraduit'
+import { suggestionAdresse } from '@/components/formulaire/langue-formulaire'
+import { ChampAdresse, SectionAvancee } from '@/components/formulaire/SectionAvancee'
+import { ParLangue } from '@/components/formulaire/SelecteurLangue'
 import { SelecteurTags } from '@/components/tags/SelecteurTags'
 import { Alerte } from '@/components/ui/Alerte'
-import { Bouton } from '@/components/ui/Bouton'
 import { Champ } from '@/components/ui/Champ'
 import { Interrupteur } from '@/components/ui/Interrupteur'
-import { Onglets } from '@/components/ui/Onglets'
 import { Select } from '@/components/ui/Select'
 import { PanneauImage } from '@/features/articles/PanneauImage'
 import {
@@ -26,6 +27,7 @@ import {
   type ProprietesEditeur,
 } from '@/features/gabarits/editeur'
 import { useEditeurContenu } from '@/features/gabarits/useEditeurContenu'
+import { useCategories } from '@/features/categories/useCategories'
 import { t } from '@/i18n/fr'
 import { formatFCFA } from '@/lib/format'
 import { slugifier } from '@/lib/slug'
@@ -78,13 +80,9 @@ function EditeurBijou({ contenu: initial, surCree }: ProprietesEditeur<Bijou>) {
     fr: Boolean(initial?.traductions.fr?.slug),
     en: Boolean(initial?.traductions.en?.slug),
   })
-  const listeCategories = useQuery({
-    queryKey: cles.categories(),
-    queryFn: () => categories.lister({ pageSize: 100 }),
-    staleTime: 60_000,
-  })
+  const listeCategories = useCategories('produit')
   const libelles = libellesBijou(bijou)
-  const langueSuggestion = suggestion?.champ.split('.')[1]
+  const adresseProposee = suggestionAdresse(suggestion)
 
   const valeurTraduite = (champ: ChampTexte) => ({
     fr: valeurs.traductions.fr[champ],
@@ -138,32 +136,6 @@ function EditeurBijou({ contenu: initial, surCree }: ProprietesEditeur<Bijou>) {
             }}
           />
           <ChampTraduit
-            nom="slug"
-            libelle={t('bijou.slug')}
-            aide={t('article.slugAide')}
-            valeurs={valeurTraduite('slug')}
-            erreurs={erreurDe('slug')}
-            surChange={(langue, valeur) => {
-              setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
-              ecrire('slug')(langue, valeur)
-            }}
-          />
-          {suggestion && (langueSuggestion === 'fr' || langueSuggestion === 'en') ? (
-            <Alerte ton="info">
-              <p>{t('article.slugPris')}</p>
-              <Bouton
-                variante="secondaire"
-                onClick={() => {
-                  ecrire('slug')(langueSuggestion, suggestion.valeur)
-                  setSlugManuel((actuel) => ({ ...actuel, [langueSuggestion]: true }))
-                  editeur.effacerSuggestion()
-                }}
-              >
-                {t('article.utiliserSlug')} « {suggestion.valeur} »
-              </Bouton>
-            </Alerte>
-          ) : null}
-          <ChampTraduit
             nom="culture"
             libelle={t('bijou.culture')}
             requis
@@ -182,6 +154,24 @@ function EditeurBijou({ contenu: initial, surCree }: ProprietesEditeur<Bijou>) {
             erreurs={erreurDe('histoire')}
             surChange={ecrire('histoire')}
           />
+          <SectionAvancee
+            ouverte={Boolean(adresseProposee) || LANGUES.some((l) => erreurDe('slug')[l])}
+          >
+            <ChampAdresse
+              valeurs={valeurTraduite('slug')}
+              erreurs={erreurDe('slug')}
+              surChange={(langue, valeur) => {
+                setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
+                ecrire('slug')(langue, valeur)
+              }}
+              suggestion={adresseProposee}
+              surSuggestion={(langue, valeur) => {
+                ecrire('slug')(langue, valeur)
+                setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
+                editeur.effacerSuggestion()
+              }}
+            />
+          </SectionAvancee>
           <fieldset className="grid gap-4 rounded-md border border-sand-200 p-4 sm:grid-cols-2">
             <legend className="px-1 text-body font-semibold text-ink-900">
               {t('bijou.caracteristiques')}
@@ -266,7 +256,7 @@ function EditeurBijou({ contenu: initial, surCree }: ProprietesEditeur<Bijou>) {
             control={control}
             name="tagIds"
             render={({ field }) => (
-              <SelecteurTags valeur={field.value} surChange={field.onChange} />
+              <SelecteurTags contexte="bijou" valeur={field.value} surChange={field.onChange} />
             )}
           />
           <Controller
@@ -337,7 +327,7 @@ function ApercuBijou({ valeurs, bijou }: { valeurs: ValeursBijou; bijou: Bijou |
   const matieres = bijou?.matieres ?? []
 
   return (
-    <Onglets
+    <ParLangue
       libelle={t('article.apercu')}
       onglets={langues.map((langue) => {
         const traduction = valeurs.traductions[langue]

@@ -19,13 +19,13 @@ async function ouvrir(role: RoleEssai, chemin: string) {
   window.history.pushState({}, '', chemin)
   return render(<App />)
 }
-const grille = () => screen.findByRole('list', { name: 'Médias' })
+const grille = () => screen.findByRole('list', { name: 'Médiathèque' })
 
 describe('grille', () => {
   it('filtre « à fournir » dans l’adresse ; aucune violation axe', async () => {
     const { container } = await ouvrir('editeur', '/medias')
     expect(within(await grille()).getAllByRole('listitem')).toHaveLength(2)
-    fireEvent.click(screen.getByLabelText(/Seulement les contenus « à fournir »/))
+    fireEvent.click(screen.getByLabelText(/Seulement les contenus à compléter/))
     await waitFor(() => expect(window.location.search).toContain('aFournir=true'))
     await waitFor(async () =>
       expect(within(await grille()).getAllByRole('listitem')).toHaveLength(1),
@@ -99,7 +99,7 @@ describe('fiche', () => {
     const dialogue = await screen.findByRole('dialog', { name: 'Supprimer ce média' })
     fireEvent.click(within(dialogue).getByRole('button', { name: 'Supprimer' }))
     expect(
-      await screen.findByText(/Ce média est utilisé : il ne peut pas être supprimé\. \(RG-08\)/),
+      await screen.findByText(/Ce média est utilisé : il ne peut pas être supprimé\.$/),
     ).toBeTruthy()
     expect(magasin.medias.some((m) => m.id === IDS_EXEMPLE.mediaComplet)).toBe(true)
   })

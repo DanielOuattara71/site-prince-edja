@@ -1,18 +1,27 @@
 import type { z } from 'zod'
 import { creerRessource } from '@/api/endpoints/ressource'
+import { entreeLivreSchema, livreSchema, modificationLivreSchema } from '@/api/schemas/livres'
 import {
   archiveSchema,
   distinctionSchema,
   ecritureArchive,
   ecritureDistinction,
+  ecritureEtudeCas,
+  ecritureGalerie,
   ecritureJalon,
   ecritureOffre,
   ecriturePage,
+  ecriturePageLegale,
+  ecriturePartenaire,
   ecriturePresse,
   ecritureUnivers,
+  etudeCasSchema,
+  galerieSchema,
   jalonSchema,
   offreSchema,
+  pageLegaleSchema,
   pageSchema,
+  partenaireSchema,
   presseSchema,
   universSchema,
   destinationSchema,
@@ -82,3 +91,19 @@ export const jalons = lot3('jalons', jalonSchema, ecritureJalon)
 export const offres = lot3('offres', offreSchema, ecritureOffre)
 /** Ensemble fermé : `creer` et `supprimer` existent dans le gabarit, aucun écran ne les appelle. */
 export const pages = lot3('pages', pageSchema, ecriturePage)
+
+// --- Lot 4 (§ 9.9, § 9.13 à 9.16) ---
+
+export const galerie = lot3('galerie', galerieSchema, ecritureGalerie)
+export const etudesCas = lot3('etudes-cas', etudeCasSchema, ecritureEtudeCas)
+export const partenaires = lot3('partenaires', partenaireSchema, ecriturePartenaire)
+/** Ensemble fermé : ni créées ni supprimées (§ 9.16). */
+export const pagesLegales = lot3('pages-legales', pageLegaleSchema, ecriturePageLegale)
+
+/** Livres (SCHEMAS § 8.3 ; contrat 1.5.0 proposé, § 22) : servis par le faux serveur seulement. */
+export const livres = creerRessource('livres', {
+  lecture: livreSchema,
+  resume: resumeOrdonnableSchema,
+  entree: entreeLivreSchema,
+  modification: modificationLivreSchema,
+})

@@ -19,3 +19,19 @@ export function formaterDateHeure(iso: string): string {
 export function formaterDate(iso: string): string {
   return formatDate.format(new Date(iso))
 }
+
+const formatHeure = new Intl.DateTimeFormat('fr-FR', {
+  timeZone: FUSEAU,
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
+/** « 14:32 » (heure d'Abidjan) : indicateur « Enregistré à » (U6). */
+export function formaterHeure(iso: string): string {
+  return formatHeure.format(new Date(iso))
+}
+
+/** Instant présent, en ISO (appelé dans un gestionnaire, jamais pendant le rendu). */
+export function maintenantIso(): string {
+  return new Date().toISOString()
+}

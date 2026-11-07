@@ -1,10 +1,5 @@
 import { z } from 'zod'
-import type {
-  Article,
-  CATEGORIES_ARTICLE,
-  EntreeArticle,
-  ModificationArticle,
-} from '@/api/schemas/articles'
+import type { Article, EntreeArticle, ModificationArticle } from '@/api/schemas/articles'
 import { LANGUES, type Langue } from '@/api/schemas/communs'
 import { corpsRicheSchema, type CorpsRiche } from '@/api/schemas/corps-riche'
 
@@ -25,7 +20,9 @@ export interface TraductionFormulaire {
 }
 
 export interface ValeursArticle {
-  categorie: (typeof CATEGORIES_ARTICLE)[number] | ''
+  /** Nom de la catégorie (texte historique) et son identifiant (famille `article`, SCHEMAS § 4). */
+  categorie: string
+  categorieId: string
   imageId: string | null
   tagIds: string[]
   aLaUne: boolean
@@ -44,6 +41,7 @@ const traductionVide = (): TraductionFormulaire => ({
 export function valeursVides(): ValeursArticle {
   return {
     categorie: '',
+    categorieId: '',
     imageId: null,
     tagIds: [],
     aLaUne: false,
@@ -66,6 +64,7 @@ export function valeursDepuisArticle(article: Article): ValeursArticle {
   }
   return {
     categorie: article.categorie,
+    categorieId: article.categorieId ?? '',
     imageId: article.imageId,
     tagIds: article.tagIds,
     aLaUne: article.aLaUne,
@@ -90,6 +89,7 @@ const traductionSchema = z.object({
 export const schemaFormulaireArticle = z
   .object({
     categorie: z.string().min(1, 'Choisissez une catégorie.'),
+    categorieId: z.string(),
     imageId: z.uuid().nullable(),
     tagIds: z.array(z.uuid()),
     aLaUne: z.boolean(),
@@ -146,7 +146,8 @@ function traductionsEcrites(valeurs: ValeursArticle, existantes: Langue[]) {
 
 export function versEntree(valeurs: ValeursArticle): EntreeArticle {
   return {
-    categorie: valeurs.categorie as EntreeArticle['categorie'],
+    categorie: valeurs.categorie,
+    ...(valeurs.categorieId ? { categorieId: valeurs.categorieId } : {}),
     imageId: valeurs.imageId,
     tagIds: valeurs.tagIds,
     aLaUne: valeurs.aLaUne,
@@ -156,7 +157,8 @@ export function versEntree(valeurs: ValeursArticle): EntreeArticle {
 
 export function versModification(valeurs: ValeursArticle, article: Article): ModificationArticle {
   return {
-    categorie: valeurs.categorie as EntreeArticle['categorie'],
+    categorie: valeurs.categorie,
+    ...(valeurs.categorieId ? { categorieId: valeurs.categorieId } : {}),
     imageId: valeurs.imageId,
     tagIds: valeurs.tagIds,
     aLaUne: valeurs.aLaUne,

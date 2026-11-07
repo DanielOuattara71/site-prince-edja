@@ -7,6 +7,7 @@ import { CLASSES_LIEN } from '@/components/ui/classes'
 import { IndicateurAFournir } from '@/components/ui/IndicateurAFournir'
 import { PastilleStatut } from '@/components/ui/PastilleStatut'
 import { ListePage } from '@/features/gabarits/ListePage'
+import { nomCategorie, useCategories } from '@/features/categories/useCategories'
 import { t } from '@/i18n/fr'
 import { formaterDate } from '@/lib/dates'
 import { etatAffiche } from '@/lib/statuts'
@@ -23,6 +24,12 @@ const COLONNES: Colonne<ResumeContenu>[] = [
         {a.titre || t('article.sansTitre')}
       </Link>
     ),
+  },
+  {
+    id: 'categorie',
+    entete: t('article.categorie'),
+    masquable: true,
+    cellule: (a) => a.categorie || '—',
   },
   {
     id: 'statut',
@@ -76,12 +83,24 @@ const COLONNES: Colonne<ResumeContenu>[] = [
 ]
 
 export default function ListeArticles() {
+  const categoriesArticle = useCategories('article')
   return (
     <ListePage
       titre={t('menu.articles')}
       ressource="articles"
       colonnes={COLONNES}
-      charger={(parametres) => articles.lister(parametres)}
+      // Le filtre envoie le nom : c'est la catégorie que le serveur connaît aujourd'hui (SCHEMAS § 4).
+      charger={(parametres, propres) => articles.lister(parametres, undefined, propres)}
+      filtres={[
+        {
+          cle: 'categorie',
+          libelle: t('article.categorie'),
+          options: (categoriesArticle.data?.items ?? []).map((c) => ({
+            valeur: nomCategorie(c),
+            libelle: nomCategorie(c),
+          })),
+        },
+      ]}
       creer={{ chemin: '/articles/nouveau', libelle: t('article.nouveau') }}
       actionsGroupees={[
         {

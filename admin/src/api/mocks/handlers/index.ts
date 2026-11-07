@@ -3,10 +3,16 @@ import { magasin } from '@/api/mocks/magasin'
 import { API, erreur } from '@/api/mocks/reponses'
 import { handlersArticles } from '@/api/mocks/handlers/articles'
 import { handlersAuth } from '@/api/mocks/handlers/auth'
+import { handlersAudience } from '@/api/mocks/handlers/audience'
+import { handlersComptes } from '@/api/mocks/handlers/comptes'
 import { handlersBijoux } from '@/api/mocks/handlers/bijoux'
 import { handlersCategories } from '@/api/mocks/handlers/categories'
 import { handlersEditorial } from '@/api/mocks/handlers/editorial'
 import { handlersEditorialLot3 } from '@/api/mocks/handlers/editorial-lot3'
+import { handlersEditorialLot4 } from '@/api/mocks/handlers/editorial-lot4'
+import { handlersLivres } from '@/api/mocks/handlers/livres'
+import { handlersEmplacements } from '@/api/mocks/handlers/emplacements'
+import { handlersReglages } from '@/api/mocks/handlers/reglages'
 import { handlersCreateurs } from '@/api/mocks/handlers/createurs'
 import { handlersMedias } from '@/api/mocks/handlers/medias'
 import { handlersSite } from '@/api/mocks/handlers/site'
@@ -33,6 +39,8 @@ export const handlers = [
   conditionsReseau,
   ...handlersAuth,
   ...handlersArticles,
+  ...handlersAudience,
+  ...handlersComptes,
   ...handlersMedias,
   ...handlersTags,
   ...handlersSite,
@@ -42,4 +50,8 @@ export const handlers = [
   ...handlersBijoux,
   ...handlersEditorial,
   ...handlersEditorialLot3,
+  ...handlersEditorialLot4,
+  ...handlersLivres,
+  ...handlersEmplacements,
+  ...handlersReglages,
 ]

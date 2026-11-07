@@ -130,9 +130,20 @@ export function enrichirCreateur(c: CreateurEssai): Createur {
   }
 }
 
+/** Éléments rattachés à une catégorie, tous statuts : articles, projets, bijoux, livres (RG-31). */
+export function elementsDeCategorie(id: string): number {
+  return (
+    magasin.bijoux.filter((b) => b.categorieId === id).length +
+    magasin.livres.filter((l) => l.categorieId === id).length +
+    magasin.articles.filter((a) => a.categorieId === id).length +
+    magasin.projets.filter((p) => p.categorieId === id).length
+  )
+}
+
 export function enrichirCategorie(c: Categorie): Categorie {
   return {
     ...c,
+    nombreElements: elementsDeCategorie(c.id),
     nombreBijouxPublies: magasin.bijoux.filter(
       (b) => b.categorieId === c.id && b.statut === 'publie',
     ).length,

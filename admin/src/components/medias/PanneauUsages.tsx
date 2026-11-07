@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import type { Usage } from '@/api/schemas/communs'
-import { ENTREES_MENU } from '@/components/layout/navigation'
+import { cheminDeRessource } from '@/components/layout/navigation'
 import { CLASSES_LIEN } from '@/components/ui/classes'
 import { PastilleStatut } from '@/components/ui/PastilleStatut'
 import { t } from '@/i18n/fr'
@@ -24,8 +24,7 @@ export function PanneauUsages({
   usages: Usage[]
   proprietaire?: string | null
 }) {
-  const cheminDe = (usage: Usage) =>
-    ENTREES_MENU.find((entree) => entree.ressource === usage.ressource)?.chemin
+  const cheminDe = (usage: Usage) => cheminDeRessource(usage.ressource)
 
   return (
     <section

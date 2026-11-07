@@ -179,6 +179,16 @@ export const handlersMedias = [
         details: { usages },
       })
     }
+    // Une photo fixe du site retient aussi son média (`on delete restrict`, SCHEMAS § 10).
+    const fixe = magasin.emplacements.find((e) => e.mediaId === media.id)
+    if (fixe) {
+      return erreur(
+        422,
+        'RG-08',
+        `Ce média est la photo fixe « ${fixe.libelle} » : changez-la d'abord dans Sur le site.`,
+        { details: { usages: [] } },
+      )
+    }
     magasin.medias = magasin.medias.filter((candidat) => candidat.id !== media.id)
     journaliser(garde.compte, 'suppression', 'medias', media.id, media, null)
     return vide()

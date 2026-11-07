@@ -13,32 +13,44 @@ import { t } from '@/i18n/fr'
  * Galerie d'un bijou (§ 10.3) : images ordonnées, ajoutées depuis la médiathèque (texte
  * alternatif exigé avant validation), retirées, réordonnées au glisser-déposer ou au clavier.
  * Le CDC en attend 5 à 8 ; en deçà, la galerie est « à fournir ». Le bouton porte l'`id`
- * `galerieMediaIds` : le résumé d'erreurs y mène (D-44).
+ * `galerieMediaIds` : le résumé d'erreurs y mène (D-44). Réutilisée par les études de cas
+ * (§ 9.13), qui ne portent pas l'exigence « 5 à 8 » : libellé et aide y sont passés en props.
  */
 export function PanneauGalerie({
   valeur,
   surChange,
   desactive,
+  libelle = t('bijou.galerie'),
+  aide = t('bijou.galerieAide'),
+  id = 'galerieMediaIds',
 }: {
   valeur: string[]
   surChange: (ids: string[]) => void
   desactive: boolean
+  /** Une famille réutilisatrice change l'appel lexicographique (études de cas, § 9.13). */
+  libelle?: string
+  aide?: string
+  /** Identifiant du bouton « ajouter » visible dans le résumé d'erreurs (D-44). */
+  id?: string
 }) {
   const [ouvert, setOuvert] = useState(false)
   const lus = useQueries({
-    queries: valeur.map((id) => ({ queryKey: cles.media(id), queryFn: () => medias.lire(id) })),
+    queries: valeur.map((mediaId) => ({
+      queryKey: cles.media(mediaId),
+      queryFn: () => medias.lire(mediaId),
+    })),
   })
-  const elements = valeur.map((id, i) => ({ id, media: lus[i]?.data }))
+  const elements = valeur.map((mediaId, i) => ({ id: mediaId, media: lus[i]?.data }))
 
   return (
     <fieldset className="space-y-3">
-      <legend className="text-body font-semibold text-ink-900">{t('bijou.galerie')}</legend>
+      <legend className="text-body font-semibold text-ink-900">{libelle}</legend>
       <p className="text-caption text-ink-700">
-        {t('bijou.galerieAide')} ({valeur.length})
+        {aide} ({valeur.length})
       </p>
       {elements.length > 0 ? (
         <ListeOrdonnable
-          libelle={t('bijou.galerie')}
+          libelle={libelle}
           elements={elements}
           cle={(e) => e.id}
           nom={(e) => e.media?.traductions.fr?.texteAlt || t('media.sansAlt')}
@@ -60,7 +72,7 @@ export function PanneauGalerie({
               {desactive ? null : (
                 <Bouton
                   variante="discret"
-                  onClick={() => surChange(valeur.filter((id) => id !== e.id))}
+                  onClick={() => surChange(valeur.filter((mediaId) => mediaId !== e.id))}
                 >
                   {t('bijou.retirer')}
                 </Bouton>
@@ -70,7 +82,7 @@ export function PanneauGalerie({
         />
       ) : null}
       {desactive ? null : (
-        <Bouton id="galerieMediaIds" variante="secondaire" onClick={() => setOuvert(true)}>
+        <Bouton id={id} variante="secondaire" onClick={() => setOuvert(true)}>
           <ImagePlus aria-hidden className="size-4" />
           {t('bijou.ajouterImage')}
         </Bouton>

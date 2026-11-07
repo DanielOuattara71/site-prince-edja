@@ -7,6 +7,7 @@ import { Squelette } from '@/components/ui/Squelette'
 import { useSession } from '@/auth/contexte-session'
 import { t } from '@/i18n/fr'
 import { cn } from '@/lib/cn'
+import { TAILLES_PAGE } from '@/lib/pagination'
 import { ecrirePreference, lirePreference } from '@/lib/preferences'
 
 /**
@@ -50,6 +51,7 @@ export function TableauDonnees<T>({
   page,
   pageSize,
   surPage,
+  surTaille,
   tri,
   surTri,
   selection,
@@ -70,6 +72,8 @@ export function TableauDonnees<T>({
   page: number
   pageSize: number
   surPage: (page: number) => void
+  /** Choix de la taille de page (20, 50 ou 100, ECRANS § 0.2) ; absent = taille fixe. */
+  surTaille?: (taille: number) => void
   /** `champ` (croissant) ou `-champ` (décroissant), comme le contrat (§ 2). */
   tri?: string
   surTri?: (tri: string) => void
@@ -290,7 +294,7 @@ export function TableauDonnees<T>({
 
       {corps}
 
-      {etat === 'pret' && total > pageSize ? (
+      {etat === 'pret' && (total > pageSize || (surTaille && total > TAILLES_PAGE[0])) ? (
         <nav
           aria-label={`${t('tableau.pagination')} : ${libelle}`}
           className="flex flex-wrap items-center justify-between gap-2"
@@ -298,7 +302,23 @@ export function TableauDonnees<T>({
           <p className="tnum text-caption text-ink-700">
             {debut}–{fin} {t('tableau.sur')} {total}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {surTaille ? (
+              <label className="flex items-center gap-2 text-caption text-ink-700">
+                {t('tableau.parPage')}
+                <select
+                  value={pageSize}
+                  onChange={(evenement) => surTaille(Number(evenement.target.value))}
+                  className="min-h-11 rounded-md border border-sand-300 bg-sand-50 px-2 text-body text-ink-900"
+                >
+                  {TAILLES_PAGE.map((taille) => (
+                    <option key={taille} value={taille}>
+                      {taille}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <Bouton variante="secondaire" disabled={page <= 1} onClick={() => surPage(page - 1)}>
               <ChevronLeft aria-hidden className="size-4" />
               {t('tableau.precedente')}

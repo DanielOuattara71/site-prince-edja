@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import {
   CLES_PAGE,
+  CLES_PAGE_LEGALE,
   cibleInterneEcriture,
   cibleInterneSchema,
   contenuBaseShape,
@@ -12,6 +13,8 @@ import {
   traductionsLecture,
   versionSchema,
 } from '@/api/schemas/communs'
+import { corpsRicheSchema } from '@/api/schemas/corps-riche'
+import { TEMPLATES_PROJET } from '@/lib/templates'
 
 /**
  * Ressources éditoriales du lot 2 (`docs/CONTRAT-API.md` § 9.2 à 9.5) : épisodes, projets,
@@ -27,12 +30,16 @@ const urlHttps = z
   .regex(/^https:\/\/\S+$/, 'Une adresse qui commence par https://.')
 
 /** Champs propres ajoutés au résumé de liste (§ 8). */
-export const resumeOrdonnableSchema = resumeContenuSchema.extend({
-  ordre: z.number().int().optional(),
-  numero: z.string().optional(),
-  cle: z.string().optional(),
-  periode: z.string().optional(),
-})
+export const resumeOrdonnableSchema = resumeContenuSchema
+  .extend({
+    ordre: z.number().int().optional(),
+    numero: z.string().optional(),
+    cle: z.string().optional(),
+    periode: z.string().optional(),
+    /** Emplacement d'une image de galerie (§ 9.9), pour le filtre et l'ordre par groupe. */
+    emplacement: z.string().optional(),
+  })
+  .loose()
 export type ResumeEditorial = z.infer<typeof resumeOrdonnableSchema>
 
 // --- Épisodes (§ 9.2) ---
@@ -55,6 +62,8 @@ export const episodeSchema = z.object({
   numero: z.string(),
   imageId: idSchema.nullable(),
   guideMediaId: idSchema.nullable(),
+  /** Projet de l'épisode (SCHEMAS § 6, RG-32) ; absent tant que le back end ne le sert pas. */
+  projetId: idSchema.nullable().optional(),
   destinationId: idSchema.nullable(),
   trailerUrl: z.string().nullable(),
   dureeMinutes: z.number().int().nullable(),
@@ -80,6 +89,7 @@ const champsEpisode = {
   numero: texte(10),
   imageId: idSchema.nullable().optional(),
   guideMediaId: idSchema.nullable().optional(),
+  projetId: idSchema.nullable().optional(),
   destinationId: idSchema.nullable().optional(),
   trailerUrl: urlHttps.nullable().optional(),
   dureeMinutes: z.number().int().min(1).max(1000).nullable().optional(),
@@ -101,6 +111,12 @@ const traductionProjetLecture = z.object({
   slug: slugSchema,
   titre: z.string(),
   accroche: z.string(),
+  /** Présentation longue (SCHEMAS § 5, NOUVEAU). */
+  contenu: corpsRicheSchema.nullable().optional(),
+  /** Templates (PROPOSITION-TEMPLATES-PROJETS) : citation du héros, programme, festivals. */
+  citation: z.string().nullable().optional(),
+  programme: z.string().nullable().optional(),
+  festivals: z.string().nullable().optional(),
 })
 
 export const projetSchema = z.object({
@@ -109,6 +125,19 @@ export const projetSchema = z.object({
   avancement: z.enum(AVANCEMENTS_PROJET),
   annee: datePartielleSchema.nullable(),
   imageId: idSchema.nullable(),
+  /** Catégorie de la famille `projet` (SCHEMAS § 5, facultative). */
+  categorieId: idSchema.nullable().optional(),
+  /** Template choisi ; absent = celui du format (projets enregistrés avant les templates). */
+  template: z.enum(TEMPLATES_PROJET).optional(),
+  /** Blocs facultatifs masqués sur le site (le contenu reste enregistré). */
+  blocsMasques: z.array(z.string()).optional(),
+  /** Image panoramique du bandeau (21:9). */
+  bandeauId: idSchema.nullable().optional(),
+  /** « Saison 1 » : mention de la série (template Film). */
+  saison: z.string().nullable().optional(),
+  /** Escales du template Programme (villes). */
+  escaleIds: z.array(idSchema).optional(),
+  partenaireIds: z.array(idSchema).optional(),
   cible: cibleInterneSchema.nullable(),
   tagIds: z.array(idSchema),
   ordre: z.number().int(),
@@ -120,6 +149,10 @@ const traductionProjetEcriture = z.strictObject({
   slug: slugSchema.optional(),
   titre: texte(200),
   accroche: z.string().max(300).optional(),
+  contenu: corpsRicheSchema.nullable().optional(),
+  citation: z.string().max(300).nullable().optional(),
+  programme: z.string().max(4000).nullable().optional(),
+  festivals: z.string().max(4000).nullable().optional(),
 })
 
 const champsProjet = {
@@ -128,6 +161,13 @@ const champsProjet = {
   annee: datePartielleSchema.nullable().optional(),
   imageId: idSchema.nullable().optional(),
   cible: cibleInterneEcriture.nullable().optional(),
+  categorieId: idSchema.nullable().optional(),
+  template: z.enum(TEMPLATES_PROJET).optional(),
+  blocsMasques: z.array(z.string().max(40)).max(20).optional(),
+  bandeauId: idSchema.nullable().optional(),
+  saison: z.string().trim().max(40).nullable().optional(),
+  escaleIds: z.array(idSchema).max(30).optional(),
+  partenaireIds: z.array(idSchema).max(30).optional(),
   tagIds: z.array(idSchema).max(50).optional(),
   traductions: traductionsEcriture(traductionProjetEcriture),
 }
@@ -391,6 +431,139 @@ export const ecriturePage = ecriture({
       seoTitre: texteOuNull(70),
       seoDescription: texteOuNull(160),
       blocs: z.record(z.string().max(80), z.string().max(4000)).optional(),
+    }),
+  ),
+})
+
+// --- Lot 4 éditorial (§ 9.9, § 9.13 à 9.16) ---
+
+/** Images éditoriales de la galerie (§ 9.9) : accueil ou boutique, une ordre par emplacement. */
+export const EMPLACEMENTS_GALERIE = ['accueil', 'boutique'] as const
+export const RATIOS_GALERIE = ['1/1', '4/3', '3/2', '16/9', '4/5', '3/4'] as const
+
+const traductionGalerieLecture = z.object({
+  etiquette: z.string().nullable(),
+  titre: z.string().nullable(),
+  legende: z.string().nullable(),
+})
+
+export const galerieSchema = z.object({
+  ...contenuBaseShape,
+  emplacement: z.enum(EMPLACEMENTS_GALERIE),
+  mediaId: idSchema.nullable(),
+  cible: cibleInterneSchema.nullable(),
+  lienExterne: z.string().nullable(),
+  ratio: z.enum(RATIOS_GALERIE),
+  parallaxe: z.number().int().min(0).max(20).nullable(),
+  ordre: z.number().int(),
+  tagIds: z.array(idSchema),
+  traductions: traductionsLecture(traductionGalerieLecture),
+})
+export type Galerie = z.infer<typeof galerieSchema>
+
+export const ecritureGalerie = ecriture({
+  emplacement: z.enum(EMPLACEMENTS_GALERIE),
+  mediaId: idSchema.nullable().optional(),
+  cible: cibleInterneEcriture.nullable().optional(),
+  lienExterne: urlHttps.nullable().optional(),
+  ratio: z.enum(RATIOS_GALERIE),
+  parallaxe: z.number().int().min(0).max(20).nullable().optional(),
+  tagIds: z.array(idSchema).max(50).optional(),
+  traductions: traductionsEcriture(
+    z.strictObject({
+      etiquette: texteOuNull(120),
+      titre: texteOuNull(200),
+      legende: texteOuNull(600),
+    }),
+  ),
+})
+
+/** Études de cas (§ 9.13) : une offre visée (facultative), une image, un récit par étapes. */
+export const etudeCasSchema = z.object({
+  ...contenuBaseShape,
+  offreId: idSchema.nullable(),
+  imageId: idSchema.nullable(),
+  galerieMediaIds: z.array(idSchema),
+  ordre: z.number().int(),
+  tagIds: z.array(idSchema),
+  traductions: traductionsLecture(
+    z.object({
+      slug: slugSchema,
+      titre: z.string(),
+      client: z.string().nullable(),
+      challenge: z.string().nullable(),
+      idee: z.string().nullable(),
+      execution: z.string().nullable(),
+      contenus: z.string().nullable(),
+      diffusion: z.string().nullable(),
+      resultats: z.string().nullable(),
+      temoignage: z.string().nullable(),
+    }),
+  ),
+})
+export type EtudeCas = z.infer<typeof etudeCasSchema>
+
+export const ecritureEtudeCas = ecriture({
+  offreId: idSchema.nullable().optional(),
+  imageId: idSchema.nullable().optional(),
+  galerieMediaIds: z.array(idSchema).max(50).optional(),
+  tagIds: z.array(idSchema).max(50).optional(),
+  traductions: traductionsEcriture(
+    z.strictObject({
+      slug: slugSchema.optional(),
+      titre: texte(200),
+      client: texteOuNull(200),
+      challenge: texteOuNull(8000),
+      idee: texteOuNull(8000),
+      execution: texteOuNull(8000),
+      contenus: texteOuNull(8000),
+      diffusion: texteOuNull(8000),
+      resultats: texteOuNull(8000),
+      temoignage: texteOuNull(2000),
+    }),
+  ),
+})
+
+/** Partenaires (§ 9.14) : un logo, un nom, une adresse de destination (facultative). */
+export const partenaireSchema = z.object({
+  ...contenuBaseShape,
+  logoId: idSchema.nullable(),
+  lien: z.string().nullable(),
+  ordre: z.number().int(),
+  tagIds: z.array(idSchema),
+  traductions: traductionsLecture(z.object({ nom: z.string() })),
+})
+export type Partenaire = z.infer<typeof partenaireSchema>
+
+export const ecriturePartenaire = ecriture({
+  logoId: idSchema.nullable().optional(),
+  lien: urlHttps.nullable().optional(),
+  tagIds: z.array(idSchema).max(50).optional(),
+  traductions: traductionsEcriture(z.strictObject({ nom: texte(200) })),
+})
+
+/** Pages légales (§ 9.16) : ensemble fermé, texte fourni par la maison, jamais généré. */
+export const pageLegaleSchema = z.object({
+  ...contenuBaseShape,
+  cle: z.enum(CLES_PAGE_LEGALE),
+  tagIds: z.array(idSchema),
+  traductions: traductionsLecture(
+    z.object({
+      titre: z.string(),
+      resume: z.string().nullable(),
+      corps: corpsRicheSchema.nullable(),
+    }),
+  ),
+})
+export type PageLegale = z.infer<typeof pageLegaleSchema>
+
+export const ecriturePageLegale = ecriture({
+  tagIds: z.array(idSchema).max(50).optional(),
+  traductions: traductionsEcriture(
+    z.strictObject({
+      titre: texte(200),
+      resume: texteOuNull(600),
+      corps: corpsRicheSchema.nullable(),
     }),
   ),
 })

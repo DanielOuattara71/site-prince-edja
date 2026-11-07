@@ -48,6 +48,7 @@ export const RESSOURCES_CONTENU = [
   'pages-legales',
   'bijoux',
   'createurs',
+  'livres',
 ] as const
 export type RessourceContenu = (typeof RESSOURCES_CONTENU)[number]
 
@@ -69,6 +70,8 @@ export type Ressource =
   | 'journal'
   | 'comptes'
   | 'tableau-de-bord'
+  /** Photos fixes du site (PROMPT-CORRECTION § 7.3) : lecture équipe, modification admin (E4). */
+  | 'emplacements-photos'
 
 /** Ce que `peut` lit d'un objet. Tous les champs sont facultatifs. */
 export interface ObjetCible {
@@ -84,7 +87,13 @@ export type CompteDroits = Pick<Compte, 'id' | 'role' | 'actif' | 'createurId'>
 const RANG: Record<Exclude<Role, 'vendeur'>, number> = { editeur: 1, admin: 2, super_admin: 3 }
 
 /** Ressources qu'un vendeur peut atteindre, et seulement pour son créateur (RG-22). */
-const RESSOURCES_VENDEUR: readonly Ressource[] = ['bijoux', 'medias', 'createurs', 'demandes']
+const RESSOURCES_VENDEUR: readonly Ressource[] = [
+  'bijoux',
+  'medias',
+  'createurs',
+  'demandes',
+  'livres',
+]
 
 /** Transitions réservées aux admins (RG-02, § 7.3). */
 const ACTIONS_ADMIN_CONTENU: readonly Action[] = [
@@ -136,6 +145,11 @@ export function peut(
     case 'medias':
       if (action === 'lire' || action === 'creer' || action === 'modifier') return true
       return action === 'supprimer' && admin
+
+    case 'emplacements-photos':
+      // Un éditeur consulte ; seul un administrateur change une photo fixe (ECRANS E4, par défaut).
+      if (action === 'lire') return true
+      return action === 'modifier' && admin
 
     case 'site':
       if (action === 'lire') return true
@@ -194,7 +208,7 @@ function peutSurContenu(
     case 'ordonner':
       return admin
     case 'confirmer_prix':
-      return admin && ressource === 'bijoux'
+      return admin && (ressource === 'bijoux' || ressource === 'livres')
     default:
       return admin && ACTIONS_ADMIN_CONTENU.includes(action)
   }

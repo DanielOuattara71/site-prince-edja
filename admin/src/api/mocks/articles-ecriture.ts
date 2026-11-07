@@ -70,6 +70,7 @@ export function nouvelArticle(
     languesPresentes: [],
     dernierMotifRefus: null,
     categorie: entree.categorie,
+    categorieId: entree.categorieId ?? null,
     imageId: entree.imageId ?? null,
     tagIds: entree.tagIds ?? [],
     aLaUne: entree.aLaUne ?? false,
@@ -82,6 +83,7 @@ export function articleModifie(article: Article, modification: ModificationArtic
   return {
     ...article,
     ...(modification.categorie !== undefined ? { categorie: modification.categorie } : {}),
+    ...(modification.categorieId !== undefined ? { categorieId: modification.categorieId } : {}),
     ...(modification.imageId !== undefined ? { imageId: modification.imageId } : {}),
     ...(modification.tagIds !== undefined ? { tagIds: modification.tagIds } : {}),
     ...(modification.aLaUne !== undefined ? { aLaUne: modification.aLaUne } : {}),
@@ -112,6 +114,7 @@ export function resumeArticle(article: Article): ResumeContenu {
     champsAFournir: enrichi.champsAFournir,
     languesPresentes: enrichi.languesPresentes,
     imageId: article.imageId,
+    categorie: article.categorie,
   }
 }
 

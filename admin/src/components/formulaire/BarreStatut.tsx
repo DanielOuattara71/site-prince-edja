@@ -6,7 +6,7 @@ import { Bouton, type VarianteBouton } from '@/components/ui/Bouton'
 import { IndicateurAFournir } from '@/components/ui/IndicateurAFournir'
 import { PastilleStatut } from '@/components/ui/PastilleStatut'
 import { t, type CleTraduction } from '@/i18n/fr'
-import { formaterDateHeure } from '@/lib/dates'
+import { formaterDateHeure, formaterHeure } from '@/lib/dates'
 import { ACTIONS_DEPUIS, etatAffiche, type ActionStatut } from '@/lib/statuts'
 
 /**
@@ -51,6 +51,7 @@ export function BarreStatut({
   surEnregistrer,
   surAction,
   actionEnCours = null,
+  enregistreA = null,
 }: {
   ressource: RessourceContenu
   /** `null` : contenu pas encore créé (seul « Enregistrer le brouillon » est proposé). */
@@ -59,6 +60,8 @@ export function BarreStatut({
   surEnregistrer: () => void
   surAction: (action: ActionStatut) => void
   actionEnCours?: ActionStatut | 'enregistrer' | null
+  /** Heure du dernier enregistrement réussi (U6) : « Enregistré à 14:32 ». */
+  enregistreA?: string | null
 }) {
   const { moi } = useSession()
   const compte = moi?.compte
@@ -98,7 +101,9 @@ export function BarreStatut({
                   : 'size-4'
               }
             />
-            {t(`barre.enregistrement.${enregistrement}` as CleTraduction)}
+            {enregistrement === 'enregistre' && enregistreA
+              ? `${t('barre.enregistreA')} ${formaterHeure(enregistreA)}`
+              : t(`barre.enregistrement.${enregistrement}` as CleTraduction)}
           </output>
         </div>
         <div className="flex flex-wrap items-center gap-2">

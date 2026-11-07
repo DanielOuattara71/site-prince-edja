@@ -1,16 +1,17 @@
 import { useState } from 'react'
 import { Controller, useWatch } from 'react-hook-form'
+import { Link } from 'react-router'
 import { cles } from '@/api/cles'
 import { articles } from '@/api/endpoints/contenus'
-import { CATEGORIES_ARTICLE, type Article } from '@/api/schemas/articles'
+import type { Article } from '@/api/schemas/articles'
 import { LANGUES, type Langue } from '@/api/schemas/communs'
 import { EditeurRiche } from '@/components/editeur/EditeurRiche'
 import { ChampTraduit } from '@/components/formulaire/ChampTraduit'
+import { suggestionAdresse } from '@/components/formulaire/langue-formulaire'
+import { ChampAdresse, SectionAvancee } from '@/components/formulaire/SectionAvancee'
+import { ParLangue } from '@/components/formulaire/SelecteurLangue'
 import { SelecteurTags } from '@/components/tags/SelecteurTags'
-import { Alerte } from '@/components/ui/Alerte'
-import { Bouton } from '@/components/ui/Bouton'
 import { Interrupteur } from '@/components/ui/Interrupteur'
-import { Onglets } from '@/components/ui/Onglets'
 import { Select } from '@/components/ui/Select'
 import {
   ActionsLaterales,
@@ -18,7 +19,10 @@ import {
   PageFormulaire,
   type ProprietesEditeur,
 } from '@/features/gabarits/editeur'
+import { useSession } from '@/auth/contexte-session'
+import { peut } from '@/auth/permissions'
 import { useEditeurContenu } from '@/features/gabarits/useEditeurContenu'
+import { nomCategorie, useCategories } from '@/features/categories/useCategories'
 import { t } from '@/i18n/fr'
 import { slugifier } from '@/lib/slug'
 import { ApercuArticle } from './ApercuArticle'
@@ -64,13 +68,16 @@ function EditeurArticle({ contenu: initial, surCree }: ProprietesEditeur<Article
     cle: cles.article,
   })
   const { formulaire, contenu: article, modifiable, tentative, suggestion } = editeur
-  const { control, formState, setValue, register } = formulaire
+  const { control, formState, setValue } = formulaire
   const valeurs = useWatch({ control }) as ValeursArticle
+  const categoriesArticle = useCategories('article')
+  const { moi } = useSession()
+  const peutGererCategories = peut(moi?.compte, 'modifier', 'categories')
   const [slugManuel, setSlugManuel] = useState<Record<Langue, boolean>>({
     fr: Boolean(initial?.traductions.fr?.slug),
     en: Boolean(initial?.traductions.en?.slug),
   })
-  const langueSuggestion = suggestion?.champ.split('.')[1]
+  const adresseProposee = suggestionAdresse(suggestion)
 
   const surTitre = (langue: Langue, titre: string) => {
     setValue(`traductions.${langue}.titre`, titre, { shouldDirty: true })
@@ -110,34 +117,6 @@ function EditeurArticle({ contenu: initial, surCree }: ProprietesEditeur<Article
           surChange={surTitre}
         />
         <ChampTraduit
-          nom="slug"
-          libelle={t('article.slug')}
-          aide={t('article.slugAide')}
-          valeurs={valeurTraduite('slug')}
-          erreurs={erreurDe('slug')}
-          surChange={(langue, valeur) => {
-            setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
-            ecrire('slug')(langue, valeur)
-          }}
-        />
-        {suggestion && (langueSuggestion === 'fr' || langueSuggestion === 'en') ? (
-          <Alerte ton="info">
-            <p>{t('article.slugPris')}</p>
-            <Bouton
-              variante="secondaire"
-              onClick={() => {
-                setValue(`traductions.${langueSuggestion}.slug`, suggestion.valeur, {
-                  shouldDirty: true,
-                })
-                setSlugManuel((actuel) => ({ ...actuel, [langueSuggestion]: true }))
-                editeur.effacerSuggestion()
-              }}
-            >
-              {t('article.utiliserSlug')} « {suggestion.valeur} »
-            </Bouton>
-          </Alerte>
-        ) : null}
-        <ChampTraduit
           nom="extrait"
           libelle={t('article.extrait')}
           multiligne
@@ -146,13 +125,14 @@ function EditeurArticle({ contenu: initial, surCree }: ProprietesEditeur<Article
           erreurs={erreurDe('extrait')}
           surChange={ecrire('extrait')}
         />
-        <Onglets
+        <ParLangue
           libelle={t('article.corps')}
           onglets={LANGUES.map((langue) => ({
             id: langue,
             libelle: `${t('article.corps')} (${langue.toUpperCase()})`,
             contenu: (
               <Controller
+                key={langue}
                 control={control}
                 name={`traductions.${langue}.corps`}
                 render={({ field, fieldState }) => (
@@ -168,42 +148,84 @@ function EditeurArticle({ contenu: initial, surCree }: ProprietesEditeur<Article
             ),
           }))}
         />
-        <details className="rounded-md border border-sand-200 p-4">
-          <summary className="cursor-pointer text-body font-semibold">{t('article.seo')}</summary>
-          <div className="mt-4 space-y-4">
-            <ChampTraduit
-              nom="seoTitre"
-              libelle={t('article.seoTitre')}
-              maxLength={70}
-              valeurs={valeurTraduite('seoTitre')}
-              erreurs={erreurDe('seoTitre')}
-              surChange={ecrire('seoTitre')}
-            />
-            <ChampTraduit
-              nom="seoDescription"
-              libelle={t('article.seoDescription')}
-              multiligne
-              maxLength={160}
-              valeurs={valeurTraduite('seoDescription')}
-              erreurs={erreurDe('seoDescription')}
-              surChange={ecrire('seoDescription')}
-            />
-          </div>
-        </details>
+        <SectionAvancee
+          ouverte={
+            Boolean(adresseProposee) ||
+            LANGUES.some((l) =>
+              (['slug', 'seoTitre', 'seoDescription'] as const).some((c) => erreurDe(c)[l]),
+            )
+          }
+        >
+          <ChampAdresse
+            valeurs={valeurTraduite('slug')}
+            erreurs={erreurDe('slug')}
+            surChange={(langue, valeur) => {
+              setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
+              ecrire('slug')(langue, valeur)
+            }}
+            suggestion={adresseProposee}
+            surSuggestion={(langue, valeur) => {
+              setValue(`traductions.${langue}.slug`, valeur, { shouldDirty: true })
+              setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
+              editeur.effacerSuggestion()
+            }}
+          />
+          <ChampTraduit
+            nom="seoTitre"
+            libelle={t('article.seoTitre')}
+            maxLength={70}
+            valeurs={valeurTraduite('seoTitre')}
+            erreurs={erreurDe('seoTitre')}
+            surChange={ecrire('seoTitre')}
+          />
+          <ChampTraduit
+            nom="seoDescription"
+            libelle={t('article.seoDescription')}
+            multiligne
+            maxLength={160}
+            valeurs={valeurTraduite('seoDescription')}
+            erreurs={erreurDe('seoDescription')}
+            surChange={ecrire('seoDescription')}
+          />
+        </SectionAvancee>
       </fieldset>
 
       <aside className="space-y-6">
         <fieldset disabled={!modifiable} className="space-y-6">
           <legend className="sr-only">{t('article.reglages')}</legend>
-          <Select
-            id="categorie"
-            libelle={t('article.categorie')}
-            required
-            invite={t('article.choisirCategorie')}
-            options={CATEGORIES_ARTICLE.map((c) => ({ valeur: c, libelle: c }))}
-            erreur={formState.errors.categorie?.message}
-            {...register('categorie')}
-          />
+          <div className="space-y-1">
+            <Select
+              id="categorie"
+              libelle={t('article.categorie')}
+              required
+              invite={t('article.choisirCategorie')}
+              disabled={!categoriesArticle.isSuccess}
+              options={(categoriesArticle.data?.items ?? []).map((c) => ({
+                valeur: c.id,
+                libelle: nomCategorie(c),
+              }))}
+              erreur={formState.errors.categorie?.message}
+              value={valeurs.categorieId}
+              onChange={(evenement) => {
+                const choisie = categoriesArticle.data?.items.find(
+                  (c) => c.id === evenement.target.value,
+                )
+                setValue('categorieId', choisie?.id ?? '', { shouldDirty: true })
+                setValue('categorie', choisie ? nomCategorie(choisie) : '', {
+                  shouldDirty: true,
+                  shouldValidate: tentative > 0,
+                })
+              }}
+            />
+            {peutGererCategories ? (
+              <Link
+                to="/categories#categories-article"
+                className="inline-flex min-h-11 items-center text-caption font-semibold text-clay-700 underline underline-offset-4"
+              >
+                {t('categorie.gerer')}
+              </Link>
+            ) : null}
+          </div>
           <Controller
             control={control}
             name="imageId"
@@ -220,6 +242,7 @@ function EditeurArticle({ contenu: initial, surCree }: ProprietesEditeur<Article
             name="tagIds"
             render={({ field }) => (
               <SelecteurTags
+                contexte="article"
                 valeur={field.value}
                 surChange={field.onChange}
                 exigerFormat

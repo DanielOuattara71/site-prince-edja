@@ -25,12 +25,12 @@ une réponse du client, dans `docs/QUESTIONS.md` du back end.
 | `docs/PROMPT-BACKEND-PRINCE-EDJA.md` | Cahier du back end |
 | `prince-edja-api/docs/PLAN.md` | Étapes 1 à 12 du back end et leur ordre |
 | `admin/docs/DECISIONS.md` | Décisions D-01 à D-56 |
-| `prince-edja-api/docs/DECISIONS.md` | Décisions B-01 à B-45 |
+| `prince-edja-api/docs/DECISIONS.md` | Décisions B-01 à B-55 |
 | `AGENTS.md` (racine du site) | Conventions du site public |
 
 ## 3. Où en est-on
 
-### Admin — étapes 0 à 7 faites
+### Admin — étapes 0 à 9 faites
 
 - Socle, couche `api/` et faux serveur MSW, `peut()`, coquille, composants transverses.
 - Gabarits `ListePage` / `useCycleContenu` (`src/features/gabarits/`), articles de bout en bout
@@ -51,10 +51,12 @@ une réponse du client, dans `docs/QUESTIONS.md` du back end.
   famille de plus = une description dans `features/editorial/specs.ts` + une configuration dans
   `mocks/handlers/editorial.ts`. **C'est le patron à suivre pour l'étape 7.**
 - **Étape 7 faite** (D-67, D-68) : distinctions, presse, archive, univers, jalons, offres, pages, toutes déclaratives (`features/editorial/specs.ts`, `mocks/handlers/editorial-lot3.ts`). Nouveaux types de champ : `booleen`, `sources`, `blocs` ; ensembles fermés (`fermee`).
-- Dernier état : 185 tests sur 185 (deux exécutions stables), lint et typecheck propres, build et `verifier-dist` OK, e2e
-  8 sur 8 contre l'API (`g2.sh`).
+- **Étape 8 faite** : messages, demandes, abonnés ; navigation, textes d’interface, pages légales et paramètres sont livrés ; export CSV de l’audience ciblée.
+- **Étape 9 faite** (D-70) : comptes (création, rôle, désactivation, réinitialisation), journal (lecture admin, export super-admin), publication du site, profil, tableau de bord (10 dernières modifications cliquables, espace Administration filtré par `peut()`) ; faux serveur et tests d’accès complets.
+- **Étape 10, écrans du lot 4 faits** (D-71) : galerie, études de cas, partenaires et pages légales déclaratives (ensemble fermé) ; chiffres d’audience et motifs de contact ordonnables ; paramètres (vente en ligne toujours fermée, interrupteurs réservés au super-admin) ; navigation remplacée en entier ; textes d’interface.
+- Dernier état : 211 tests sur 211, lint et typecheck propres, build et `verifier-dist` OK.
 
-### Back end — étapes 0 à 6 et 9 faites, étape 4 étendue
+### Back end — étapes 0 à 12 faites, étape 4 étendue
 
 - Socle, schéma (79 tables), accès (sessions, CSRF, Argon2id), articles, tags, journal, versions,
   médias, publication du site (file de tâches maison `tache`, pas pg-boss, B-34).
@@ -69,8 +71,12 @@ une réponse du client, dans `docs/QUESTIONS.md` du back end.
 - **Lot 3 éditorial fait** (B-48) : archive, distinctions, presse, univers, jalons, offres, pages
   sur la fabrique (`configurations-lot3.ts`), migration `0004`, contrat **1.3.0**. Reste au lot 3 :
   galerie, études de cas, partenaires, pages légales (pas encore d'écran admin non plus).
-- Dernier état : 142 tests sur 142, lint, formatage et build OK ; e2e de l'admin 10 sur 10 contre
-  l'API. Question ouverte Q-45 (clés de bloc des pages).
+- **Étape 8 faite** : audience et e-mails ; messages, demandes et abonnés côté admin.
+- **Étape 7 faite** : lecture publique depuis PostgreSQL, sitemap cohérent ; aucun brouillon, relecture, archivé ou prix non confirmé ne sort.
+- **Étape 10 faite** (B-49 à B-52) : invitations verrouillées par `multiVendeurs`, cloisonnement vendeur sur trois niveaux, consultation journalisée sans impersonation, modification vendeur d’un bijou publié renvoyée en relecture (RG-23). Question ouverte Q-46 pour un éventuel écran dédié « voir comme ».
+- **Étape 11 faite** (B-53) : `migrer:contenus` importe 83 objets en brouillon (19 médias, 13 réutilisés), crée une variante vide par bijou, rejouable sans doublon (rapport `prince-edja-api/docs/RAPPORT-MIGRATION.md`).
+- **Étape 12 faite** (B-54, B-55) : documentation complète (`ARCHITECTURE`, `API`, `REGLES-DE-GESTION`, `SECURITE`, déploiement, exploitation, restauration, retour arrière, coûts) ; OpenAPI et matrice RG générés et contrôlés par tests unitaires ; aucun déploiement ni essai de restauration exécuté en production.
+- Dernier état : 49 tests unitaires + 114 tests d’intégration ; lint, typage, formatage, build et audit OK ; migration contenus validée sur base test jetable ; production non exécutée. Questions ouvertes Q-45 à Q-50.
 
 ### Rien n'est commité
 
@@ -113,22 +119,18 @@ L'utilisateur commite lui-même. **Ne commite ni ne pousse sans demande explicit
      ressources ordonnables.
 3. ~~**Admin étape 7**~~ **faite** : distinctions, presse, archive, univers, jalons, offres, pages. Validation :
    une entrée d'archive sans source n'est pas publiable.
-4. **Back end étape 8** : audience et e-mails (contact, collaboration, newsletter à double
-   consentement, demandes à plusieurs lignes, modèles FR/EN, purges). Côté admin : `messages`,
-   `demandes`, `abonnes`.
-5. **Admin étape 8** : messages, demandes, abonnés, navigation, textes d'interface, pages légales,
-   paramètres. Validation : export CSV, confirmation du manifeste.
-6. **Back end étape 7** : lecture publique (`/public/api/v1/contenus`, `/site`, `/sitemap`,
+4. ~~Back end étape 8~~ **faite**.
+5. ~~Admin étape 8~~ **faite**.
+6. ~~Back end étape 7~~ **faite**. (`/public/api/v1/contenus`, `/site`, `/sitemap`,
    RG-07, catégories vides masquées RG-09).
-7. **Admin étape 9** : comptes, journal, publication, profil, tableau de bord (parcours
-   super-admin).
-8. **Back end étapes 10, 11, 12** : multi-vendeurs verrouillé, migration de `src/data/*` (une
-   variante par pièce, tout en brouillon, rapport à blanc), clôture (sécurité, documentation,
-   passation).
-9. **Admin étape 10** : audit d'accessibilité, performance, nettoyage, documentation, critères
-   d'acceptation globaux (25 écrans, trois états chacun, axe sans violation sérieuse).
+7. ~~Admin étape 9~~ **faite** (D-70) : comptes, journal, publication, profil, tableau de bord.
+8. ~~Back end étape 10~~ **faite**.
+9. ~~Back end étape 11~~ **faite**.
+10. ~~Back end étape 12~~ **faite** (documentation et revue qualité ; production à valider).
+11. **Admin étape 10, première partie faite** : les neuf écrans du lot 4 (galerie, études de cas, partenaires, pages légales, chiffres d’audience, paramètres, navigation, textes d’interface, motifs de contact) sont livrés (D-71). Reste : audit d’accessibilité, performance, nettoyage, documentation, critères
+    d’acceptation globaux (25 écrans, trois états chacun, axe sans violation sérieuse).
 
-Questions déjà ouvertes chez le client : `prince-edja-api/docs/QUESTIONS.md`, Q-01 à Q-44.
+Questions déjà ouvertes chez le client : `prince-edja-api/docs/QUESTIONS.md`, Q-01 à Q-49.
 Notamment le domaine de production, l'hébergement de l'API et le workflow de build (Q-21, Q-22,
 Q-44).
 
@@ -195,10 +197,10 @@ npm run format:check && npm run typecheck && npm run lint && npx vitest run && n
 
 ## 8. Prochaine action concrète
 
-> Les quatre points ci-dessous (boutique) sont **faits**, l'étape 6 de l'admin aussi. Prochaine
-> action : **back end étape 8** (audience et e-mails : messages, demandes à plusieurs lignes,
-> abonnés à double consentement, purges), puis **admin étape 8** (messages, demandes, abonnés,
-> navigation, textes d'interface, pages légales, paramètres).
+> L'admin livre les neuf écrans du lot 4 (D-71) ; le back end a livré les étapes 10 à 12 (B-49 à
+> B-55), production non exécutée. Prochaine action : **le reste de l'étape 10 de l'admin** —
+> audit d'accessibilité, performance, nettoyage et critères d'acceptation globaux (25 écrans,
+> trois états chacun, axe sans violation sérieuse) — puis validation en production.
 
 1. Relire le contrat, § 10, et `prince-edja-api/src/modules/{categories,createurs,bijoux}/schemas.ts`
    pour la forme exacte des corps et réponses.

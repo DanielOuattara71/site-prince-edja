@@ -189,7 +189,8 @@ describe('écrans', () => {
       ordre: 1,
       traductions: { fr: { slug: 'exemple-second', titre: 'Exemple — second', accroche: '' } },
     })
-    await ouvrir('admin', '/projets')
+    // Le hub occupe /projets (ECRANS § 3.1) : la liste ordonnable est à /projets/liste.
+    await ouvrir('admin', '/projets/liste')
     fireEvent.click(await screen.findByRole('button', { name: /Changer l’ordre d’affichage/ }))
     const liste = await screen.findByRole('list', { name: 'Ordre d’affichage sur le site' })
     fireEvent.click(within(liste).getByRole('button', { name: 'Monter « Exemple — second »' }))

@@ -5,11 +5,14 @@ propre adresse, qui parle à l'API `/admin/api/v1`. La forme des échanges est f
 [`docs/CONTRAT-API.md`](../docs/CONTRAT-API.md) (à la racine du dépôt), qui fait foi. Tant que
 le back end n'existe pas, l'API est simulée par MSW.
 
-> État : **étape 7** — distinctions, presse, archive (sources exigées), univers, jalons, offres, pages fixes ; **étape 6** — boutique (créateurs, bijoux et variantes, catégories), épisodes, projets, villes, destinations (formulaires déclaratifs) ; médiathèque ; articles de bout en bout sur les gabarits de liste et de formulaire
+> État : **mission de simplification (06/11/2026)** — menu à neuf entrées et onglets (C2), un seul sélecteur de langue et adresse dans « Avancé » (C3), listes à recherche instantanée et pagination 20/50/100 (C4), « Enregistré à », conflit de version, messages d’erreur (C5), hub Projets, catégories par famille, Livres (E1), « Sur le site » et photos fixes (C6), tableau de bord, barre mobile, accueil (C7) — D-72 à D-79, contrat 1.5.0 **proposé** (faux serveur seulement) ; **étape 10, écrans du lot 4** — galerie, études de cas, partenaires, pages légales (raison `corps` rédigé par langue), chiffres d’audience, motifs de contact, paramètres (vente en ligne toujours fermée ; interrupteurs réservés au super-admin), navigation, textes d’interface (D-71) ; **étape 9** — comptes (création, rôle, désactivation, lien de réinitialisation), journal (lecture admin / export super-admin), publication (relance et suivi), profil, tableau de bord (dernières modifications cliquables, espace Administration) ; **étape 8** — messages, demandes, abonnés ; **étape 7** — distinctions, presse, archive (sources exigées), univers, jalons, offres, pages fixes ; **étape 6** — boutique (créateurs, bijoux et variantes, catégories), épisodes, projets, villes, destinations (formulaires déclaratifs)
 > (filtres dans l'adresse, actions groupées, brouillon automatique, aperçu avec articles liés,
 > historique, circuit soumettre → publier → suivi de reconstruction). Critère G2 du lot 1 vérifié
 > contre l'API réelle (`npm run test:e2e`). Composants transverses : étape 3 ; les autres écrans
 > affichent leur étape de livraison.
+>
+> Le back end a livré les étapes 10, 11 et 12 (multi-vendeurs verrouillé, migration des contenus, documentation et revue qualité ; mise en production non exécutée).
+> Reste pour **l’étape 10** : audit d’accessibilité, performance, nettoyage et critères d’acceptation globaux.
 >
 > En développement, **`/composants`** montre chaque composant sur le faux serveur. Cette page
 > n'existe pas dans le build.

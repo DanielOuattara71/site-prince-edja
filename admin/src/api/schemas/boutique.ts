@@ -19,14 +19,22 @@ export const montantSchema = z.number().int().min(0).max(1_000_000_000)
 
 // --- Catégories (§ 10.1) ---
 
+/** Trois familles de catégories (SCHEMAS § 3, D10) ; défaut `produit` (catégories historiques). */
+export const FAMILLES_CATEGORIE = ['article', 'projet', 'produit'] as const
+export const familleCategorieSchema = z.enum(FAMILLES_CATEGORIE)
+export type FamilleCategorie = z.infer<typeof familleCategorieSchema>
+
 const traductionCategorieLecture = z.object({ slug: slugSchema, nom: z.string() })
 
 /** La liste renvoie les objets complets : petits, sans cycle de vie (B-45 du back end). */
 export const categorieSchema = z.object({
   id: idSchema,
   ordre: z.number().int(),
+  famille: familleCategorieSchema.default('produit'),
   visible: z.boolean(),
   nombreBijouxPublies: z.number().int().min(0),
+  /** Éléments rattachés, tous statuts (articles, projets, bijoux, livres) : suppression refusée au-delà de 0. */
+  nombreElements: z.number().int().min(0).optional(),
   traductions: traductionsLecture(traductionCategorieLecture),
   version: versionSchema,
 })
@@ -38,6 +46,7 @@ const traductionCategorieEcriture = z.strictObject({
 })
 
 export const entreeCategorieSchema = z.strictObject({
+  famille: familleCategorieSchema.optional(),
   visible: z.boolean().optional(),
   traductions: z.strictObject({
     fr: traductionCategorieEcriture,

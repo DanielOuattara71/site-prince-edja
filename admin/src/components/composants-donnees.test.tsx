@@ -92,7 +92,7 @@ describe('barre de statut (RG-01, RG-02, RG-05)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Publier' }))
     expect(surAction).toHaveBeenCalledWith('publier')
     expect(screen.getByRole('button', { name: 'Refuser' })).toBeTruthy()
-    expect(screen.getByText('À fournir')).toBeTruthy()
+    expect(screen.getByText('À compléter')).toBeTruthy()
     expect(screen.getByText('Programmé')).toBeTruthy()
     expect(screen.getByText(/heure d’Abidjan/)).toBeTruthy()
   })
@@ -179,7 +179,7 @@ describe('tableau de données', () => {
     fireEvent.click(within(tableau).getByRole('checkbox', { name: 'Sélectionner toute la page' }))
     expect(screen.getByText(/2 sélectionné/)).toBeTruthy()
 
-    fireEvent.click(screen.getByRole('button', { name: /Suivante/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Suivant/ }))
     expect(screen.getByText('tri=-titre page=2')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('checkbox', { name: 'Auteur' }))
@@ -228,10 +228,10 @@ describe('sélecteur de tags (RG-06)', () => {
       return <SelecteurTags valeur={ids} surChange={setIds} exigerFormat afficherErreur />
     }
     await rendreAvecSession(<Essai />, { role: 'editeur' })
-    expect(await screen.findByText(/Choisissez au moins un tag de format/)).toBeTruthy()
+    expect(await screen.findByText(/Choisissez au moins une étiquette de format/)).toBeTruthy()
     fireEvent.click(screen.getByLabelText('Article'))
     await waitFor(() =>
-      expect(screen.queryByText(/Choisissez au moins un tag de format/)).toBeNull(),
+      expect(screen.queryByText(/Choisissez au moins une étiquette de format/)).toBeNull(),
     )
   })
 })
@@ -419,7 +419,8 @@ describe('session tombée pendant le travail (D-16, D-38)', () => {
 })
 
 describe('vitrine des composants', () => {
-  it('se rend en développement, sans violation axe', async () => {
+  // Vitrine retirée des routes (C2, « page de démonstration ») : test conservé jusqu'à C9.
+  it.skip('se rend en développement, sans violation axe', async () => {
     const { connecter } = await import('@/test/faux-serveur')
     await connecter('admin')
     window.history.pushState({}, '', '/composants')

@@ -1,6 +1,6 @@
 # CONTRAT-API — Prince EDJA
 
-> **Version 1.3.0 · 01/11/2026 · ARRÊTÉE.**
+> **Version 1.4.0 · 05/11/2026 · ARRÊTÉE.**
 > Contrat de la face d'administration (`/admin/api/v1`) entre l'interface d'admin (`admin/`) et
 > le back end (`prince-edja-api`). La face publique figure en annexe (§ 18), à titre de
 > référence pour le back end et le site.
@@ -1130,6 +1130,7 @@ existe déjà ou non.
 | `GET /newsletter/desinscription?jeton=` | — | Abonné `desabonne` |
 | `POST /demandes` | `{ varianteIds: string[] (1 à 20), nom, email, message?, langue, siteWeb }` | Demande `nouvelle` ; une variante inconnue, non publiée ou indisponible → `404` |
 | `GET /contenus/{type}?langue=` et `/contenus/{type}/{slug}?langue=` | — | Contenus `publie` avec `publieLe ≤ maintenant` ; jamais un brouillon, une relecture, un archivé, ni un prix dont `prixConfirme` est faux |
+| `GET /categories?famille=&langue=` | — | Catégories visibles et non vides de la famille (`article`, `projet`, `produit`), avec leur effectif publié |
 | `GET /site` | — | Identité, navigation, textes d'interface, pages légales publiées, réglages publics (`languesActives`) |
 | `GET /sitemap` | — | Adresses publiables par langue, avec date de modification |
 
@@ -1176,3 +1177,81 @@ développement : la valeur par défaut est sûre et modifiable sans rupture.
 | 1.1.0 | 30/10/2026 | `CibleInterne` gagne `{ type: 'page-legale', cle }` : le pied de page du site renvoie vers les cinq pages légales, que les cibles de la 1.0.0 ne pouvaient pas désigner. Relevé par le back end en écrivant les données de départ (étape 2). Mineure : ajout d'une valeur en lecture. | Responsable technique |
 | 1.2.0 | 01/11/2026 | Relevé en écrivant l'admin (D-64, D-65) et le back end (B-46) : `destinations.latitude` et `longitude` deviennent `number \| null` (une destination se crée en brouillon avant ses coordonnées, toujours exigées à la publication) ; le tag pays de la Côte d'Ivoire a le code `cote-d-ivoire` ; `projets` et `villes` acceptent `tri=ordre` (et `titre`). Mineure : une valeur ajoutée en lecture, un tri ajouté. | Responsable technique |
 | 1.3.0 | 01/11/2026 | Relevé en écrivant le lot 3 (B-48, D-67) : `distinctions.annee`, `presse.datePublication`, `presse.lien` et `univers.cible` acceptent `null` en brouillon, toujours exigés à la publication ; les pages n'ont aucune clé de bloc tant que l'inventaire n'est pas fourni. Mineure : des valeurs ajoutées en lecture. | Responsable technique |
+| 1.4.0 | 05/11/2026 | Annexe publique : `GET /categories?famille=&langue=` (catégories visibles et non vides d'une famille). Mineure. | Responsable technique |
+| 1.5.0 | 06/11/2026 | **PROPOSÉE, non arrêtée** : voir § 22. Écrite par l'admin (étapes C2 à C7, E1) d'après SCHEMAS-ENTITES et PROMPT-CORRECTION ; à valider par le back end avant implémentation réelle (D1 à D4, C6). L'admin ne l'utilise que contre le faux serveur. | En attente (admin a proposé) |
+
+---
+
+## 22. Proposition 1.5.0 — extensions demandées par l'admin (PROPOSÉE)
+
+> Statut : **proposée, non arrêtée** (§ 0 : « aucune implémentation ne précède la version du contrat
+> qui la décrit » — l'admin l'implémente **contre le faux serveur seulement** ; le back end la
+> valide, l'amende ou la refuse en D1 à D4 et C6). Source de vérité des données : SCHEMAS-ENTITES.
+> Tous les ajouts sont **compatibles** : champs facultatifs en lecture, champs facultatifs en écriture.
+
+### 22.1 Catégories par famille (SCHEMAS § 3, RG-29 à RG-31)
+
+| Changement | Détail |
+|---|---|
+| `categories.famille` | `'article' \| 'projet' \| 'produit'`, lecture ; défaut `produit` pour les catégories existantes. Écriture facultative à la création (`POST`), non modifiable ensuite. |
+| `GET /categories?famille=` | Filtre par famille. Sans paramètre : toutes. |
+| `categories.nombreElements` | Lecture : éléments rattachés tous statuts (articles, projets, bijoux, livres). |
+| `PATCH /categories/ordre` | La liste porte toutes les catégories **d'une** famille, et elles seules. |
+| `DELETE /categories/:id` | Utilisée → `409 CATEGORIE_UTILISEE`, `details: { nombre }` (remplace `422 RG-09`). |
+| Unicité du slug | Par famille et par langue. |
+| Nouveau code | `422 CATEGORIE_INCOMPATIBLE` : catégorie d'une autre famille (RG-29). |
+
+### 22.2 Articles, projets, épisodes (SCHEMAS § 4 à § 6)
+
+| Ressource | Ajout |
+|---|---|
+| `articles` | `categorieId: string \| null` (lecture et écriture facultatives). Le texte `categorie` reste, et accepte le nom d'une catégorie `article` (plus seulement les huit valeurs). Résumé de liste : `categorie` (nom). |
+| `projets` | `categorieId: string \| null` (famille `projet`) ; `traductions[l].contenu: CorpsRiche \| null` (présentation). Résumé : `format`, `avancement`, `categorieId`, `categorie` (nom), `nombreEpisodes`. Filtres : `format`, `avancement`, `categorie`. |
+| `episodes` | `projetId: string \| null` (RG-32 ; projet inexistant → `422 VALIDATION`). Résumé : `projetId`, `projet` (titre), `destination` (nom). Filtres : `projetId`, `destinationId`. |
+
+### 22.3 Livres (SCHEMAS § 8.3, § 8.4)
+
+`/livres` sur le gabarit § 8 (cycle de vie, versions, `PATCH /ordre` non). Champs : `reference` (U),
+`createurId` (défaut : créateur principal), `categorieId` (famille `produit`), `imageId` (couverture),
+`galerieMediaIds` (≤ 8), `visible` (défaut `true`), `prixConfirme`, `auteur`, `editeur`, `isbn`,
+`anneePublication`, `nombrePages`, `tagIds`, `traductions[l]: { slug, titre, resume }`, et
+`variantes: { id?, libelle, reference, prix, ancienPrix, stock, disponible }[]` — **tableau entier
+remplacé** à chaque écriture (alternative : routes de variantes comme les bijoux, § 10.3 ; voir
+`docs/QUESTIONS.md`). Exigences de publication : titre, résumé, couverture avec texte alternatif,
+catégorie, créateur, au moins une variante. Résumé : `numero` (= `reference`), `auteur`, `categorie`,
+`prixMin`, `visible`. Filtre : `categorie`. Cloisonnement vendeur identique aux bijoux.
+
+### 22.4 Photos fixes (PROMPT-CORRECTION § 7.3)
+
+`GET /emplacements-photos` → `{ items: { cle, libelle, formatConseille: string | null, mediaId,
+media: { id, url, texteAlt } | null, misAJourLe }[] }`. `PUT /emplacements-photos/:cle` avec
+`{ mediaId: string | null }` : image seulement, texte alternatif dans chaque langue active (`422 RG-08`),
+journalisé, publication déclenchée. Droits : ressource `emplacements-photos`, lecture équipe,
+modification admin (et éditeur si le client le décide, E4). Un média assigné ne se supprime pas.
+
+### 22.5 Tableau de bord (ECRANS § 1)
+
+`programmes?: { ressource, id, titre, publieLe }[]` : les cinq prochains contenus publiés à date
+future. `messagesNonLus` et `demandesNouvelles` sont comptés pour de vrai.
+
+### 22.6 Erreurs (U13)
+
+Codes ajoutés au § 4.2 : `CATEGORIE_INCOMPATIBLE` (422), `CATEGORIE_UTILISEE` (409). L'admin affiche
+le message du serveur ; s'il est vide, celui de `i18n/fr.ts` ; jamais le code.
+
+### 22.7 Ce qui ne change pas encore
+
+`/admin/api/v1/journal` reste appelé tel quel : le renommage en `/activite` (PROMPT-CORRECTION § 8,
+308 pendant une version) attend le back end. L'adresse d'**écran** `/journal` de l'admin redirige
+déjà vers `/activite`.
+
+### 22.8 Templates de projet (ajout du 06/11/2026, `docs/PROPOSITION-TEMPLATES-PROJETS.md`)
+
+`projets` gagne, tous facultatifs (un projet existant sans ces champs garde son rendu) :
+`template: 'film' | 'programme' | 'bibliotheque'` (absent = celui du format : Série et Documentaire →
+`film`, Émission → `programme`, Archive → `bibliotheque`) ; `blocsMasques: string[]` (blocs facultatifs
+masqués, contenu conservé) ; `bandeauId` (image panoramique 21:9) ; `saison` (texte, template Film) ;
+`escaleIds: string[]` (villes, template Programme) ; `partenaireIds: string[]` ;
+`traductions[l].citation`, `traductions[l].programme`, `traductions[l].festivals` (textes, `null` si vides).
+Résumé de liste : `template`. Filtre : `template`. Exigence de publication du template Programme : au
+moins une escale (`escaleIds`). Catégories de projets de départ : Film, Tourisme, Patrimoine.

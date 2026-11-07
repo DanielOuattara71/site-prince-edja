@@ -7,3 +7,8 @@
 export function formatFCFA(montant: number): string {
   return `${new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(montant)} FCFA`
 }
+
+/** Un nombre d'abonnés ou de portée : séparateur de milliers, comme sur le site. */
+export function formatNombre(valeur: number): string {
+  return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(valeur)
+}

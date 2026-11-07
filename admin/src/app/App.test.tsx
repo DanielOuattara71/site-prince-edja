@@ -50,18 +50,26 @@ describe('accès', () => {
 })
 
 describe('menu filtré par peut() pour chaque rôle', () => {
+  // Neuf entrées (C2) ; le détail par rôle, vendeur compris, est dans `navigation.test.tsx`.
+  const neuf = [
+    'Tableau de bord',
+    'Journal',
+    'Projets',
+    'Boutique',
+    'Médiathèque',
+    'Preuves et presse',
+    'Boîte de réception',
+    'Réglages',
+    'Technique',
+  ]
   const cas: [RoleEssai, string[], string[]][] = [
     [
       'editeur',
-      ['Articles', 'Médias', 'Bijoux'],
-      ['Messages', 'Comptes', 'Journal', 'Tags', 'Créateurs', 'Publication du site'],
+      ['Tableau de bord', 'Journal', 'Projets', 'Boutique', 'Médiathèque', 'Preuves et presse'],
+      ['Boîte de réception', 'Réglages', 'Technique'],
     ],
-    [
-      'admin',
-      ['Articles', 'Messages', 'Tags', 'Créateurs', 'Journal', 'Comptes', 'Publication du site'],
-      [],
-    ],
-    ['super', ['Articles', 'Messages', 'Journal', 'Comptes'], []],
+    ['admin', neuf, []],
+    ['super', neuf, []],
   ]
 
   it.each(cas)('%s', async (role, visibles, absents) => {

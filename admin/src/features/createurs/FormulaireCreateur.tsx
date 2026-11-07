@@ -18,7 +18,7 @@ import { Bouton } from '@/components/ui/Bouton'
 import { Champ } from '@/components/ui/Champ'
 import { Confirmation } from '@/components/ui/Confirmation'
 import { Interrupteur } from '@/components/ui/Interrupteur'
-import { Onglets } from '@/components/ui/Onglets'
+import { ParLangue } from '@/components/formulaire/SelecteurLangue'
 import { PanneauImage } from '@/features/articles/PanneauImage'
 import {
   ActionsLaterales,
@@ -278,7 +278,7 @@ function ApercuCreateur({ valeurs }: { valeurs: ValeursCreateur }) {
       l === 'fr' || valeurs.traductions[l].bio.trim() || valeurs.traductions[l].accroche.trim(),
   )
   return (
-    <Onglets
+    <ParLangue
       libelle={t('article.apercu')}
       onglets={langues.map((langue) => ({
         id: langue,

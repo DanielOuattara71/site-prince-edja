@@ -81,5 +81,16 @@ export const tableauDeBordSchema = z.object({
       statut: statutContenuSchema.nullable(),
     }),
   ),
+  /** Les 5 prochains contenus programmés (ECRANS § 1, contrat 1.5.0 proposé) ; absent = aucun. */
+  programmes: z
+    .array(
+      z.object({
+        ressource: z.string(),
+        id: idSchema,
+        titre: z.string(),
+        publieLe: horodatageSchema,
+      }),
+    )
+    .optional(),
 })
 export type TableauDeBord = z.infer<typeof tableauDeBordSchema>

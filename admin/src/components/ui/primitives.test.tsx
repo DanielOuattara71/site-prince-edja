@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ResumeErreurs } from '@/components/formulaire/ResumeErreurs'
@@ -107,7 +107,7 @@ describe('pastilles et « à fournir »', () => {
       'Publié',
       'Programmé',
       'Archivé',
-      'À fournir',
+      'À compléter',
     ]) {
       expect(screen.getByText(libelle)).toBeTruthy()
     }
@@ -217,7 +217,7 @@ describe('notifications', () => {
 })
 
 describe('résumé des erreurs', () => {
-  it('prend le focus à la soumission et mène au champ', () => {
+  it('prend le focus à la soumission et mène au champ', async () => {
     const { rerender } = render(
       <>
         <ResumeErreurs erreurs={[]} tentative={0} />
@@ -235,7 +235,7 @@ describe('résumé des erreurs', () => {
     )
     expect(document.activeElement?.textContent).toContain('Le formulaire contient des erreurs')
     fireEvent.click(screen.getByRole('link', { name: 'Titre obligatoire.' }))
-    expect(document.activeElement).toBe(screen.getByLabelText('Titre'))
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Titre')))
   })
 })
 

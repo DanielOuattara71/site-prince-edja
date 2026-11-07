@@ -19,6 +19,7 @@ import { magasin } from '@/api/mocks/magasin'
 import { manquesMedia, trouverMedia, type Manquant } from '@/api/mocks/regles'
 import { erreur } from '@/api/mocks/reponses'
 import { ressourceSimulee, titreDe, type Traductions } from '@/api/mocks/ressource-simulee'
+import { templateDe } from '@/lib/templates'
 
 /**
  * Épisodes, projets, villes, destinations simulés (`docs/CONTRAT-API.md` § 9.2 à 9.5), sur la
@@ -127,6 +128,7 @@ export const handlersEditorial = [
       numero: String(e['numero']),
       imageId: (e['imageId'] as string | null | undefined) ?? null,
       guideMediaId: (e['guideMediaId'] as string | null | undefined) ?? null,
+      projetId: (e['projetId'] as string | null | undefined) ?? null,
       destinationId: (e['destinationId'] as string | null | undefined) ?? null,
       trailerUrl: (e['trailerUrl'] as string | null | undefined) ?? null,
       dureeMinutes: (e['dureeMinutes'] as number | null | undefined) ?? null,
@@ -147,6 +149,9 @@ export const handlersEditorial = [
           champ: 'numero',
         })
       }
+      if (o.projetId && !magasin.projets.some((p) => p.id === o.projetId)) {
+        return erreur(422, 'VALIDATION', 'Ce projet n’existe pas.', { champ: 'projetId' })
+      }
       if (o.destinationId && !magasin.destinations.some((d) => d.id === o.destinationId)) {
         return erreur(422, 'VALIDATION', 'Cette destination n’existe pas.', {
           champ: 'destinationId',
@@ -155,7 +160,22 @@ export const handlersEditorial = [
       return refusPdf(o.guideMediaId, 'guideMediaId')
     },
     tris: { numero: (o) => o.numero, titre: (o) => titreDe(o, 'titre').toLowerCase() },
-    resume: (o) => ({ numero: o.numero }),
+    // Projet et destination lisibles dans la liste (ECRANS § 3.4).
+    resume: (o) => {
+      const projet = magasin.projets.find((p) => p.id === o.projetId)
+      const destination = magasin.destinations.find((d) => d.id === o.destinationId)
+      return {
+        numero: o.numero,
+        projetId: o.projetId ?? null,
+        projet: projet ? titreDe(projet, 'titre') : null,
+        destination: destination ? titreDe(destination, 'nom') : null,
+      }
+    },
+    filtrer: (o, params) => {
+      const projet = params.get('projetId')
+      const destination = params.get('destinationId')
+      return (!projet || o.projetId === projet) && (!destination || o.destinationId === destination)
+    },
   }),
 
   ...ressourceSimulee<Projet>({
@@ -169,12 +189,26 @@ export const handlersEditorial = [
     champTitre: 'titre',
     slugs: true,
     ordonnable: true,
-    traduction: (e) => ({ titre: e['titre'], accroche: texteOuVide(e['accroche']) }),
+    traduction: (e) => ({
+      titre: e['titre'],
+      accroche: texteOuVide(e['accroche']),
+      contenu: e['contenu'] ?? null,
+      citation: texteOuNull(e['citation']),
+      programme: texteOuNull(e['programme']),
+      festivals: texteOuNull(e['festivals']),
+    }),
     champsInitiaux: (e) => ({
       format: e['format'] as Projet['format'],
       avancement: e['avancement'] as Projet['avancement'],
       annee: (e['annee'] as string | null | undefined) ?? null,
       imageId: (e['imageId'] as string | null | undefined) ?? null,
+      categorieId: (e['categorieId'] as string | null | undefined) ?? null,
+      ...(e['template'] ? { template: e['template'] as NonNullable<Projet['template']> } : {}),
+      blocsMasques: (e['blocsMasques'] as string[] | undefined) ?? [],
+      bandeauId: (e['bandeauId'] as string | null | undefined) ?? null,
+      saison: (e['saison'] as string | null | undefined) ?? null,
+      escaleIds: (e['escaleIds'] as string[] | undefined) ?? [],
+      partenaireIds: (e['partenaireIds'] as string[] | undefined) ?? [],
       cible: (e['cible'] as CibleInterne | null | undefined) ?? null,
       tagIds: (e['tagIds'] as string[] | undefined) ?? [],
     }),
@@ -182,6 +216,10 @@ export const handlersEditorial = [
       const cible = contenuCible(o.cible)
       return [
         ...manquesTraduits(o.traductions, { titre: 'Titre', accroche: 'Accroche' }),
+        // Template Programme : au moins une escale (PROPOSITION-TEMPLATES-PROJETS § 4.2).
+        ...(templateDe(o) === 'programme' && (o.escaleIds ?? []).length === 0
+          ? [{ champ: 'escaleIds', message: 'Au moins une escale est exigée.' }]
+          : []),
         // Un projet en préparation n'a pas encore d'image (§ 9.3).
         ...manquesImage(o.imageId, 'imageId', o.avancement !== 'en_preparation'),
         ...(cible && cible.statut !== 'publie'
@@ -190,10 +228,39 @@ export const handlersEditorial = [
       ]
     },
     credibilite: (o) => (o.annee ? [] : ['annee']),
-    controler: (o) =>
-      contenuCible(o.cible) === undefined
-        ? erreur(422, 'VALIDATION', 'Le contenu visé n’existe pas.', { champ: 'cible' })
-        : null,
+    controler: (o) => {
+      if (contenuCible(o.cible) === undefined)
+        return erreur(422, 'VALIDATION', 'Le contenu visé n’existe pas.', { champ: 'cible' })
+      // RG-29 : une catégorie de la famille `projet` seulement.
+      const categorie = magasin.categories.find((c) => c.id === o.categorieId)
+      if (o.categorieId && categorie?.famille !== 'projet')
+        return erreur(422, 'CATEGORIE_INCOMPATIBLE', 'Choisissez une catégorie de projets.', {
+          champ: 'categorieId',
+        })
+      return null
+    },
+    // Format, avancement, catégorie et nombre d'épisodes lisibles dans la liste (ECRANS § 3.2).
+    resume: (o) => ({
+      format: o.format,
+      template: templateDe(o),
+      avancement: o.avancement,
+      categorieId: o.categorieId ?? null,
+      categorie:
+        magasin.categories.find((c) => c.id === o.categorieId)?.traductions.fr?.nom ?? null,
+      nombreEpisodes: magasin.episodes.filter((e) => e.projetId === o.id).length,
+    }),
+    filtrer: (o, params) => {
+      const format = params.get('format')
+      const template = params.get('template')
+      const avancement = params.get('avancement')
+      const categorie = params.get('categorie')
+      return (
+        (!format || o.format === format) &&
+        (!template || templateDe(o) === template) &&
+        (!avancement || o.avancement === avancement) &&
+        (!categorie || o.categorieId === categorie)
+      )
+    },
     tris: { ordre: (o) => o.ordre, titre: (o) => titreDe(o, 'titre').toLowerCase() },
   }),
 

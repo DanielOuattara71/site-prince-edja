@@ -34,7 +34,10 @@ const traductionArticleLecture = z.object({
 
 export const articleSchema = z.object({
   ...contenuBaseShape,
-  categorie: categorieArticleSchema,
+  /** Nom de la catégorie (texte historique, conservé jusqu'à C9, SCHEMAS § 4). */
+  categorie: z.string(),
+  /** Catégorie de la famille `article` (SCHEMAS § 3.4, NOUVEAU). */
+  categorieId: idSchema.nullable().optional(),
   imageId: idSchema.nullable(),
   tagIds: z.array(idSchema),
   aLaUne: z.boolean(),
@@ -54,7 +57,9 @@ export const traductionArticleEcriture = z.strictObject({
 })
 
 const champsArticleEcriture = {
-  categorie: categorieArticleSchema,
+  // Nom de la catégorie choisie : les huit de départ, ou une catégorie ajoutée dans Catégories.
+  categorie: z.string().trim().min(1, 'Catégorie obligatoire.').max(80),
+  categorieId: idSchema.nullable().optional(),
   imageId: idSchema.nullable().optional(),
   tagIds: z.array(idSchema).optional(),
   aLaUne: z.boolean().optional(),

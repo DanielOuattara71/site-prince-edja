@@ -1,5 +1,6 @@
 import { CircleAlert } from 'lucide-react'
 import { useEffect, useRef } from 'react'
+import { allerAuChamp } from '@/components/formulaire/aller-au-champ'
 import { CLASSES_LIEN } from '@/components/ui/classes'
 import { t } from '@/i18n/fr'
 import type { ErreurListee } from '@/lib/formulaires'
@@ -29,12 +30,6 @@ export function ResumeErreurs({
   }, [tentative, nombre])
 
   if (nombre === 0) return null
-
-  const allerAuChamp = (champ: string) => {
-    const cible = document.getElementById(champ) ?? document.getElementsByName(champ)[0]
-    cible?.focus()
-    cible?.scrollIntoView?.({ block: 'center' })
-  }
 
   return (
     <div

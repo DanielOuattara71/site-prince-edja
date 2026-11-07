@@ -1,6 +1,8 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import { articles, journal, medias, site, tags } from '@/api/endpoints/contenus'
+import { abonnes, demandes, messages } from '@/api/endpoints/audience'
+import { comptes } from '@/api/endpoints/comptes'
 import { aLeCode, manquantsDe, usagesDe, type ErreurApi } from '@/api/erreurs'
 import { IDS_EXEMPLE } from '@/api/mocks/donnees'
 import { avancer } from '@/api/mocks/magasin'
@@ -185,5 +187,91 @@ describe('faux serveur — médias et tags', () => {
     await connecter('admin')
     const tag = await tags.lire(IDS_EXEMPLE.tagFormat)
     expect(aLeCode(await echec(tags.supprimer(tag.id, tag.version)), 'RG-08')).toBe(true)
+  })
+})
+
+describe('faux serveur — boîtes de réception et newsletter (§ 8)', () => {
+  it('un éditeur n’a pas accès aux boîtes de réception ; un admin les traite', async () => {
+    await connecter('editeur')
+    expect((await echec(messages.lister({ statut: 'non_lu' })))?.status).toBe(403)
+
+    await connecter('admin')
+    const liste = await messages.lister({ statut: 'non_lu' })
+    expect(liste.items).toHaveLength(1)
+    const message = liste.items[0]
+    if (!message) throw new Error('Message attendu en boîte de réception.')
+    const modifie = await messages.modifier(message.id, { statut: 'lu', version: message.version })
+    expect(modifie.statut).toBe('lu')
+    const refus = await echec(messages.modifier(message.id, { statut: 'traite', version: 1 }))
+    expect(refus?.status).toBe(409)
+  })
+
+  it('une demande de pièce passe par les transitions du service', async () => {
+    await connecter('admin')
+    const liste = await demandes.lister({ statut: 'nouvelle' })
+    expect(liste.items).toHaveLength(1)
+    const demande = liste.items[0]
+    if (!demande) throw new Error('Demande attendue.')
+    const prise = await demandes.modifier(demande.id, {
+      statut: 'en_cours',
+      version: demande.version,
+    })
+    expect(prise.statut).toBe('en_cours')
+    const refus = await echec(
+      demandes.modifier(prise.id, { statut: 'nouvelle', version: prise.version }),
+    )
+    expect(refus?.code).toBe('TRANSITION_INTERDITE')
+  })
+
+  it('l’export des abonnés part avec les consentements, puis l’abonné est supprimable', async () => {
+    await connecter('admin')
+    const liste = await abonnes.lister({ statut: 'en_attente' })
+    expect(liste.items).toHaveLength(1)
+    const abonne = liste.items[0]
+    if (!abonne) throw new Error('Abonné attendu.')
+    const texte = await abonnes.exporterAbonnes({ statut: 'en_attente' })
+    expect(texte).toContain('abonne@exemple.test')
+    await abonnes.supprimer(abonne.id)
+    expect((await abonnes.lister({ statut: 'en_attente' })).items).toHaveLength(0)
+  })
+})
+
+describe('faux serveur — comptes (§ 15.1)', () => {
+  it('un éditeur n’a pas accès à la liste des comptes ; un super-admin la consulte', async () => {
+    await connecter('editeur')
+    expect((await echec(comptes.lister({ page: 1, pageSize: 20 })))?.status).toBe(403)
+
+    await connecter('super')
+    const liste = await comptes.lister({ page: 1, pageSize: 20 })
+    expect(liste.items).toHaveLength(3)
+    expect(liste.items.map((compte) => compte.email)).toEqual(
+      expect.arrayContaining(['editeur@exemple.test', 'admin@exemple.test', 'super@exemple.test']),
+    )
+  })
+
+  it('la création d’un compte éditeur passe par un lien ; la création d’un vendeur est refusée', async () => {
+    await connecter('super')
+    const cree = await comptes.creer({
+      email: 'nouveau@exemple.test',
+      nom: 'Nouveau',
+      role: 'editeur',
+    })
+    expect(cree.actif).toBe(true)
+    expect(cree.doitChangerMotDePasse).toBe(true)
+    const refus = await echec(
+      comptes.creer({ email: 'vendeur@exemple.test', nom: 'Vendeur', role: 'vendeur' }),
+    )
+    expect(refus?.code).toBe('MULTI_VENDEURS_INACTIF')
+  })
+
+  it('un compte se désactive, puis l’envoi du lien est refusé pour un compte inactif', async () => {
+    await connecter('super')
+    const liste = await comptes.lister({ page: 1, pageSize: 20 })
+    const admin = liste.items.find((compte) => compte.email === 'admin@exemple.test')
+    if (!admin) throw new Error('Compte admin attendu.')
+    const desactive = await comptes.modifier(admin.id, { actif: false })
+    expect(desactive.actif).toBe(false)
+    const refus = await echec(comptes.envoyerLien(admin.id))
+    expect(refus?.code).toBe('VALIDATION')
   })
 })

@@ -1,18 +1,40 @@
 import type { Article } from '@/api/schemas/articles'
+import type { Livre } from '@/api/schemas/livres'
 import type { Bijou, Categorie } from '@/api/schemas/boutique'
-import type { Destination, Episode, Projet, Ville } from '@/api/schemas/editorial'
+import type {
+  Destination,
+  Episode,
+  EtudeCas,
+  Galerie,
+  PageLegale,
+  Partenaire,
+  Projet,
+  Ville,
+} from '@/api/schemas/editorial'
 import type { Compte, CompteResume, Langue } from '@/api/schemas/communs'
 import type { Media } from '@/api/schemas/medias'
+import type {
+  ChiffreAudience,
+  MotifContact,
+  Navigation,
+  Parametres,
+  TextesInterface,
+} from '@/api/schemas/reglages'
 import type { EntreeJournal, Publication } from '@/api/schemas/site'
 import type { Tag } from '@/api/schemas/tags'
 import type { EntreeVersion } from '@/api/schemas/versions'
+import type { Abonne, Demande, Message } from '@/api/schemas/audience'
 import {
+  abonnesInitiales,
   articlesInitiaux,
   bijouxInitiaux,
   archiveInitiale,
   categoriesInitiales,
+  emplacementsInitiaux,
+  type EmplacementEssai,
   distinctionsInitiales,
   jalonsInitiaux,
+  messagesInitiaux,
   offresInitiales,
   pagesInitiales,
   presseInitiale,
@@ -25,13 +47,23 @@ import {
   type Presse,
   type Univers,
   destinationsInitiales,
+  demandesInitiales,
   episodesInitiaux,
   projetsInitiaux,
   villesInitiales,
   comptesInitiaux,
   createursInitiaux,
+  etudesCasInitiaux,
+  chiffresAudienceInitiaux,
+  galerieInitiale,
   mediasInitiaux,
+  motifsContactInitiaux,
+  navigationInitiale,
+  pagesLegalesInitiales,
+  parametresInitiaux,
+  partenairesInitiaux,
   tagsInitiaux,
+  textesInterfaceInitiaux,
   type CompteEssai,
   type CreateurEssai,
 } from '@/api/mocks/donnees'
@@ -59,6 +91,9 @@ export interface Magasin {
   createurs: CreateurEssai[]
   categories: Categorie[]
   bijoux: Bijou[]
+  /** Livres (SCHEMAS § 8.3) : aucun livre d'exemple, le catalogue vient du client. */
+  livres: Livre[]
+  emplacements: EmplacementEssai[]
   episodes: Episode[]
   projets: Projet[]
   villes: Ville[]
@@ -72,6 +107,21 @@ export interface Magasin {
   pages: PageFixe[]
   /** Variantes citées par une demande de pièce (RG-11) : les demandes arrivent au lot 4. */
   variantesCitees: string[]
+  /** Lot 4 éditorial (§ 9.9 à 9.16). */
+  galerie: Galerie[]
+  etudesCas: EtudeCas[]
+  partenaires: Partenaire[]
+  pagesLegales: PageLegale[]
+  /** Boîtes de réception et newsletter (contrat § 12). */
+  messages: Message[]
+  demandes: Demande[]
+  abonnes: Abonne[]
+  /** Réglages du site (§ 13) : chiffres d'audience, motifs de contact, singletons. */
+  chiffresAudience: ChiffreAudience[]
+  motifsContact: MotifContact[]
+  parametres: Parametres
+  navigation: Navigation
+  textesInterface: TextesInterface
   publications: Publication[]
   journal: EntreeJournal[]
   versions: VersionStockee[]
@@ -121,6 +171,8 @@ function etatInitial(): Magasin {
     createurs,
     categories: categoriesInitiales(),
     bijoux,
+    livres: [],
+    emplacements: emplacementsInitiaux(),
     episodes: episodesInitiaux(),
     projets: projetsInitiaux(),
     villes: villesInitiales(),
@@ -133,6 +185,22 @@ function etatInitial(): Magasin {
     offres: offresInitiales(),
     pages: pagesInitiales(),
     variantesCitees: [],
+    galerie: galerieInitiale(),
+    etudesCas: etudesCasInitiaux(),
+    partenaires: partenairesInitiaux(),
+    pagesLegales: pagesLegalesInitiales(),
+    messages: messagesInitiaux(),
+    demandes: demandesInitiales(),
+    abonnes: abonnesInitiales(),
+    chiffresAudience: chiffresAudienceInitiaux(),
+    motifsContact: motifsContactInitiaux(),
+    parametres: parametresInitiaux(),
+    navigation: navigationInitiale(),
+    textesInterface: {
+      valeurs: textesInterfaceInitiaux(),
+      clesManquantes: { fr: [], en: [] },
+      version: 1,
+    },
     publications: [],
     journal: [],
     versions: versionsInitiales({ articles, medias, tags, createurs, bijoux }),

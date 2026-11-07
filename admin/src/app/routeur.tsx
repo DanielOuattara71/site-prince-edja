@@ -1,12 +1,18 @@
 import type { ComponentType } from 'react'
 import { createBrowserRouter, Outlet, type RouteObject } from 'react-router'
 import { EnPreparation } from '@/app/EnPreparation'
+import { VersActivite } from '@/app/VersActivite'
 import { ErreurInattendue, Introuvable } from '@/app/pages-erreur'
 import { RouteAutorisee, RouteProtegee, RoutePublique } from '@/auth/gardes'
 import { Coque } from '@/components/layout/Coque'
-import { ENTREES_MENU } from '@/components/layout/navigation'
+import { GroupeEcrans } from '@/components/layout/GroupeEcrans'
+import { ONGLETS, type Onglet } from '@/components/layout/navigation'
 import { Squelette } from '@/components/ui/Squelette'
 
+/** Une route par onglet du menu (le tableau de bord est la route d'index). */
+const ROUTES_ONGLETS: Onglet[] = [
+  ...new Map(ONGLETS.filter((o) => o.chemin !== '/').map((o) => [o.chemin, o])).values(),
+]
 /** Écrans livrés, par entrée du menu : liste, création, fiche (gabarit de la section 9). */
 function ecransContenu(charger: {
   liste: () => Promise<{ default: ComponentType }>
@@ -20,6 +26,11 @@ function ecransContenu(charger: {
   ]
 }
 
+/**
+ * Écrans livrés, par adresse. Seules les adresses d'un onglet du menu deviennent des routes :
+ * les écrans retirés en C2 (univers, jalons, offres, études de cas, pages, navigation, textes
+ * d'interface, motifs de contact) restent déclarés ici, sans route, jusqu'à la décision C9.
+ */
 const ECRANS_LIVRES: Record<string, RouteObject[]> = {
   '/articles': ecransContenu({
     liste: () => import('@/features/articles/ListeArticles'),
@@ -31,12 +42,38 @@ const ECRANS_LIVRES: Record<string, RouteObject[]> = {
       default: (await import('@/features/editorial/ecrans')).FormulaireEpisode,
     }),
   }),
-  '/projets': ecransContenu({
-    liste: async () => ({ default: (await import('@/features/editorial/ecrans')).ListeProjets }),
+  // Projets : le hub à la racine (ECRANS § 3.1), la liste un niveau plus bas.
+  '/projets': [
+    {
+      index: true,
+      lazy: async () => ({ Component: (await import('@/features/projets/HubProjets')).default }),
+    },
+    {
+      path: 'liste',
+      lazy: async () => ({
+        Component: (await import('@/features/editorial/ecrans')).ListeProjets,
+      }),
+    },
+    ...ecransContenu({
+      liste: async () => ({ default: (await import('@/features/editorial/ecrans')).ListeProjets }),
+      formulaire: async () => ({
+        default: (await import('@/features/editorial/ecrans')).FormulaireProjet,
+      }),
+    }).slice(1),
+  ],
+  '/livres': ecransContenu({
+    liste: async () => ({ default: (await import('@/features/editorial/ecrans')).ListeLivres }),
     formulaire: async () => ({
-      default: (await import('@/features/editorial/ecrans')).FormulaireProjet,
+      default: (await import('@/features/editorial/ecrans')).FormulaireLivre,
     }),
   }),
+  '/guides': [
+    {
+      index: true,
+      lazy: async () => ({ Component: (await import('@/features/projets/GuidesPdf')).default }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
   '/villes': ecransContenu({
     liste: async () => ({ default: (await import('@/features/editorial/ecrans')).ListeVilles }),
     formulaire: async () => ({
@@ -112,6 +149,15 @@ const ECRANS_LIVRES: Record<string, RouteObject[]> = {
     formulaire: () => import('@/features/bijoux/FormulaireBijou'),
   }),
   // Catégories : un seul écran, liste ordonnable et dialogue de saisie.
+  '/tags': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/tags/ListeTags')).default,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
   '/categories': [
     {
       index: true,
@@ -132,6 +178,137 @@ const ECRANS_LIVRES: Record<string, RouteObject[]> = {
     {
       path: ':id',
       lazy: async () => ({ Component: (await import('@/features/medias/FicheMedia')).default }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  // Étape 8 — boîtes de réception et newsletter : listes opérationnelles, pas d'écran « nouveau ».
+  '/messages': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/audience/ListeMessages')).default,
+      }),
+    },
+  ],
+  '/demandes': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/audience/ListeDemandes')).default,
+      }),
+    },
+  ],
+  '/abonnes': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/audience/ListeAbonnes')).default,
+      }),
+    },
+  ],
+  // Étape 9 — technique : publication, journal, comptes.
+  '/publication': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/publication/SuiviSite')).default,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  '/activite': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/journal/ListeJournal')).default,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  '/comptes': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/comptes/ListeComptes')).default,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  // Lot 4 — familles éditoriales livrées (§ 9.9, § 9.13 à 9.16) : liste, création, fiche.
+  // Médiathèque › Sur le site (ECRANS § 5.2) : photos fixes et galeries ; les fiches restent.
+  '/galerie': ecransContenu({
+    liste: () => import('@/features/medias/SurLeSite'),
+    formulaire: async () => ({
+      default: (await import('@/features/editorial/ecrans')).FormulaireGalerie,
+    }),
+  }),
+  '/etudes-cas': ecransContenu({
+    liste: async () => ({ default: (await import('@/features/editorial/ecrans')).ListeEtudesCas }),
+    formulaire: async () => ({
+      default: (await import('@/features/editorial/ecrans')).FormulaireEtudeCas,
+    }),
+  }),
+  '/partenaires': ecransContenu({
+    liste: async () => ({
+      default: (await import('@/features/editorial/ecrans')).ListePartenaires,
+    }),
+    formulaire: async () => ({
+      default: (await import('@/features/editorial/ecrans')).FormulairePartenaire,
+    }),
+  }),
+  // Pages légales : ensemble fermé, pas d’écran « nouveau » (§ 9.16).
+  '/pages-legales': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/editorial/ecrans')).ListePagesLegales,
+      }),
+    },
+    {
+      path: ':id',
+      lazy: async () => ({
+        Component: (await import('@/features/editorial/ecrans')).FormulairePageLegale,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  // Réglages et lecture : écrans singletons (§ 13.2 à 13.6).
+  '/audience': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/audience/ChiffresAudience')).default,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  '/parametres': [
+    {
+      index: true,
+      lazy: async () => ({ Component: (await import('@/features/reglages/Parametres')).default }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  '/navigation': [
+    {
+      index: true,
+      lazy: async () => ({ Component: (await import('@/features/reglages/Navigation')).default }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  '/textes-interface': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/reglages/TextesInterface')).default,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  '/motifs-contact': [
+    {
+      index: true,
+      lazy: async () => ({ Component: (await import('@/features/contact/MotifsContact')).default }),
     },
     { path: '*', element: <Introuvable /> },
   ],
@@ -186,29 +363,30 @@ const routes: RouteObject[] = [
                   Component: (await import('@/features/tableau-de-bord/TableauDeBord')).default,
                 }),
               },
+              {
+                path: '/profil',
+                lazy: async () => ({
+                  Component: (await import('@/features/profil/Profil')).default,
+                }),
+              },
               // Vitrine des composants : développement seulement, absente du build (étape 3).
-              ...(import.meta.env.DEV
-                ? [
-                    {
-                      path: '/composants',
-                      lazy: async () => ({
-                        Component: (await import('@/features/demo/Composants')).default,
-                      }),
-                    },
-                  ]
-                : []),
-              ...ENTREES_MENU.map((entree): RouteObject => {
-                const ecrans = ECRANS_LIVRES[entree.chemin]
+              // La vitrine des composants (`/composants`) est retirée des routes (C2) ; le
+              // fichier reste jusqu'à C9 (docs/ELEMENTS-RETIRES.md).
+              ...ROUTES_ONGLETS.map((onglet): RouteObject => {
+                const ecrans = ECRANS_LIVRES[onglet.chemin]
                 return {
-                  path: entree.chemin,
+                  path: onglet.chemin,
                   element: (
-                    <RouteAutorisee action={entree.action} ressource={entree.ressource}>
-                      {ecrans ? <Outlet /> : <EnPreparation entree={entree} />}
+                    <RouteAutorisee action={onglet.action} ressource={onglet.ressource}>
+                      <GroupeEcrans />
+                      {ecrans ? <Outlet /> : <EnPreparation libelle={onglet.libelle} />}
                     </RouteAutorisee>
                   ),
                   children: ecrans ?? [{ path: '*', element: null }],
                 }
               }),
+              // Ancienne adresse du journal d'audit (PROMPT-CORRECTION § 5.5).
+              { path: '/journal/*', element: <VersActivite /> },
               { path: '*', element: <Introuvable /> },
             ],
           },

@@ -136,6 +136,12 @@ export function usagesMedia(id: string): Usage[] {
     if (bijou.imageId === id) usages.push({ ...base, champ: 'imageId' })
     if (bijou.galerieMediaIds.includes(id)) usages.push({ ...base, champ: 'galerieMediaIds' })
   }
+  for (const livre of magasin.livres) {
+    const titre = livre.traductions.fr?.titre ?? livre.traductions.en?.titre ?? ''
+    const base = { ressource: 'livres', id: livre.id, titre, statut: livre.statut }
+    if (livre.imageId === id) usages.push({ ...base, champ: 'imageId' })
+    if (livre.galerieMediaIds.includes(id)) usages.push({ ...base, champ: 'galerieMediaIds' })
+  }
   for (const createur of magasin.createurs) {
     if (createur.photoId === id) {
       usages.push({

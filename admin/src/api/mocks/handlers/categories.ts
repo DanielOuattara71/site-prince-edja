@@ -8,7 +8,7 @@ import {
 import { LANGUES, type Langue } from '@/api/schemas/communs'
 import { autoriser, versionPerimee } from '@/api/mocks/garde'
 import { journaliser, magasin, ouvrirPublication } from '@/api/mocks/magasin'
-import { enrichirCategorie } from '@/api/mocks/regles-boutique'
+import { elementsDeCategorie, enrichirCategorie } from '@/api/mocks/regles-boutique'
 import { slugifier } from '@/api/mocks/regles'
 import { API, erreur, json, lireCorps, paginer, vide } from '@/api/mocks/reponses'
 
@@ -26,8 +26,12 @@ const tries = () => [...magasin.categories].sort((a, b) => a.ordre - b.ordre)
 function controlerSlugs(c: Categorie): Response | null {
   for (const langue of LANGUES) {
     const slug = c.traductions[langue]?.slug
+    // Unique par famille et par langue (SCHEMAS § 3.2).
     const pris = (s: string) =>
-      magasin.categories.some((autre) => autre.id !== c.id && autre.traductions[langue]?.slug === s)
+      magasin.categories.some(
+        (autre) =>
+          autre.id !== c.id && autre.famille === c.famille && autre.traductions[langue]?.slug === s,
+      )
     if (slug && pris(slug)) {
       let rang = 2
       while (pris(`${slug}-${rang}`)) rang += 1
@@ -70,8 +74,10 @@ export const handlersCategories = [
     if (!garde.ok) return garde.reponse
     const url = new URL(request.url)
     const visible = url.searchParams.get('visible')
+    const famille = url.searchParams.get('famille')
     const liste = tries()
       .filter((c) => visible === null || String(c.visible) === visible)
+      .filter((c) => famille === null || c.famille === famille)
       .map(enrichirCategorie)
     const page = paginer(url, liste)
     return page.ok ? json(page.corps) : page.reponse
@@ -83,7 +89,11 @@ export const handlersCategories = [
     const corps = await lireCorps(request, ordreSchema)
     if (!corps.ok) return corps.reponse
     const { ids } = corps.valeur
-    const existants = new Set(magasin.categories.map((c) => c.id))
+    // L'ordre se règle dans une famille : la liste porte toutes ses catégories, et elles seules.
+    const famille = trouver(ids[0])?.famille
+    const existants = new Set(
+      magasin.categories.filter((c) => c.famille === famille).map((c) => c.id),
+    )
     if (
       new Set(ids).size !== ids.length ||
       ids.length !== existants.size ||
@@ -121,9 +131,15 @@ export const handlersCategories = [
     if (!garde.ok) return garde.reponse
     const corps = await lireCorps(request, entreeCategorieSchema)
     if (!corps.ok) return corps.reponse
+    const famille = corps.valeur.famille ?? 'produit'
     const c: Categorie = {
       id: crypto.randomUUID(),
-      ordre: Math.max(-1, ...magasin.categories.map((x) => x.ordre)) + 1,
+      ordre:
+        Math.max(
+          -1,
+          ...magasin.categories.filter((x) => x.famille === famille).map((x) => x.ordre),
+        ) + 1,
+      famille,
       visible: corps.valeur.visible ?? true,
       nombreBijouxPublies: 0,
       traductions: traductions({}, corps.valeur.traductions),
@@ -177,13 +193,19 @@ export const handlersCategories = [
       c.version,
     )
     if (perimee) return perimee
-    const nombre = magasin.bijoux.filter((b) => b.categorieId === c.id).length
+    // RG-31 : une catégorie utilisée ne se supprime pas ; on peut la masquer.
+    const nombre = elementsDeCategorie(c.id)
     if (nombre > 0) {
       return erreur(
-        422,
-        'RG-09',
-        `Cette catégorie contient ${nombre} bijou(x) : déplacez-les avant de la supprimer.`,
-        { details: { nombreBijoux: nombre } },
+        409,
+        'CATEGORIE_UTILISEE',
+        `Utilisée par ${nombre} élément(s) : retirez-la d'abord, ou masquez-la.`,
+        {
+          details: {
+            nombre,
+            nombreBijoux: magasin.bijoux.filter((b) => b.categorieId === c.id).length,
+          },
+        },
       )
     }
     magasin.categories = magasin.categories.filter((autre) => autre.id !== c.id)

@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { cles } from '@/api/cles'
 import { categories } from '@/api/endpoints/boutique'
 import { aLeCode, estErreurApi } from '@/api/erreurs'
-import type { Categorie } from '@/api/schemas/boutique'
+import { FAMILLES_CATEGORIE, type Categorie, type FamilleCategorie } from '@/api/schemas/boutique'
 import { useSession } from '@/auth/contexte-session'
 import { peut } from '@/auth/permissions'
 import { FilAriane } from '@/components/layout/FilAriane'
@@ -19,34 +19,56 @@ import { Confirmation } from '@/components/ui/Confirmation'
 import { EtatErreur, EtatVide } from '@/components/ui/Etats'
 import { Interrupteur } from '@/components/ui/Interrupteur'
 import { Squelette } from '@/components/ui/Squelette'
-import { t } from '@/i18n/fr'
+import { nomCategorie as nomDe, useCategories } from '@/features/categories/useCategories'
+import { t, type CleTraduction } from '@/i18n/fr'
 import { messageErreur } from '@/lib/message-erreur'
 import { slugifier } from '@/lib/slug'
 
 /**
- * Catégories de la boutique (section 9, contrat § 10.1) : huit catégories de départ, une seule
- * alimentée. L'ordre se règle au glisser-déposer ou au clavier ; le compteur dit combien de
- * bijoux publiés chacune porte. Une catégorie sans bijou publié reste masquée sur le site
- * (RG-09) ; une catégorie qui contient des bijoux ne se supprime pas.
+ * Catégories (ECRANS § 4.4, SCHEMAS § 3) : un seul écran, **trois sections empilées** —
+ * Articles, Projets, Produits. Chacune est ordonnable (glisser-déposer ou clavier), avec son
+ * nombre d'éléments, un interrupteur « Visible », « Ajouter » et, par ligne, « Modifier » et
+ * « Supprimer ». Une catégorie utilisée ne se supprime pas (RG-31, « Utilisée par N éléments »).
+ * La section Articles a l'ancre `#categories-article` (lien depuis le Journal).
  */
-const nomDe = (c: Categorie) => c.traductions.fr?.nom ?? c.traductions.en?.nom ?? ''
-
 export default function Categories() {
   const { moi } = useSession()
+  const admin = peut(moi?.compte, 'modifier', 'categories')
+  return (
+    <section className="space-y-10">
+      <div>
+        <FilAriane elements={[{ libelle: t('menu.categories') }]} />
+        <TitrePage titre={t('categorie.titre')}>{t('categorie.titre')}</TitrePage>
+        <p className="mt-2 max-w-3xl text-body text-ink-700">{t('categorie.intro')}</p>
+      </div>
+      {!admin ? <Alerte>{t('categorie.lectureSeule')}</Alerte> : null}
+      {FAMILLES_CATEGORIE.map((famille) => (
+        <SectionCategories key={famille} famille={famille} admin={admin} />
+      ))}
+    </section>
+  )
+}
+
+function SectionCategories({ famille, admin }: { famille: FamilleCategorie; admin: boolean }) {
   const client = useQueryClient()
   const notifier = useNotifications()
-  const admin = peut(moi?.compte, 'modifier', 'categories')
+  const requete = useCategories(famille)
   const [edition, setEdition] = useState<Categorie | 'nouvelle' | null>(null)
   const [suppression, setSuppression] = useState<Categorie | null>(null)
-
-  const requete = useQuery({
-    queryKey: cles.categories(),
-    queryFn: () => categories.lister({ pageSize: 100 }),
-  })
+  const titre = t(`categorie.section.${famille}` as CleTraduction)
+  const idTitre = `categories-${famille}`
 
   const ordonner = useMutation({
     mutationFn: (ids: string[]) => categories.ordonner(ids),
     onSuccess: () => notifier.succes(t('categorie.ordreEnregistre')),
+    onError: (erreur) => notifier.erreur(messageErreur(erreur)),
+    onSettled: () => client.invalidateQueries({ queryKey: ['categories'] }),
+  })
+
+  const basculer = useMutation({
+    mutationFn: (c: Categorie) =>
+      categories.modifier(c.id, { visible: !c.visible, version: c.version }),
+    onSuccess: () => notifier.succes(t('formulaire.enregistre')),
     onError: (erreur) => notifier.erreur(messageErreur(erreur)),
     onSettled: () => client.invalidateQueries({ queryKey: ['categories'] }),
   })
@@ -66,81 +88,116 @@ export default function Categories() {
 
   const surOrdre = (nouvelles: Categorie[]) => {
     // Affiché tout de suite ; la liste revient du serveur une fois l'ordre écrit.
-    client.setQueryData(cles.categories(), (page: typeof requete.data) =>
+    client.setQueryData([...cles.categories(), famille], (page: typeof requete.data) =>
       page ? { ...page, items: nouvelles } : page,
     )
     ordonner.mutate(nouvelles.map((c) => c.id))
   }
 
   return (
-    <section className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <section aria-labelledby={idTitre} className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-sand-200 pb-2">
         <div>
-          <FilAriane elements={[{ libelle: t('menu.categories') }]} />
-          <TitrePage titre={t('categorie.titre')}>{t('categorie.titre')}</TitrePage>
-          <p className="mt-2 max-w-3xl text-body text-ink-700">{t('categorie.intro')}</p>
+          <h2 id={idTitre} className="font-display text-heading-sm uppercase text-ink-900">
+            {titre}
+          </h2>
+          <p className="text-caption text-ink-700">
+            {t(`categorie.aide.${famille}` as CleTraduction)}
+          </p>
         </div>
         {admin ? (
-          <Bouton onClick={() => setEdition('nouvelle')}>
+          <Bouton
+            variante="secondaire"
+            aria-label={`${t('categorie.ajouter')} — ${titre}`}
+            onClick={() => setEdition('nouvelle')}
+          >
             <Plus aria-hidden className="size-4" />
-            {t('categorie.nouvelle')}
+            {t('categorie.ajouter')}
           </Bouton>
         ) : null}
       </div>
-      {!admin ? <Alerte>{t('categorie.lectureSeule')}</Alerte> : null}
 
       {requete.isPending ? (
-        <Squelette lignes={8} />
+        <Squelette lignes={4} />
       ) : requete.isError ? (
         <EtatErreur erreur={requete.error} surReessai={() => void requete.refetch()} />
       ) : requete.data.items.length === 0 ? (
-        <EtatVide titre={t('liste.vide')} />
+        <EtatVide
+          titre={t('categorie.videSection')}
+          action={
+            admin ? (
+              <Bouton variante="secondaire" onClick={() => setEdition('nouvelle')}>
+                {t('categorie.ajouter')}
+              </Bouton>
+            ) : undefined
+          }
+        />
       ) : (
         <ListeOrdonnable
-          libelle={t('categorie.ordre')}
+          libelle={`${t('categorie.ordre')} — ${titre}`}
           elements={requete.data.items}
           cle={(c) => c.id}
           nom={nomDe}
           desactivee={!admin || ordonner.isPending}
           surOrdre={surOrdre}
-          renderLigne={(c) => (
-            <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-body font-semibold text-ink-900">{nomDe(c)}</p>
-                <p className="text-caption text-ink-700">
-                  {c.nombreBijouxPublies} {t('categorie.publies')}
-                  {c.nombreBijouxPublies === 0 || !c.visible ? (
-                    <span className="ml-2 rounded-full border border-dashed border-sand-300 px-2 text-ink-700">
-                      {t('categorie.masquee')}
-                    </span>
-                  ) : null}
-                </p>
-              </div>
-              {admin ? (
-                <div className="flex gap-2">
-                  <Bouton
-                    variante="secondaire"
-                    aria-label={`${t('categorie.modifier')} « ${nomDe(c)} »`}
-                    onClick={() => setEdition(c)}
-                  >
-                    {t('categorie.modifier')}
-                  </Bouton>
-                  <Bouton
-                    variante="discret"
-                    aria-label={`${t('categorie.supprimer')} « ${nomDe(c)} »`}
-                    onClick={() => setSuppression(c)}
-                  >
-                    {t('categorie.supprimer')}
-                  </Bouton>
+          renderLigne={(c) => {
+            const nombre = c.nombreElements ?? c.nombreBijouxPublies
+            return (
+              <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-body font-semibold text-ink-900">
+                    {nomDe(c)}
+                    {c.traductions.en?.nom ? (
+                      <span className="ml-2 text-caption font-normal text-ink-700">
+                        EN : {c.traductions.en.nom}
+                      </span>
+                    ) : null}
+                  </p>
+                  <p className="text-caption text-ink-700">
+                    {nombre} {t('categorie.elements')}
+                    {!c.visible ? (
+                      <span className="ml-2 rounded-full border border-dashed border-sand-300 px-2 text-ink-700">
+                        {t('categorie.masquee')}
+                      </span>
+                    ) : null}
+                  </p>
                 </div>
-              ) : null}
-            </div>
-          )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Interrupteur
+                    libelle={`${t('categorie.visibleCourt')} — ${nomDe(c)}`}
+                    libelleCourt={t('categorie.visibleCourt')}
+                    actif={c.visible}
+                    desactive={!admin || basculer.isPending}
+                    surChange={() => basculer.mutate(c)}
+                  />
+                  {admin ? (
+                    <>
+                      <Bouton
+                        variante="secondaire"
+                        aria-label={`${t('categorie.modifier')} « ${nomDe(c)} »`}
+                        onClick={() => setEdition(c)}
+                      >
+                        {t('categorie.modifier')}
+                      </Bouton>
+                      <Bouton
+                        variante="discret"
+                        aria-label={`${t('categorie.supprimer')} « ${nomDe(c)} »`}
+                        onClick={() => setSuppression(c)}
+                      >
+                        {t('categorie.supprimer')}
+                      </Bouton>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            )
+          }}
         />
       )}
 
       {edition ? (
         <DialogueCategorie
+          famille={famille}
           categorie={edition === 'nouvelle' ? null : edition}
           surFermeture={() => setEdition(null)}
         />
@@ -150,7 +207,11 @@ export default function Categories() {
           ouverte
           titre={t('categorie.supprimerTitre')}
           objet={nomDe(suppression)}
-          consequence={t('categorie.supprimerTexte')}
+          consequence={
+            (suppression.nombreElements ?? 0) > 0
+              ? `${t('categorie.utiliseePar')} ${suppression.nombreElements ?? 0} ${t('categorie.elements')}. ${t('categorie.retirezDabord')}`
+              : t('categorie.supprimerTexte')
+          }
           libelleConfirmer={t('categorie.supprimer')}
           danger
           enCours={supprimer.isPending}
@@ -164,9 +225,11 @@ export default function Categories() {
 
 /** Création ou modification : nom FR (obligatoire) et EN (facultatif), adresse, visibilité. */
 function DialogueCategorie({
+  famille,
   categorie,
   surFermeture,
 }: {
+  famille: FamilleCategorie
   categorie: Categorie | null
   surFermeture: () => void
 }) {
@@ -190,7 +253,7 @@ function DialogueCategorie({
             traductions: { fr, en: en ?? (categorie.traductions.en ? null : undefined) },
             version: categorie.version,
           })
-        : categories.creer({ visible, traductions: { fr, ...(en ? { en } : {}) } })
+        : categories.creer({ famille, visible, traductions: { fr, ...(en ? { en } : {}) } })
     },
     onSuccess: () => {
       notifier.succes(t('formulaire.enregistre'))

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Controller, type Control, type FieldErrors } from 'react-hook-form'
 import { cles } from '@/api/cles'
 import { medias } from '@/api/endpoints/contenus'
-import { destinations, episodes } from '@/api/endpoints/editorial'
+import { destinations, episodes, offres, projets } from '@/api/endpoints/editorial'
 import {
   CLES_PAGE,
   CLES_PAGE_LEGALE,
@@ -13,19 +13,32 @@ import {
   type CibleInterne,
   type Langue,
 } from '@/api/schemas/communs'
+import type { CorpsRiche } from '@/api/schemas/corps-riche'
+import { EditeurRiche } from '@/components/editeur/EditeurRiche'
 import { SelecteurMedia } from '@/components/medias/SelecteurMedia'
 import { SelecteurTags } from '@/components/tags/SelecteurTags'
 import { Bouton } from '@/components/ui/Bouton'
 import { Interrupteur } from '@/components/ui/Interrupteur'
 import { Champ } from '@/components/ui/Champ'
 import { MessageErreurChamp } from '@/components/ui/EnveloppeChamp'
+import { ParLangue } from '@/components/formulaire/SelecteurLangue'
 import { Select } from '@/components/ui/Select'
+import { Alerte } from '@/components/ui/Alerte'
+import { SelecteurCreateur } from '@/components/createurs/SelecteurCreateur'
+import { EditeurVariantes, SelecteurCategorie } from '@/features/gabarits/champs-produit'
+import {
+  BlocsFacultatifs,
+  ChoixTemplate,
+  SelecteurRelations,
+} from '@/features/gabarits/champs-projet'
 import { ZoneTexte } from '@/components/ui/ZoneTexte'
+import { PanneauGalerie } from '@/features/bijoux/PanneauGalerie'
 import { PanneauImage } from '@/features/articles/PanneauImage'
 import {
   TYPES_SOURCE,
   type ChampDeclaratif,
   type SourceFormulaire,
+  type VarianteFormulaire,
   type Valeurs,
 } from '@/features/gabarits/declaratif'
 import { t, type CleTraduction } from '@/i18n/fr'
@@ -40,18 +53,21 @@ export function ChampFormulaire({
   control,
   erreurs,
   desactive,
+  existant = false,
 }: {
   champ: ChampDeclaratif
   control: Control<Valeurs>
   erreurs: FieldErrors<Valeurs>
   desactive: boolean
+  /** Le contenu existe déjà : un changement de format y est signalé (ECRANS § 3.3). */
+  existant?: boolean
 }) {
   const erreur = (erreurs[champ.cle] as { message?: string } | undefined)?.message
   return (
     <Controller
       control={control}
       name={champ.cle}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         switch (champ.type) {
           case 'image':
             return (
@@ -79,6 +95,7 @@ export function ChampFormulaire({
             return (
               <SelecteurTags
                 valeur={(field.value as string[] | undefined) ?? []}
+                {...(champ.contexte ? { contexte: champ.contexte } : {})}
                 surChange={field.onChange}
                 erreur={erreur}
               />
@@ -105,19 +122,97 @@ export function ChampFormulaire({
                 erreur={erreur}
               />
             )
-          case 'choix':
+          case 'choix': {
+            const valeur = String(field.value ?? '')
+            const aide = champ.aideSelon?.[valeur] ?? champ.aide
             return (
-              <Select
+              <div className="space-y-2">
+                <Select
+                  id={champ.cle}
+                  libelle={champ.libelle}
+                  aide={aide}
+                  required={champ.obligatoire ?? false}
+                  invite={t('declaratif.choisir')}
+                  options={[...champ.options]}
+                  erreur={erreur}
+                  value={valeur}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  onBlur={field.onBlur}
+                />
+                {champ.alerteChangement && fieldState.isDirty && existant ? (
+                  <Alerte ton="info">{champ.alerteChangement}</Alerte>
+                ) : null}
+              </div>
+            )
+          }
+          case 'categorie':
+            return (
+              <SelecteurCategorie
                 id={champ.cle}
                 libelle={champ.libelle}
                 aide={champ.aide}
-                required={champ.obligatoire ?? false}
-                invite={t('declaratif.choisir')}
-                options={[...champ.options]}
+                famille={champ.famille}
+                valeur={String(field.value ?? '')}
+                surChange={field.onChange}
                 erreur={erreur}
-                value={String(field.value ?? '')}
-                onChange={(e) => field.onChange(e.target.value)}
-                onBlur={field.onBlur}
+              />
+            )
+          case 'createur':
+            return (
+              <SelecteurCreateur
+                valeur={(field.value as string | null) ?? null}
+                surChange={field.onChange}
+                erreur={erreur}
+              />
+            )
+          case 'template':
+            return (
+              <ChoixTemplate
+                id={champ.cle}
+                libelle={champ.libelle}
+                aide={champ.aide}
+                valeur={String(field.value ?? '')}
+                surChange={field.onChange}
+                control={control}
+                champFormat={champ.champFormat}
+                existant={existant}
+                erreur={erreur}
+              />
+            )
+          case 'blocsProjet':
+            return (
+              <BlocsFacultatifs
+                id={champ.cle}
+                control={control}
+                champTemplate={champ.champTemplate}
+                champFormat={champ.champFormat}
+                masques={(field.value as string[] | undefined) ?? []}
+                surChange={field.onChange}
+                desactive={desactive}
+              />
+            )
+          case 'relations':
+            return (
+              <SelecteurRelations
+                id={champ.cle}
+                libelle={champ.libelle}
+                aide={champ.aide}
+                ressource={champ.ressource}
+                valeur={(field.value as string[] | undefined) ?? []}
+                surChange={field.onChange}
+                erreur={erreur}
+              />
+            )
+          case 'variantes':
+            return (
+              <EditeurVariantes
+                id={champ.cle}
+                libelle={champ.libelle}
+                aide={champ.aide}
+                valeur={(field.value as VarianteFormulaire[] | undefined) ?? []}
+                surChange={field.onChange}
+                erreurs={erreurs[champ.cle] as unknown}
+                desactive={desactive}
               />
             )
           case 'booleen':
@@ -155,6 +250,29 @@ export function ChampFormulaire({
                   }
                 }
                 surChange={field.onChange}
+              />
+            )
+          case 'corps':
+            return (
+              <EditeurCorps
+                id={champ.cle}
+                libelle={champ.libelle}
+                aide={champ.aide}
+                valeur={
+                  (field.value as Record<Langue, CorpsRiche | null> | undefined) ?? {
+                    fr: null,
+                    en: null,
+                  }
+                }
+                surChange={field.onChange}
+              />
+            )
+          case 'galerie':
+            return (
+              <PanneauGalerie
+                valeur={(field.value as string[] | undefined) ?? []}
+                surChange={field.onChange}
+                desactive={desactive}
               />
             )
           case 'texte':
@@ -278,7 +396,7 @@ function PanneauDocument({
   )
 }
 
-const LISTES = { episodes, destinations } as const
+const LISTES = { episodes, destinations, offres, projets } as const
 
 /** Un contenu lié (épisode d'une destination, destination d'un épisode). */
 function SelecteurRelation({
@@ -303,6 +421,8 @@ function SelecteurRelation({
   })
   return (
     <Select
+      // Remonté quand la liste arrive : une valeur reçue d'avance (`?projetId=`) s'affiche alors.
+      key={liste.isSuccess ? 'pret' : 'attente'}
       id={id}
       libelle={libelle}
       invite={t('declaratif.aucun')}
@@ -325,8 +445,9 @@ const LIBELLES_PAGE: Record<string, string> = Object.fromEntries(
 /**
  * Lien interne (§ 6, `CibleInterne`) : une page fixe, une page légale ou un contenu existant,
  * jamais une adresse écrite à la main. Un contenu non publié est refusé à la publication (RG-03).
+ * Exporté : la navigation du site (§ 13.4) choisit ses cibles avec le même sélecteur.
  */
-function SelecteurCible({
+export function SelecteurCible({
   id,
   libelle,
   aide,
@@ -515,6 +636,47 @@ function EditeurSources({
           {t('archive.ajouterSource')}
         </Bouton>
       )}
+    </fieldset>
+  )
+}
+
+/**
+ * Corps riche par langue (§ 9.16) : un seul éditeur à la fois, langue choisie en haut du formulaire (`ParLangue`, U2).
+ * `EditeurRiche` est non contrôlé après montage : `key` par langue force un remontage quand on
+ * change d'onglet, chaque langue garde sa valeur dans le formulaire.
+ */
+function EditeurCorps({
+  id,
+  libelle,
+  aide,
+  valeur,
+  surChange,
+}: {
+  id: string
+  libelle: string
+  aide?: string | undefined
+  valeur: Record<Langue, CorpsRiche | null>
+  surChange: (corps: Record<Langue, CorpsRiche | null>) => void
+}) {
+  return (
+    <fieldset id={id} className="space-y-3">
+      <legend className="text-body font-semibold text-ink-900">{libelle}</legend>
+      {aide ? <p className="text-caption text-ink-700">{aide}</p> : null}
+      <ParLangue
+        libelle={t('declaratif.corpsLangues')}
+        onglets={LANGUES.map((l) => ({
+          id: l,
+          libelle: t(`langue.${l}`),
+          contenu: (
+            <EditeurRiche
+              key={l}
+              libelle={`${libelle} (${l.toUpperCase()})`}
+              valeur={valeur[l]}
+              surChange={(c) => surChange({ ...valeur, [l]: c })}
+            />
+          ),
+        }))}
+      />
     </fieldset>
   )
 }

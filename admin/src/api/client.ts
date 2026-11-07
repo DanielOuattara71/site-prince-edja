@@ -15,7 +15,7 @@ import { erreurApiSchema } from '@/api/schemas/communs'
 
 const BASE_API = import.meta.env.VITE_API_URL ?? '/admin/api/v1'
 
-type Methode = 'GET' | 'POST' | 'PATCH' | 'DELETE'
+type Methode = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
 type ValeurQuery = string | number | boolean | string[] | undefined
 
 let jetonCsrf: string | null = null

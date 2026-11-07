@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { App } from '@/app/App'
-import { articlesInitiaux, IDS_EXEMPLE } from '@/api/mocks/donnees'
+import { articlesInitiaux, idCategorieArticle, IDS_EXEMPLE } from '@/api/mocks/donnees'
 import { avancer, magasin } from '@/api/mocks/magasin'
 import { violationsGraves } from '@/test/axe'
 import { connecter, utiliserFauxServeur, type RoleEssai } from '@/test/faux-serveur'
@@ -77,7 +77,14 @@ describe('parcours éditeur', () => {
     expect((document.getElementById('traductions.fr.slug') as HTMLInputElement).value).toBe(
       'exemple-grand-bassam-l-ete',
     )
-    fireEvent.change(screen.getByLabelText(/^Catégorie/), { target: { value: 'Voyage' } })
+    fireEvent.change(await screen.findByRole('combobox', { name: /^Catégorie/ }), {
+      target: { value: idCategorieArticle('Voyage') },
+    })
+    await waitFor(() =>
+      expect(
+        (screen.getByRole('combobox', { name: /^Catégorie/ }) as HTMLSelectElement).value,
+      ).toBe(idCategorieArticle('Voyage')),
+    )
     fireEvent.click(
       screen.getAllByRole('button', { name: 'Enregistrer le brouillon' })[0] as HTMLElement,
     )
@@ -92,7 +99,7 @@ describe('parcours éditeur', () => {
     expect(within(liste).getByRole('link', { name: 'Image principale manquante.' })).toBeTruthy()
     // Chaque manque mène au champ.
     fireEvent.click(within(liste).getByRole('link', { name: 'Résumé manquant.' }))
-    expect(document.activeElement?.id).toBe('traductions.fr.extrait')
+    await waitFor(() => expect(document.activeElement?.id).toBe('traductions.fr.extrait'))
   }, 40_000)
 
   it('un article en relecture est en lecture seule pour l’éditeur, sans « Publier »', async () => {

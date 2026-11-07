@@ -7,6 +7,7 @@ import { MessageErreurChamp } from '@/components/ui/EnveloppeChamp'
 import { EtatErreur } from '@/components/ui/Etats'
 import { Squelette } from '@/components/ui/Squelette'
 import { t, type CleTraduction } from '@/i18n/fr'
+import { TYPES_PAR_CONTEXTE, type ContexteEtiquettes } from '@/lib/etiquettes'
 
 /**
  * Tags d'un contenu, par groupe (section 10). Avec `exigerFormat`, l'absence de tag de
@@ -26,13 +27,16 @@ const TYPES_PAR_DEFAUT: TypeTag[] = ['format', 'pays', 'theme', 'projet']
 export function SelecteurTags({
   valeur,
   surChange,
-  types = TYPES_PAR_DEFAUT,
+  contexte,
+  types = contexte ? TYPES_PAR_CONTEXTE[contexte] : TYPES_PAR_DEFAUT,
   exigerFormat = false,
   afficherErreur = false,
   erreur,
 }: {
   valeur: string[]
   surChange: (ids: string[]) => void
+  /** Famille du formulaire (U8) : ne propose que ses types d'étiquettes. */
+  contexte?: ContexteEtiquettes
   types?: TypeTag[]
   exigerFormat?: boolean
   /** Montre l'erreur RG-06 (après une première soumission, par exemple). */

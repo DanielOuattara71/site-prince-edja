@@ -134,7 +134,8 @@ describe('écrans', () => {
     expect(await violationsGraves(container)).toEqual([])
   })
 
-  it('pages : onze pages, ni création ni suppression ; les blocs de l’accueil se saisissent', async () => {
+  // Écran retiré du menu et des routes (C2) : test conservé, décision en C9 (docs/ELEMENTS-RETIRES.md).
+  it.skip('pages : onze pages, ni création ni suppression ; les blocs de l’accueil se saisissent', async () => {
     await ouvrir('admin', '/pages')
     const tableau = await screen.findByRole('table', { name: 'Pages du site' })
     expect(within(tableau).getAllByRole('row')).toHaveLength(12)
@@ -154,10 +155,21 @@ describe('écrans', () => {
     )
   })
 
-  it('distinctions, presse, univers, jalons, offres : listes et ordre d’affichage', async () => {
+  it('distinctions, presse : listes et ordre d’affichage', async () => {
     for (const [chemin, nom] of [
       ['/distinctions', 'Distinctions'],
       ['/presse', 'Presse'],
+    ] as const) {
+      const { unmount } = await ouvrir('admin', chemin)
+      expect(await screen.findByRole('table', { name: nom })).toBeTruthy()
+      expect(screen.getByRole('button', { name: /Changer l’ordre d’affichage/ })).toBeTruthy()
+      unmount()
+    }
+  })
+
+  // Écrans retirés du menu et des routes (C2) : test conservé, décision en C9.
+  it.skip('univers, jalons, offres : listes et ordre d’affichage', async () => {
+    for (const [chemin, nom] of [
       ['/univers', 'Univers'],
       ['/jalons', 'Jalons'],
       ['/offres', 'Offres'],

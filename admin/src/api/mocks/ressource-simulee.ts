@@ -59,6 +59,17 @@ export interface ConfigRessource<O extends ObjetEditorial> {
   ordonnable?: boolean
   /** Champs propres ajoutés au résumé de liste. */
   resume?: (objet: O) => Record<string, unknown>
+  /**
+   * Filtres propres à la liste (`?emplacement=`…) : renvoyer `false` exclut l'objet. Les
+   * paramètres communs (statut, langue, tag…) ont déjà été appliqués.
+   */
+  filtrer?: (objet: O, params: URLSearchParams) => boolean
+  /**
+   * Champ de regroupement de l'ordre (`emplacement` d'une galerie, § 9.9) : la liste envoyée à
+   * `PATCH /ordre` ne porte que les éléments d'un même groupe, et la création ordonne dans le
+   * groupe seul.
+   */
+  groupe?: 'emplacement'
   /** Effet sur les autres objets après une écriture (une seule parution à la une…). */
   apresEcriture?: (objet: O) => void
 }
@@ -175,6 +186,7 @@ export function ressourceSimulee<O extends ObjetEditorial>(config: ConfigRessour
         if (sans && o.traductions[sans]) return false
         if (p.getAll('tag').some((tag) => !o.tagIds.includes(tag))) return false
         if (p.get('aFournir') === 'true' && enrichir(o).champsAFournir.length === 0) return false
+        if (config.filtrer && !config.filtrer(o, p)) return false
         return !q || titre(o).toLowerCase().includes(q)
       })
       const tries = trier(
@@ -197,10 +209,20 @@ export function ressourceSimulee<O extends ObjetEditorial>(config: ConfigRessour
             if (!corps.ok) return corps.reponse
             const { ids } = corps.valeur
             const existants = new Set(config.collection().map((o) => o.id))
+            const { groupe } = config
+            /** Ordre par groupe (§ 9.9) : la liste porte un seul groupe, les autres bougent pas. */
+            const valeurGroupe = groupe
+              ? (
+                  config.collection().find((x) => x.id === ids[0]) as
+                    Record<string, unknown> | undefined
+                )?.[groupe]
+              : undefined
+            const memeGroupe = (o: O) =>
+              groupe ? (o as Record<string, unknown>)[groupe] === valeurGroupe : true
             if (
               new Set(ids).size !== ids.length ||
-              ids.length !== existants.size ||
-              ids.some((id) => !existants.has(id))
+              !ids.every((id) => existants.has(id)) ||
+              config.collection().some((o) => memeGroupe(o) !== ids.includes(o.id))
             ) {
               return erreur(
                 422,
@@ -209,7 +231,7 @@ export function ressourceSimulee<O extends ObjetEditorial>(config: ConfigRessour
                 { champ: 'ids' },
               )
             }
-            for (const o of config.collection()) o.ordre = ids.indexOf(o.id)
+            for (const o of config.collection()) if (memeGroupe(o)) o.ordre = ids.indexOf(o.id)
             journaliser(garde.compte, 'ordre', config.nom, null, null, { ids })
             if (config.collection().some((o) => o.statut === 'publie')) {
               ouvrirPublication(garde.compte, 'publication', null)

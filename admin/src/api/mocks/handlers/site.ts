@@ -2,6 +2,7 @@ import { http } from 'msw'
 import { autoriser } from '@/api/mocks/garde'
 import {
   avancementPublication,
+  horodatage,
   magasin,
   ouvrirPublication,
   resumeCompte,
@@ -92,8 +93,25 @@ export const handlersSite = [
       aRelire: articles.filter((article) => article.statut === 'en_relecture').length,
       brouillons: articles.filter((article) => article.statut === 'brouillon').length,
       aFournir: articles.filter((article) => article.champsAFournir.length > 0).length,
-      messagesNonLus: 0,
-      demandesNouvelles: 0,
+      messagesNonLus: magasin.messages.filter((m) => m.statut === 'non_lu').length,
+      demandesNouvelles: magasin.demandes.filter((d) => d.statut === 'nouvelle').length,
+      // Contenus publiés à une date future : les 5 prochains (ECRANS § 1).
+      programmes: [
+        ...magasin.articles.map((o) => ({
+          ressource: 'articles',
+          o,
+          titre: o.traductions.fr?.titre ?? o.traductions.en?.titre ?? '',
+        })),
+        ...magasin.bijoux.map((o) => ({
+          ressource: 'bijoux',
+          o,
+          titre: o.traductions.fr?.nom ?? o.traductions.en?.nom ?? '',
+        })),
+      ]
+        .filter(({ o }) => o.statut === 'publie' && o.publieLe && o.publieLe > horodatage())
+        .sort((a, b) => (a.o.publieLe ?? '').localeCompare(b.o.publieLe ?? ''))
+        .slice(0, 5)
+        .map(({ ressource, o, titre }) => ({ ressource, id: o.id, titre, publieLe: o.publieLe })),
       derniereReconstruction: derniere ? avancementPublication(derniere) : null,
       dernieresModifications: [...articles]
         .sort((a, b) => b.modifieLe.localeCompare(a.modifieLe))
