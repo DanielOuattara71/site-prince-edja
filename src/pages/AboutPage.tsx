@@ -15,29 +15,23 @@ import { FormulaireB2B } from '@/components/about/FormulaireB2B'
 import { AfricanPatternRibbon } from '@/components/motifs/AfricanPatternRibbon'
 import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 
-/** Ce que le CDC attend dans la timeline et que les données ne portent pas encore. */
-const ETAPES_MANQUANTES = [
-  'Formation',
-  'Création de contenu',
-  'OHENE',
-  'Productions',
-  'Conférences',
-  'Projets actuels',
-]
+/*
+ * Étapes que le CDC attend dans la timeline et que les données ne portent pas encore :
+ * Formation, Création de contenu, OHENE, Productions, Conférences, Projets actuels. Elles ne
+ * sont plus annoncées sur la page (« Étapes encore à documenter… » était un texte d'atelier,
+ * audit V2-03, décision § 8.5) : elles y entreront avec leurs sources, dans `MILESTONES`.
+ */
 
-/** Les cinq engagements du CDC. PROPOSITION à valider : le CDC nomme les thèmes. */
-const ENGAGEMENTS = [
-  { titre: 'La culture', texte: 'PROPOSITION à valider : ce que le bloc doit dire de la culture.' },
-  {
-    titre: 'La transmission',
-    texte: 'PROPOSITION à valider : ce que le bloc doit dire de la transmission.',
-  },
-  { titre: 'Le tourisme', texte: 'PROPOSITION à valider : ce que le bloc doit dire du tourisme.' },
-  { titre: 'La mémoire', texte: 'PROPOSITION à valider : ce que le bloc doit dire de la mémoire.' },
-  {
-    titre: 'L’image du continent',
-    texte: 'PROPOSITION à valider : ce que le bloc doit dire de l’image du continent.',
-  },
+/**
+ * Les cinq engagements du CDC : les thèmes sont nommés par le CDC, leurs textes restent à écrire
+ * avec la maison. Un engagement sans texte s'affiche avec son titre seul.
+ */
+const ENGAGEMENTS: { titre: string; texte: string }[] = [
+  { titre: 'La culture', texte: '' },
+  { titre: 'La transmission', texte: '' },
+  { titre: 'Le tourisme', texte: '' },
+  { titre: 'La mémoire', texte: '' },
+  { titre: 'L’image du continent', texte: '' },
 ]
 
 /** Sommaire de la page : tout tient sur un seul écran, les sections restent atteignables. */
@@ -88,12 +82,8 @@ export default function AboutPage() {
                 <Button to="/contact" variant="dark">
                   Travailler avec Prince
                 </Button>
-                <span className="inline-flex min-h-11 items-center rounded-md border border-sand-300 px-5 text-caption text-ink-500">
-                  Bio à télécharger · fichier à fournir
-                </span>
-                <span className="inline-flex min-h-11 items-center rounded-md border border-sand-300 px-5 text-caption text-ink-500">
-                  Press kit · fichier à fournir
-                </span>
+                {/* Bio et press kit téléchargeables : liens ajoutés quand les fichiers
+                    existent. Les annoncer « à fournir » était un texte d'atelier (§ 8.5). */}
               </div>
             </div>
 
@@ -171,10 +161,6 @@ export default function AboutPage() {
                   Onze ans au service du récit<span aria-hidden className="text-clay-500">.</span>
                 </h2>
               </Reveal>
-              <p className="text-body text-ink-500">
-                Étapes encore à documenter : {ETAPES_MANQUANTES.join(', ')}. Aucune date ni
-                aucun fait ne sera avancé sans source.
-              </p>
             </div>
 
             <ol className="relative space-y-12 border-l border-sand-200 pl-8 lg:col-span-7">
@@ -237,7 +223,9 @@ export default function AboutPage() {
                 <h3 className="font-display uppercase text-heading-sm text-ink-900">
                   {engagement.titre}
                 </h3>
-                <p className="mt-2 text-body text-ink-500">{engagement.texte}</p>
+                {engagement.texte && (
+                  <p className="mt-2 text-body text-ink-500">{engagement.texte}</p>
+                )}
               </div>
             ))}
           </Stagger>

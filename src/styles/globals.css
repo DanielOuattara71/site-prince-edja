@@ -512,6 +512,14 @@ body.curseur-on .perle {
   color: var(--color-clay-600);
 }
 
+/* Boutons de zoom à 44 px (cibles tactiles) : Leaflet les dessine à 30 px (audit V2-08).
+   Même spécificité que `.leaflet-touch .leaflet-bar a`, déclarée après : elle l'emporte. */
+.leaflet-container .leaflet-control-zoom a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}
+
 /* Pastille d'étape : nuit, filet or, numéro. Remplace l'épingle bleue par défaut. */
 .marqueur-etape {
   background: none;

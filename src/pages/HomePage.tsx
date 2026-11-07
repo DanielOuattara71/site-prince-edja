@@ -20,7 +20,7 @@ export default function HomePage() {
   useSeo({
     title: `${SITE.name} · Raconter · Transmettre · Voyager`,
     description:
-      'Documentaires X’PLORE Côte d’Ivoire, Taste & Travel, circuits OHENE Tour et bijoux TRIBE par Prince Edja, griot 2.0 basé à Abidjan.',
+      'Documentaires X’PLORE Côte d’Ivoire, Taste & Travel, circuits OHENE Tour et Edja Shop par Prince Edja, griot 2.0 basé à Abidjan.',
   })
 
   return (

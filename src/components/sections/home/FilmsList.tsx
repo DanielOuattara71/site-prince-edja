@@ -39,7 +39,7 @@ export function FilmsList() {
                 lieu={episode.lieu}
                 pitch={episode.pitch}
                 image={episode.image}
-                to="/xplore"
+                to={`/xplore/${episode.slug}`}
                 onEnter={() => setActiveImage(episode.image)}
                 onLeave={() => setActiveImage(null)}
               />

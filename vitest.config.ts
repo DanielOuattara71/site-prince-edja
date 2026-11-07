@@ -10,6 +10,8 @@ export default defineConfig({
     },
   },
   test: {
+    // Les tests du site seulement : l'admin (`admin/`) a sa propre configuration et ses alias.
+    include: ['src/**/*.test.{ts,tsx}'],
     environment: 'jsdom',
     environmentOptions: {
       jsdom: {

@@ -19,7 +19,7 @@ function Card({ d }: { d: Distinction }) {
   const placeholder = isPlaceholder(d.image)
   const [open, setOpen] = useState(false)
   return (
-    <article className="group relative h-full overflow-hidden rounded-[3px] border border-sand-200/70 bg-sand-50">
+    <article className="group relative h-full overflow-hidden rounded-md border border-sand-200/70 bg-sand-50">
       {/*
         L'image occupe toute la carte ; les informations n'apparaissent qu'au survol,
         sous un voile encre. Le gabarit « photo à venir » garde son propre texte visible,
@@ -27,15 +27,11 @@ function Card({ d }: { d: Distinction }) {
       */}
       <div className="relative aspect-[4/5] max-h-[70vh] overflow-hidden bg-sand-100">
         {placeholder ? (
+          // Sans photo, la carte reste typographique : le titre seul, sur la nuit. Les
+          // mentions « template » étaient des textes d'atelier (audit V2-03, § 8.5).
           <div className="grain flex h-full w-full flex-col items-center justify-center bg-night-900 p-8 text-center">
-            <span className="rounded-full border border-gold-400/30 px-4 py-1.5">
-              <span className="label-caps text-gold-400">{d.annee} · template</span>
-            </span>
-            <p className="mt-5 max-w-[18ch] font-display uppercase text-heading-sm leading-none text-cream-100/80">
+            <p className="max-w-[18ch] font-display uppercase text-heading-sm leading-none text-cream-100/80">
               {d.titre}
-            </p>
-            <p className="mt-3 text-caption tracking-wide text-cream-100/60">
-              Grande photo, remplace ce template
             </p>
           </div>
         ) : (
@@ -92,7 +88,7 @@ function Card({ d }: { d: Distinction }) {
                     href={d.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 text-caption font-semibold text-cream-100 underline-offset-4 hover:text-gold-400 hover:underline"
+                    className="pointer-events-auto mt-3 inline-flex min-h-11 items-center gap-1.5 text-caption font-semibold text-cream-100 underline-offset-4 hover:text-gold-400 hover:underline"
                   >
                     Voir la source →
                   </a>

@@ -3,6 +3,8 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { BIJOUX } from '@/data/content'
 import { GALERIE_SHOP } from '@/data/shop'
 import { useSeo } from '@/hooks/useSeo'
+import { usePagination } from '@/hooks/usePagination'
+import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
@@ -69,10 +71,14 @@ export default function ShopPage() {
   const [galerieIndex, setGalerieIndex] = useState<number | null>(null)
   const rail = useRef<HTMLDivElement>(null)
 
+  // Chaque page du catalogue a son adresse, son titre et son canonical (SCHEMAS § 12.2).
+  const { t } = useLangue()
+  const { page } = usePagination()
   useSeo({
-    title: 'Edja Shop · Collection TRIBE',
+    title: page > 1 ? `${t('boutique.page')} ${page}` : 'Edja Shop · Bijoux et livres',
     description:
-      'Des objets qui parlent, des symboles qui relient : bijoux TRIBE façonnés à la main par des artisans ivoiriens.',
+      'Des objets qui parlent, des symboles qui relient : les bijoux et les livres d’Edja Shop, la boutique de Prince Edja.',
+    requete: page > 1 ? `?page=${page}` : '',
   })
 
   const defiler = (sens: 1 | -1) => {
@@ -143,7 +149,7 @@ export default function ShopPage() {
                 type="button"
                 onClick={() => defiler(-1)}
                 aria-label="Faire défiler vers la gauche"
-                className="flex size-9 items-center justify-center rounded-full border border-sand-300 text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
+                className="flex size-11 items-center justify-center rounded-full border border-sand-300 text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
               >
                 <ArrowLeft className="size-4" />
               </button>
@@ -151,7 +157,7 @@ export default function ShopPage() {
                 type="button"
                 onClick={() => defiler(1)}
                 aria-label="Faire défiler vers la droite"
-                className="flex size-9 items-center justify-center rounded-full border border-sand-300 text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
+                className="flex size-11 items-center justify-center rounded-full border border-sand-300 text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
               >
                 <ArrowRight className="size-4" />
               </button>

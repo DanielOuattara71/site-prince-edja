@@ -15,7 +15,7 @@ export function PressMarquee() {
           <Eyebrow>Ils en parlent</Eyebrow>
         </Reveal>
       </Container>
-      <Link to="/presse" className="mt-8 block" aria-label="Lire la revue de presse complète">
+      <Link to="/presse" className="mt-5.5 block py-2.5" aria-label="Lire la revue de presse complète">
         <Marquee duration={30}>
           {SOURCES.map((source) => (
             <span key={source} className="flex shrink-0 items-center">

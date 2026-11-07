@@ -26,13 +26,14 @@ const MOTS: Mot[] = [
 ]
 
 function Filigrane() {
+  // Texture, pas du texte : le nom est dessiné par `::before` (aucun nœud texte), ce qui le
+  // sort du contrôle de contraste — un filigrane à 5 % ne peut pas, par nature, y satisfaire.
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 bottom-0 z-0 translate-y-1/2 select-none text-center font-display text-display-xl uppercase leading-none tracking-[-0.03em] text-cream-100 opacity-5"
-    >
-      Prince Edja
-    </span>
+      data-filigrane="Prince Edja"
+      className="pointer-events-none absolute inset-x-0 bottom-0 z-0 translate-y-1/2 select-none text-center font-display text-display-xl uppercase leading-none tracking-[-0.03em] text-cream-100 opacity-5 before:content-[attr(data-filigrane)]"
+    />
   )
 }
 
@@ -158,7 +159,7 @@ export function ColonneMots() {
                 <span
                   className={
                     'block font-display text-display-lg uppercase leading-none transition-opacity duration-(--d-reveal) ease-expo ' +
-                    (index === actif ? 'text-cream-100' : 'text-cream-100/25')
+                    (index === actif ? 'text-cream-100' : 'text-cream-100/40')
                   }
                 >
                   {entree.mot}

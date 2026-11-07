@@ -45,7 +45,7 @@ export function IntroBio() {
                 href={SITE.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="text-button font-semibold text-ink-900"
+                className="inline-flex min-h-11 items-center text-button font-semibold text-ink-900"
               >
                 {SITE.linkedinLabel}
               </a>

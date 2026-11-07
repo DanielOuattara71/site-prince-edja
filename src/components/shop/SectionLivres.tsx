@@ -31,7 +31,7 @@ import { useLangue } from '@/i18n/contexteLangue'
  * navigation morte serait pire qu'une carte muette.
  */
 
-function CarteLivre({ livre }: { livre: Bijou }) {
+export function CarteLivre({ livre }: { livre: Bijou }) {
   const prix = livre.commerce?.prix ?? null
 
   return (
@@ -86,7 +86,7 @@ export function SectionLivres() {
           une pastille sur image, pas une modale. */}
       <Link
         to="#catalogue"
-        className="absolute right-[6%] top-[52px] z-10 flex size-20 -translate-y-1/2 items-center justify-center rounded-full bg-clay-500 text-center text-caption font-semibold text-cream-100 transition-transform duration-(--d-fast) hover:scale-[1.05] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600 lg:size-28 xl:right-[9%]"
+        className="absolute right-[6%] top-[52px] z-10 flex size-20 -translate-y-1/2 items-center justify-center rounded-full bg-clay-600 text-center text-caption font-semibold text-cream-100 transition-[transform,background-color] hover:bg-clay-700 duration-(--d-fast) hover:scale-[1.05] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600 lg:size-28 xl:right-[9%]"
       >
         {l({ fr: 'Tout voir', en: 'View all' })}
       </Link>

@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router'
 import { useSeo, useJsonLd } from '@/hooks/useSeo'
+import { descriptionEpisode } from '@/lib/descriptions'
 import { EPISODES } from '@/data/content'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
@@ -11,27 +12,22 @@ import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { Reveal } from '@/components/motion/Reveal'
 import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
-/** Les sections du template que les données ne portent pas encore. */
-const SECTIONS_MANQUANTES = [
-  'Trailer',
-  'Synopsis long',
-  'Note d’intention',
-  'Personnages',
-  'Making-of',
-  'Presse',
-  'Crédits',
-]
+/*
+ * Sections du gabarit que les données ne portent pas encore : trailer, synopsis long, note
+ * d'intention, personnages, making-of, presse, crédits. Elles ne sont plus annoncées sur la page
+ * (texte d'atelier, audit V2-03, décision § 8.5) : elles y entreront avec leur contenu.
+ */
 
 export default function EpisodeDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const episode = EPISODES.find((item) => item.slug === slug)
-  const { l, t } = useLangue()
+  const { t } = useLangue()
 
   useSeo({
     title: episode
       ? `${episode.titre} · ${episode.lieu} · X'PLORE`
       : 'Épisode · X\'PLORE Côte d’Ivoire',
-    description: episode?.pitch,
+    description: episode ? descriptionEpisode(episode) : undefined,
   })
 
   useJsonLd(
@@ -163,13 +159,6 @@ export default function EpisodeDetailPage() {
               Être informé
             </Button>
           </div>
-
-          <p className="max-w-2xl text-body text-ink-500">
-            {l({
-              fr: `Sections à fournir : ${SECTIONS_MANQUANTES.join(', ')}. Elles apparaîtront sur la page dès que la maison les fournira.`,
-              en: `Sections to be provided: ${SECTIONS_MANQUANTES.join(', ')}. They will appear as soon as the house provides them.`,
-            })}
-          </p>
         </Container>
       </Section>
 

@@ -4,7 +4,20 @@ import { Container } from '@/components/layout/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { formatNombre } from '@/lib/format'
 
-const A_FOURNIR = 'À fournir'
+/** Cellule sans chiffre validé : un tiret sobre à l'œil, une phrase pour les lecteurs d'écran. */
+function NonCommunique() {
+  return (
+    <>
+      <span aria-hidden>—</span>
+      <span className="sr-only">non communiqué</span>
+    </>
+  )
+}
+
+// N'apparaît que ce qui porte au moins un chiffre : une ligne ou un profil entièrement vide
+// affichait « À fournir », un texte d'atelier (audit V2-03, décision § 8.5).
+const LIGNES = AUDIENCE.filter((ligne) => ligne.taille !== null || ligne.portee !== null)
+const PROFILS = AUDIENCE_PROFILS.filter((profil) => profil.valeur !== null)
 
 /**
  * Audience de Prince Edja (CDC T-120).
@@ -22,13 +35,20 @@ export function Audience() {
           <h2 className="font-display uppercase text-display-lg">
             Qui écoute<span aria-hidden className="text-clay-500">.</span>
           </h2>
-          <p className="max-w-2xl text-body text-ink-500">
-            Plateformes, tailles, géographies, profils, portée, impressions et engagement.
-            Les chiffres non fournis restent vides plutôt que plausibles.
-          </p>
         </div>
 
-        <table className="w-full border-t border-sand-200 text-left">
+        {/* Cadre défilant : à 390 px la colonne « Validé le » débordait de la page
+            (audit V2-07). Focusable pour qu'on le fasse défiler au clavier. */}
+        {LIGNES.length > 0 && (
+        <div
+          role="region"
+          aria-label="Audience par plateforme"
+          tabIndex={0}
+          // `relative` : le texte `sr-only` des cellules vides est positionné en absolu ;
+          // sans ancêtre positionné, il sortait du cadre et élargissait la page à 390 px.
+          className="relative overflow-x-auto"
+        >
+        <table className="w-full min-w-xl border-t border-sand-200 text-left">
           <thead>
             <tr className="label-caps text-ink-500">
               <th scope="col" className="py-3 pr-4">
@@ -46,29 +66,33 @@ export function Audience() {
             </tr>
           </thead>
           <tbody>
-            {AUDIENCE.map((ligne) => (
+            {LIGNES.map((ligne) => (
               <tr key={ligne.plateforme} className="border-t border-sand-200">
                 <td className="py-4 pr-4 text-body text-ink-900">{ligne.plateforme}</td>
                 <td className="py-4 pr-4 text-body text-ink-500 tnum">
-                  {ligne.taille === null ? A_FOURNIR : formatNombre(ligne.taille)}
+                  {ligne.taille === null ? <NonCommunique /> : formatNombre(ligne.taille)}
                 </td>
                 <td className="py-4 pr-4 text-body text-ink-500 tnum">
-                  {ligne.portee === null ? A_FOURNIR : formatNombre(ligne.portee)}
+                  {ligne.portee === null ? <NonCommunique /> : formatNombre(ligne.portee)}
                 </td>
-                <td className="py-4 text-caption text-ink-500">{ligne.date ?? A_FOURNIR}</td>
+                <td className="py-4 text-caption text-ink-500">{ligne.date ?? <NonCommunique />}</td>
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
+        )}
 
-        <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {AUDIENCE_PROFILS.map((profil) => (
-            <div key={profil.label} className="border-t border-sand-200 pt-4">
-              <dt className="label-caps text-ink-500">{profil.label}</dt>
-              <dd className="mt-1 text-body text-ink-900">{profil.valeur ?? A_FOURNIR}</dd>
-            </div>
-          ))}
-        </dl>
+        {PROFILS.length > 0 && (
+          <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {PROFILS.map((profil) => (
+              <div key={profil.label} className="border-t border-sand-200 pt-4">
+                <dt className="label-caps text-ink-500">{profil.label}</dt>
+                <dd className="mt-1 text-body text-ink-900">{profil.valeur}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </Container>
     </Section>
   )

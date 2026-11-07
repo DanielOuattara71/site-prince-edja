@@ -11,6 +11,25 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { DistinctionsCarousel } from '@/components/sections/about/DistinctionsCarousel'
 import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 
+/**
+ * Kit presse du CDC. Rien n'est rédigé ici : la maison fournit les textes et les fichiers, et
+ * chaque bloc apparaît dès qu'il a un contenu (au branchement, ces listes viendront de l'admin).
+ */
+const BIOS: { titre: string; aide: string; texte: string | null }[] = [
+  { titre: 'Bio 50 mots', aide: 'Pour un générique ou un carton.', texte: null },
+  { titre: 'Bio 150 mots', aide: 'Pour un article ou une fiche festival.', texte: null },
+  { titre: 'Bio longue', aide: 'Pour un dossier de presse complet.', texte: null },
+]
+
+const ELEMENTS_MARQUE: { nom: string; fichier: string | null }[] = [
+  { nom: 'Portraits HD', fichier: null },
+  { nom: 'Logos', fichier: null },
+  { nom: 'Éléments de marque', fichier: null },
+]
+
+/** Médias, panels, conférences : date et support, aucune entrée sans source. */
+const APPARITIONS: { titre: string; support: string; date: string }[] = []
+
 interface PressCardProps {
   item: PressItem
   index: number
@@ -92,75 +111,83 @@ export default function PressPage() {
         piste touche les bords de la fenêtre comme le carrousel de la boutique. */}
     <DistinctionsCarousel
       titre="Des moments qui comptent"
-      lead="Photos et récits de moments forts, templates remplaçables depuis l'espace admin."
+      lead="Distinctions et moments forts du parcours."
     />
 
     <Section tone="light" className="bg-sand-150">
       <Container>
-        {/* Bios presse : les trois longueurs du CDC. Aucun texte n'est rédigé ici, la
-            maison les fournit. */}
-        <div className="mt-20 space-y-8">
-          <div className="space-y-2">
-            <Eyebrow>Bios presse</Eyebrow>
-            <h2 className="font-display uppercase text-display-lg">
-              Trois longueurs<span aria-hidden className="text-clay-500">.</span>
-            </h2>
+        {/* Bios presse, éléments de marque, apparitions : chaque bloc n'apparaît qu'avec
+            du contenu fourni par la maison. Des cadres « à fournir » étaient des textes
+            d'atelier (audit V2-03, décision § 8.5). */}
+        {BIOS.some((bio) => bio.texte) && (
+          <div className="mb-20 space-y-8">
+            <div className="space-y-2">
+              <Eyebrow>Bios presse</Eyebrow>
+              <h2 className="font-display uppercase text-display-lg">
+                Trois longueurs<span aria-hidden className="text-clay-500">.</span>
+              </h2>
+            </div>
+            <Stagger className="grid gap-6 lg:grid-cols-3">
+              {BIOS.filter((bio) => bio.texte).map((bio) => (
+                <div key={bio.titre} className="rounded-xl border border-sand-300 p-6">
+                  <h3 className="font-display uppercase text-heading-sm text-ink-900">
+                    {bio.titre}
+                  </h3>
+                  <p className="mt-2 text-caption text-ink-500">{bio.aide}</p>
+                  <p className="mt-4 text-body text-ink-700">{bio.texte}</p>
+                </div>
+              ))}
+            </Stagger>
           </div>
-          <Stagger className="grid gap-6 lg:grid-cols-3">
-            {[
-              { titre: 'Bio 50 mots', aide: 'Pour un générique ou un carton.' },
-              { titre: 'Bio 150 mots', aide: 'Pour un article ou une fiche festival.' },
-              { titre: 'Bio longue', aide: 'Pour un dossier de presse complet.' },
-            ].map((bio) => (
-              <div key={bio.titre} className="rounded-xl border border-dashed border-sand-300 p-6">
-                <h3 className="font-display uppercase text-heading-sm text-ink-900">
-                  {bio.titre}
-                </h3>
-                <p className="mt-2 text-body text-ink-500">{bio.aide}</p>
-                <p className="label-caps mt-4 text-ink-500">Texte à fournir</p>
-              </div>
-            ))}
-          </Stagger>
-        </div>
+        )}
 
-        {/* Éléments de marque : portraits HD, logos, éléments. Fichiers à fournir. */}
-        <div className="mt-20 space-y-8">
-          <div className="space-y-2">
-            <Eyebrow>Éléments de marque</Eyebrow>
-            <h2 className="font-display uppercase text-display-lg">
-              Portraits, logos, éléments<span aria-hidden className="text-clay-500">.</span>
-            </h2>
+        {ELEMENTS_MARQUE.some((element) => element.fichier) && (
+          <div className="mb-20 space-y-8">
+            <div className="space-y-2">
+              <Eyebrow>Éléments de marque</Eyebrow>
+              <h2 className="font-display uppercase text-display-lg">
+                Portraits, logos, éléments<span aria-hidden className="text-clay-500">.</span>
+              </h2>
+            </div>
+            <ul className="flex flex-wrap gap-3">
+              {ELEMENTS_MARQUE.map((element) =>
+                element.fichier ? (
+                  <li key={element.nom}>
+                    <Button href={element.fichier} external variant="ghost-dark">
+                      {element.nom}
+                    </Button>
+                  </li>
+                ) : null,
+              )}
+            </ul>
           </div>
-          <Stagger className="grid gap-6 sm:grid-cols-3">
-            {['Portraits HD', 'Logos', 'Éléments de marque'].map((element) => (
-              <div
-                key={element}
-                className="flex aspect-4/5 items-center justify-center rounded-xl border border-dashed border-sand-300 bg-sand-100"
-              >
-                <p className="label-caps px-6 text-center text-ink-500">{element} · à fournir</p>
-              </div>
-            ))}
-          </Stagger>
-        </div>
+        )}
 
-        {/* Apparitions : médias, panels, conférences. Données à fournir. */}
-        <div className="mt-20 space-y-8">
-          <div className="space-y-2">
-            <Eyebrow>Apparitions</Eyebrow>
-            <h2 className="font-display uppercase text-display-lg">
-              Médias, panels, conférences<span aria-hidden className="text-clay-500">.</span>
-            </h2>
-            <p className="max-w-2xl text-body text-ink-500">
-              Aucune apparition n'est encore recensée. La liste se remplira depuis l'admin,
-              avec la date et le support.
-            </p>
+        {APPARITIONS.length > 0 && (
+          <div className="mb-20 space-y-8">
+            <div className="space-y-2">
+              <Eyebrow>Apparitions</Eyebrow>
+              <h2 className="font-display uppercase text-display-lg">
+                Médias, panels, conférences<span aria-hidden className="text-clay-500">.</span>
+              </h2>
+            </div>
+            <ul className="border-b border-sand-200">
+              {APPARITIONS.map((apparition) => (
+                <li
+                  key={`${apparition.date}-${apparition.titre}`}
+                  className="border-t border-sand-200 py-5"
+                >
+                  <p className="label-caps text-ink-500">
+                    {apparition.support} · {apparition.date}
+                  </p>
+                  <p className="mt-1 text-body text-ink-900">{apparition.titre}</p>
+                </li>
+              ))}
+            </ul>
           </div>
-          <p className="rounded-xl border border-dashed border-sand-300 p-8 text-center text-body text-ink-500">
-            Liste à fournir
-          </p>
-        </div>
+        )}
 
-        <Reveal className="mt-20">
+        <Reveal>
           <div className="grain flex flex-col items-start justify-between gap-8 rounded-xl bg-night-800 p-10 text-cream-100 sm:flex-row sm:items-center lg:p-12">
             <div className="max-w-xl space-y-3">
               <p className="label-caps text-gold-400">Presse & programmation</p>
@@ -174,9 +201,7 @@ export default function PressPage() {
               </p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-3">
-              <span className="inline-flex min-h-11 items-center rounded-full border border-cream-100/25 px-5 text-caption text-cream-100/70">
-                Press kit · fichier à fournir
-              </span>
+              {/* Press kit : un bouton s'ajoute ici quand le fichier existe. */}
               <Button
                 href="mailto:contact@ohenetour.com?subject=Demande%20m%C3%A9dia%20-%20Prince%20Edja"
                 variant="primary"

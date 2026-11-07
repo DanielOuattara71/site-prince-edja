@@ -11,7 +11,7 @@ import { cn } from '@/lib/cn'
  * eux-mêmes, comme `CtaTravailler` a dû le faire pour la même raison.
  */
 const BASE_FIELD =
-  'w-full rounded-md border border-sand-200 bg-transparent px-4 py-3 text-body text-ink-900 placeholder:text-ink-500 transition-colors duration-(--d-fast) focus:border-leaf-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600'
+  'w-full rounded-md border border-sand-200 bg-transparent px-4 py-3 text-body text-ink-900 placeholder:text-ink-500 transition-colors duration-(--d-fast) focus:border-leaf-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600 disabled:cursor-not-allowed disabled:opacity-60'
 
 /** Libellé, indice et message d'erreur reliés au contrôle par `aria-describedby`. */
 function FieldWrap({

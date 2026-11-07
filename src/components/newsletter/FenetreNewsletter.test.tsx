@@ -127,4 +127,20 @@ describe('FenetreNewsletter', () => {
     ).toBeNull()
     expect(window.localStorage.getItem('pe_newsletter_intentions')).toBeNull()
   })
+
+  it('ne s’ouvre pas sur une page qui porte déjà un bloc d’inscription plein', () => {
+    minuteur()
+    render(
+      <FournisseurLangue>
+        <MemoryRouter basename="/site-prince-edja" initialEntries={['/site-prince-edja/journal']}>
+          <div data-bloc-newsletter />
+          <FenetreNewsletter />
+        </MemoryRouter>
+      </FournisseurLangue>,
+    )
+    act(() => {
+      vi.advanceTimersByTime(20_000)
+    })
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
 })

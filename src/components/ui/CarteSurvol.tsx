@@ -50,7 +50,7 @@ export function CarteSurvol({
     <article className={cn('group relative block', className)}>
       <Link
         to={to}
-        className="block overflow-hidden rounded-[3px] bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600"
+        className="block overflow-hidden rounded-md bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600"
       >
         <div className="relative" style={{ aspectRatio: ratio }}>
           <img

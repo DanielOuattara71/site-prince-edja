@@ -19,11 +19,11 @@ export const GALLERY: GalleryItem[] = [
   },
   {
     src: `${import.meta.env.BASE_URL}images/boutique/agadez.jpg`,
-    alt: 'Bijou Agadez de la collection TRIBE',
+    alt: 'Bijou Agadez d’Edja Shop',
     to: '/boutique',
     ratio: '4/3',
     speed: 4,
-    label: 'TRIBE',
+    label: 'Edja Shop',
   },
   {
     src: `${import.meta.env.BASE_URL}images/episodes/tiassale.jpg`,

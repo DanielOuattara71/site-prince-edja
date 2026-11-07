@@ -9,7 +9,7 @@ interface StatItemProps {
   label: string
   /** Date de validation du chiffre. Absente = donnée à confirmer. */
   date?: string
-  /** Mention affichée à la place d'une valeur ou d'une date manquante. */
+  /** Mention affichée à la place d'une valeur manquante (les pages publiques filtrent ces chiffres). */
   aFournir?: string
 }
 
@@ -54,7 +54,9 @@ export function StatItem({
         </p>
       )}
       <p className="label-caps mt-2 text-ink-500">{label}</p>
-      <p className="mt-1 text-caption text-ink-500">{date ?? aFournir}</p>
+      {/* Date de validation : affichée quand elle existe. « À fournir » sous chaque
+          chiffre était un texte d'atelier (audit V2-03, décision § 8.5). */}
+      {date && <p className="mt-1 text-caption text-ink-500">{date}</p>}
     </div>
   )
 }

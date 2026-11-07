@@ -5,6 +5,8 @@ export interface SeoOptions {
   description?: string
   /** `false` pour une page qui n'a rien à faire dans l'index (squelette légal, utilitaires). */
   indexable?: boolean
+  /** Requête propre à la page (`?page=2`) : elle entre dans l'adresse canonique et `og:url`. */
+  requete?: string
 }
 
 function upsertMeta(attr: 'name' | 'property', cle: string, contenu: string) {
@@ -24,7 +26,7 @@ function upsertMeta(attr: 'name' | 'property', cle: string, contenu: string) {
  * ne lit que le HTML servi. Le canonical est pris sur l'URL courante sans requête ni
  * ancre. Dire que `?utm_source=…` est une autre page créerait des doublons.
  */
-export function useSeo({ title, description, indexable = true }: SeoOptions) {
+export function useSeo({ title, description, indexable = true, requete = '' }: SeoOptions) {
   useEffect(() => {
     document.title = title
     if (description) {
@@ -39,7 +41,7 @@ export function useSeo({ title, description, indexable = true }: SeoOptions) {
       indexable ? 'index, follow' : 'noindex, follow',
     )
 
-    const url = window.location.origin + window.location.pathname
+    const url = window.location.origin + window.location.pathname + requete
     upsertMeta('property', 'og:url', url)
 
     const ogImage = document.head
@@ -56,7 +58,7 @@ export function useSeo({ title, description, indexable = true }: SeoOptions) {
       document.head.appendChild(lien)
     }
     lien.href = url
-  }, [title, description, indexable])
+  }, [title, description, indexable, requete])
 }
 
 /**

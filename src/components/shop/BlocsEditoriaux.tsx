@@ -126,7 +126,7 @@ export function BlocSuivant() {
             </h2>
             <p className="max-w-xl text-body-lg text-cream-100/75">
               Six routes, six histoires, une Côte d'Ivoire filmée à hauteur d'homme. Les
-              objets de la collection TRIBE viennent de ces mêmes territoires.
+              objets d’Edja Shop viennent de ces mêmes territoires.
             </p>
             <div className="pt-2">
               {/* `to` et pas `href` : un lien interne rechargé ferait repartir la SPA

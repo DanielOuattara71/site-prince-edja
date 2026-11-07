@@ -18,7 +18,7 @@ export default function NotFoundPage() {
 
   useSeo({
     title: 'Page introuvable · Prince Edja',
-    description: "Cette page n'existe pas ou plus. Retrouvez les histoires, la série X'PLORE et la collection TRIBE.",
+    description: "Cette page n'existe pas ou plus. Retrouvez les histoires, la série X'PLORE et Edja Shop.",
     indexable: false,
   })
 

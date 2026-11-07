@@ -82,7 +82,12 @@ export function FenetreNewsletter() {
     const autorise = !verrou || Date.now() > verrou + DUR_MODALE_FERME
     if (!autorise || marque) return
 
-    const minute = window.setTimeout(() => setOuverte(true), DUR_MODALE_PRESENCE * 1000)
+    // Vérifié à l'échéance, page rendue : une page qui porte déjà un bloc d'inscription
+    // plein (`data-bloc-newsletter`) ne reçoit pas une troisième sollicitation.
+    const minute = window.setTimeout(() => {
+      if (document.querySelector('[data-bloc-newsletter]')) return
+      setOuverte(true)
+    }, DUR_MODALE_PRESENCE * 1000)
     return () => window.clearTimeout(minute)
   }, [pathname])
 

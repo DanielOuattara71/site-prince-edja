@@ -46,6 +46,10 @@ const PAIRES = [
   ['forest-900', ['cream-100'], 4.5],
   // Bouton d'action principal : plein crème sur les surfaces nuit.
   ['cream-100', ['ink-900'], 4.5],
+  // Pastille « Tout voir » de la boutique : crème sur terracotta. Sur `clay-500` elle
+  // tombait à 3,07 (audit V2-05).
+  ['clay-600', ['cream-100'], 4.5],
+  ['clay-700', ['cream-100'], 4.5],
 ]
 
 function canal(valeur) {

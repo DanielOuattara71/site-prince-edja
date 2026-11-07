@@ -117,7 +117,7 @@ export function Header() {
             to="/"
             aria-label="Prince Edja · Accueil"
             onClick={() => replayIntro()}
-            className="flex shrink-0 items-baseline gap-1.5 whitespace-nowrap font-display uppercase tracking-wide text-heading-sm"
+            className="flex shrink-0 items-baseline gap-1.5 whitespace-nowrap py-2.5 font-display uppercase tracking-wide text-heading-sm"
           >
             {SITE.name}
             <span aria-hidden className="size-1.5 rounded-full bg-gold-400" />

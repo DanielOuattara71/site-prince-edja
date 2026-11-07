@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
-import { PROJETS, FILTRES_PROJETS, type Projet } from '@/data/projets'
+import { PROJETS, type Projet } from '@/data/projets'
+import { categoriesAffichees } from '@/lib/categories'
 import { useSeo } from '@/hooks/useSeo'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
@@ -19,31 +20,15 @@ import { cn } from '@/lib/cn'
 const HERO_HISTOIRES = `${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree.jpg`
 const HERO_HISTOIRES_SRCSET = `${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree-1200.jpg 1200w, ${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree.jpg 1920w`
 
-/** Correspondance entre les filtres du CDC et les données du projet. */
-function correspond(projet: Projet, filtre: string): boolean {
-  switch (filtre) {
-    case 'Documentaires':
-      return projet.format === 'Documentaire'
-    case 'Séries':
-      return projet.format === 'Série'
-    case 'Histoire':
-      return projet.theme.includes('Histoire') || projet.theme.includes('Mémoire')
-    case 'Patrimoine':
-      return projet.theme.includes('Patrimoine')
-    case 'Tourisme':
-      return projet.theme.includes('Gastronomie') || projet.theme.includes('Littoral')
-    case 'En production':
-      // Le libellé vient du CDC, mais aucun projet ne porte ce statut exact : les
-      // statuts réels sont « disponible » (publié) et « en préparation » (en cours).
-      // Le filtre répond donc « ce qui est en train de se faire », sinon il ne
-      // retournait jamais rien.
-      return projet.statut === 'en préparation'
-    case 'Archives':
-      return projet.format === 'Archive'
-    default:
-      return false
-  }
-}
+/**
+ * Filtres : les catégories de projets créées dans l'admin, visibles et non vides (règle du
+ * client, 06/11/2026). Elles remplacent les sept filtres écrits en dur et leurs correspondances
+ * à la main (format, thème, statut mêlés).
+ */
+const CATEGORIES_PROJETS = categoriesAffichees(
+  'projet',
+  PROJETS.map((projet) => projet.categorie),
+)
 
 function CarteProjet({ projet }: { projet: Projet }) {
   const { l } = useLangue()
@@ -62,16 +47,12 @@ function CarteProjet({ projet }: { projet: Projet }) {
             ratio="4/5"
             className="h-full w-full object-cover transition-transform duration-[700ms] ease-expo group-hover:scale-[1.03]"
           />
-        ) : (
-          <span className="absolute inset-0 flex items-center justify-center">
-            <span className="label-caps px-6 text-center text-ink-500">
-              {l({ fr: 'Visuel à fournir', en: 'Visual to be provided' })}
-            </span>
-          </span>
-        )}
+        ) : null}
+        {/* Projet annoncé, sans fiche encore : mention sobre « À venir » (décision § 8.5) ;
+            « À fournir » et « Visuel à fournir » étaient des textes d'atelier. */}
         {projet.aFournir && (
           <span className="label-caps absolute left-3 top-3 rounded-full bg-night-900/85 px-3 py-1.5 text-cream-100">
-            {l({ fr: 'À fournir', en: 'To be provided' })}
+            {l({ fr: 'À venir', en: 'Coming soon' })}
           </span>
         )}
       </div>
@@ -124,7 +105,7 @@ export default function HistoiresPage() {
     () => PROJETS.filter((projet) => filtre || projet.slug !== aLaUne?.slug),
     [aLaUne?.slug, filtre],
   )
-  const visibles = filtre ? autres.filter((projet) => correspond(projet, filtre)) : autres
+  const visibles = filtre ? autres.filter((projet) => projet.categorie === filtre) : autres
 
   return (
     <>
@@ -219,7 +200,7 @@ export default function HistoiresPage() {
             >
               {l({ fr: 'Tous les projets', en: 'All projects' })}
             </button>
-            {FILTRES_PROJETS.map((nom) => (
+            {CATEGORIES_PROJETS.map(({ nom }) => (
               <button
                 key={nom}
                 type="button"

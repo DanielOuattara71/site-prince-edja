@@ -13,10 +13,6 @@ export function Offres() {
           <h2 className="font-display uppercase text-display-lg">
             Huit façons de collaborer<span aria-hidden className="text-clay-500">.</span>
           </h2>
-          <p className="max-w-2xl text-body text-ink-500">
-            PROPOSITION à valider : les libellés viennent du cahier des charges, les
-            descriptions sont à écrire avec la maison.
-          </p>
         </div>
 
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -25,7 +21,7 @@ export function Offres() {
               <h3 className="font-display uppercase text-heading-sm text-ink-900">
                 {offre.titre}
               </h3>
-              <p className="mt-2 text-body text-ink-500">{offre.texte}</p>
+              {offre.texte && <p className="mt-2 text-body text-ink-500">{offre.texte}</p>}
             </li>
           ))}
         </ul>

@@ -20,6 +20,10 @@ export interface Projet {
   statut: StatutProjet
   theme: string[]
   image: string
+  /** Catégorie (nom), parmi celles de l'admin, famille `projet` (src/data/categories.ts). */
+  categorie: string
+  /** Template de la page (docs/PROPOSITION-TEMPLATES-PROJETS.md) : film, programme ou bibliotheque. */
+  template: 'film' | 'programme' | 'bibliotheque'
   /** Projet sans contenu : les cases vides s'affichent comme telles. */
   aFournir: boolean
   /**
@@ -32,6 +36,8 @@ export interface Projet {
 export const PROJETS: Projet[] = [
   {
     slug: 'xplore-cote-divoire',
+    categorie: 'Film',
+    template: 'film',
     titre: 'X’PLORE Côte d’Ivoire',
     accroche:
       'Six routes, six histoires : la série documentaire qui arpente la Côte d’Ivoire à hauteur d’homme.',
@@ -46,6 +52,8 @@ export const PROJETS: Projet[] = [
   },
   {
     slug: 'taste-and-travel',
+    categorie: 'Tourisme',
+    template: 'programme',
     titre: 'Taste & Travel',
     accroche:
       'Émission gastronomique et culturelle : la table comme premier poste frontière.',
@@ -60,6 +68,8 @@ export const PROJETS: Projet[] = [
   },
   {
     slug: 'chant-des-cotes',
+    categorie: 'Film',
+    template: 'film',
     titre: 'Chant des Côtes',
     accroche: 'Projet annoncé par le CDC.',
     format: 'Documentaire',
@@ -72,6 +82,8 @@ export const PROJETS: Projet[] = [
   },
   {
     slug: 'nuances-du-zaouli',
+    categorie: 'Film',
+    template: 'film',
     titre: 'Les Nuances du Zaouli',
     accroche: 'Projet annoncé par le CDC.',
     format: 'Documentaire',
@@ -84,6 +96,8 @@ export const PROJETS: Projet[] = [
   },
   {
     slug: 'route-du-masa',
+    categorie: 'Film',
+    template: 'film',
     titre: 'Sur la Route du MASA',
     accroche: 'Projet annoncé par le CDC.',
     format: 'Documentaire',
@@ -96,6 +110,8 @@ export const PROJETS: Projet[] = [
   },
   {
     slug: 'archive-dafrique',
+    categorie: 'Patrimoine',
+    template: 'bibliotheque',
     titre: 'Archive d’Afrique',
     accroche: 'Bibliothèque de mémoires : personnages, événements, traditions, objets et récits oraux.',
     format: 'Archive',

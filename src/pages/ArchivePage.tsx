@@ -9,7 +9,7 @@ import { Stagger } from '@/components/motion/Stagger'
 import { Button } from '@/components/ui/Button'
 
 export default function ArchivePage() {
-  const { l, t } = useLangue()
+  const { l } = useLangue()
 
   useSeo({
     title: 'Archive d’Afrique · Projets & Histoires · Prince Edja',
@@ -74,12 +74,8 @@ export default function ArchivePage() {
                       {entree.titre}
                     </h3>
                   </div>
-                  <p className="text-caption text-ink-500">
-                    {l({
-                      fr: 'Contenu et sources à fournir. Une entrée sans source n’est pas publiable.',
-                      en: 'Content and sources to be provided. An entry without sources is not publishable.',
-                    })}
-                  </p>
+                  {/* Sujet annoncé, sans contenu encore : mention sobre (décision § 8.5). */}
+                  <p className="label-caps text-ink-500">{l({ fr: 'À venir', en: 'Coming soon' })}</p>
                 </article>
               </Reveal>
             ))}
@@ -89,14 +85,8 @@ export default function ArchivePage() {
             <h2 className="font-display uppercase text-heading-md">Rigueur éditoriale</h2>
             <p className="mt-3 max-w-2xl text-body text-ink-700">
               {l({
-                fr: 'Trois niveaux sont distingués sur chaque entrée : l’histoire documentée (sources citées), la mémoire orale (récits recueillis) et l’interprétation (lecture de la maison). Le modèle de données rend une entrée sans source non publiable.',
-                en: 'Three levels are distinguished on each entry: documented history (cited sources), oral memory (collected accounts) and interpretation (the house’s reading). The data model makes an entry without sources unpublishable.',
-              })}
-            </p>
-            <p className="mt-4 text-caption text-ink-500">
-              {l({
-                fr: 'Aucun contenu historique n’est rédigé par le développeur : les textes et les sources viennent de la maison.',
-                en: 'No historical content is written by the developer: texts and sources come from the house.',
+                fr: 'Trois niveaux sont distingués sur chaque entrée : l’histoire documentée (sources citées), la mémoire orale (récits recueillis) et l’interprétation (lecture de la maison). Une entrée sans source n’est pas publiée.',
+                en: 'Three levels are distinguished on each entry: documented history (cited sources), oral memory (collected accounts) and interpretation (the house’s reading). An entry without sources is not published.',
               })}
             </p>
             <div className="mt-6">
@@ -105,8 +95,6 @@ export default function ArchivePage() {
               </Button>
             </div>
           </div>
-
-          <p className="sr-only">{t('legal.aFournir')}</p>
         </Container>
       </Section>
     </>

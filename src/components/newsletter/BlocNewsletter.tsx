@@ -106,7 +106,10 @@ export function BlocNewsletter({ compact = false, className }: Props) {
 
   return (
     <Reveal className={className}>
-      <div className="rounded-xl border border-sand-200 bg-sand-100 p-8 lg:p-10">
+      {/* `data-bloc-newsletter` : la page porte déjà une invitation pleine, la fenêtre
+          surgissante s'efface (FenetreNewsletter, audit AUD-016). La version compacte du
+          pied de page ne le pose pas. */}
+      <div data-bloc-newsletter className="rounded-xl border border-sand-200 bg-sand-100 p-8 lg:p-10">
         <SectionHeading
           eyebrow="La lettre du griot"
           title={

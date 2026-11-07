@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { ArrowLeft, ArrowRight, Minus, Plus } from 'lucide-react'
 import { useSeo } from '@/hooks/useSeo'
+import { descriptionObjet } from '@/lib/descriptions'
 import { PIECES } from '@/data/shop'
 import { useDemande } from '@/lib/demande'
 import { useLangue } from '@/i18n/contexteLangue'
@@ -41,8 +42,8 @@ export default function ObjetPage() {
   const augmenter = () => setQuantite((actuelle) => Math.min(9, actuelle + 1))
 
   useSeo({
-    title: objet ? `${objet.nom} · Collection TRIBE · Edja Shop` : 'Objet introuvable · Edja Shop',
-    description: objet?.histoire,
+    title: objet ? `${objet.nom} · Edja Shop` : 'Objet introuvable · Edja Shop',
+    description: objet ? descriptionObjet(objet) : undefined,
   })
 
   if (!objet) {
@@ -95,7 +96,7 @@ export default function ObjetPage() {
                   <LazyImage
                     key={src}
                     src={src}
-                    alt={index === 0 ? `${objet.nom}, pièce de la collection TRIBE` : `${objet.nom}, visuel supplémentaire`}
+                    alt={index === 0 ? `${objet.nom}, pièce d’Edja Shop` : `${objet.nom}, visuel supplémentaire`}
                     className="w-[85vw] shrink-0 aspect-square lg:w-full lg:aspect-[9/12]"
                   />
                 ))}
@@ -106,16 +107,16 @@ export default function ObjetPage() {
                 qui sert la décision tient dans cette colonne. */}
             <div className="col-span-16 lg:col-span-7">
               <div className="lg:sticky lg:top-28">
-                <Link to="/boutique" className="group mb-4 flex items-center gap-1 tracking-tight text-current">
+                <Link to="/boutique" className="group mb-4 flex min-h-11 w-fit items-center gap-1 tracking-tight text-current">
                   <ArrowLeft
                     aria-hidden
                     className="mr-2 size-4 shrink-0 transition-transform duration-100 group-active:-translate-x-1"
                   />
-                  {l({ fr: 'Retour à la boutique', en: 'Back to the shop' })}
+                  {l({ fr: 'Retour à Edja Shop', en: 'Back to Edja Shop' })}
                 </Link>
 
                 <Eyebrow tone="light" num={objet.numero}>
-                  Collection TRIBE · {objet.culture}
+                  Edja Shop · {objet.culture}
                 </Eyebrow>
 
                 <h1 className="mb-5 font-display uppercase text-display-lg leading-[0.92] text-ink-900">
@@ -147,15 +148,21 @@ export default function ObjetPage() {
                     type="button"
                     onClick={diminuer}
                     disabled={quantite <= 1}
-                    className="transition-all duration-100 hover:opacity-80 active:scale-90 pr-4 disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label={l({ fr: 'Diminuer la quantité', en: 'Decrease quantity' })}
+                    className="inline-flex min-h-11 items-center transition-all duration-100 hover:opacity-80 active:scale-90 pr-4 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <Minus aria-hidden className="size-9" />
                   </button>
-                  <span className="min-w-10 text-center md:min-w-16">{quantite}</span>
+                  {/* Annoncée à chaque changement : les boutons seuls ne disent pas le résultat. */}
+                  <span aria-live="polite" className="min-w-10 text-center md:min-w-16">
+                    <span className="sr-only">{l({ fr: 'Quantité : ', en: 'Quantity: ' })}</span>
+                    {quantite}
+                  </span>
                   <button
                     type="button"
                     onClick={augmenter}
-                    className="transition-all duration-100 hover:opacity-80 active:scale-90 pl-4"
+                    aria-label={l({ fr: 'Augmenter la quantité', en: 'Increase quantity' })}
+                    className="inline-flex min-h-11 items-center transition-all duration-100 hover:opacity-80 active:scale-90 pl-4"
                   >
                     <Plus aria-hidden className="size-9" />
                   </button>
@@ -182,7 +189,7 @@ export default function ObjetPage() {
                       </p>
                       <Link
                         to="/contact"
-                        className="inline-flex items-center text-caption font-semibold text-clay-600 underline-offset-4 transition-colors hover:text-clay-700 hover:underline"
+                        className="inline-flex min-h-11 items-center text-caption font-semibold text-clay-600 underline-offset-4 transition-colors hover:text-clay-700 hover:underline"
                       >
                         {l({ fr: 'Poser une question sur cette pièce', en: 'Ask about this piece' })}
                       </Link>

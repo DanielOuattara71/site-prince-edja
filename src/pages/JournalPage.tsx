@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { ARTICLES, CATEGORIES_JOURNAL } from '@/data/content'
+import { ARTICLES } from '@/data/content'
+import { categoriesAffichees } from '@/lib/categories'
 import { cn } from '@/lib/cn'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
@@ -82,7 +83,8 @@ export default function JournalPage() {
               >
                 Tous les articles
               </button>
-              {CATEGORIES_JOURNAL.map((categorie) => (
+              {/* Les catégories de l'admin, visibles et non vides (src/lib/categories.ts). */}
+              {categoriesAffichees('article', ARTICLES.map((a) => a.categorie)).map(({ nom: categorie }) => (
                 <button
                   key={categorie}
                   type="button"

@@ -82,7 +82,7 @@ export const NAV_PRINCIPALE: EntreeNav[] = [
   {
     libelle: { fr: 'Edja Shop', en: 'Edja Shop' },
     to: '/boutique',
-    degre: { fr: 'Collection TRIBE', en: 'TRIBE collection' },
+    degre: { fr: 'Bijoux et livres', en: 'Jewellery and books' },
   },
   {
     libelle: { fr: 'Contact', en: 'Contact' },
@@ -137,7 +137,7 @@ export const FOOTER_NAV: BlocFooter[] = [
   {
     titre: { fr: 'Edja Shop', en: 'Edja Shop' },
     liens: [
-      { libelle: { fr: 'Collection TRIBE', en: 'TRIBE collection' }, to: '/boutique' },
+      { libelle: { fr: 'Bijoux et livres', en: 'Jewellery and books' }, to: '/boutique' },
       { libelle: { fr: 'Contact', en: 'Contact' }, to: '/contact' },
     ],
   },

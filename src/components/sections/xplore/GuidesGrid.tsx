@@ -5,6 +5,8 @@ import { PdfCard } from '@/components/ui/PdfCard'
 
 export function GuidesGrid() {
   const guides = EPISODES.filter((episode) => episode.guide)
+  // Les guides viennent de l'admin : sans aucun PDF livré, pas de titre au-dessus du vide.
+  if (guides.length === 0) return null
 
   return (
     <section aria-label="Guides de voyage téléchargeables" className="section-y bg-sand-100">

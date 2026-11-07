@@ -7,14 +7,17 @@ import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Input, Select, Textarea } from '@/components/ui/Field'
-import { envoyerFormulaire } from '@/lib/formulaire'
+import { emailContact, envoyerContact, estRobot, formulairesOuverts } from '@/lib/formulaire'
+import { useLangue } from '@/i18n/contexteLangue'
 import { Button } from '@/components/ui/Button'
+import { AvisFormulaireFerme } from '@/components/ui/AvisFormulaireFerme'
 
 const SUBJECT_OPTIONS = [...CONTACT_MOTIFS.map((motif) => motif.titre), 'Autre demande']
 
-type FormStatus = 'idle' | 'sending' | 'success' | 'error'
+type FormStatus = 'idle' | 'sending' | 'success' | 'error' | 'messagerie'
 
 function ContactForm() {
+  const { t } = useLangue()
   const formRef = useRef<HTMLFormElement>(null)
   const succesRef = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<FormStatus>('idle')
@@ -27,10 +30,17 @@ function ContactForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!formRef.current) return
+    if (!formRef.current || estRobot(formRef.current)) return
+
+    // Sans API : la messagerie du visiteur s'ouvre avec l'e-mail prêt (décision § 8.1).
+    if (!formulairesOuverts) {
+      window.location.href = emailContact(new FormData(formRef.current), SITE.email)
+      setStatus('messagerie')
+      return
+    }
 
     setStatus('sending')
-    const envoye = await envoyerFormulaire(formRef.current)
+    const envoye = await envoyerContact(formRef.current)
     if (envoye) {
       setStatus('success')
       formRef.current.reset()
@@ -67,8 +77,17 @@ function ContactForm() {
       onSubmit={handleSubmit}
       className="space-y-6 rounded-xl border border-sand-200 bg-sand-100 p-8 sm:p-10"
     >
-      <input type="hidden" name="subject" value="Nouveau message du site Prince Edja" />
-      <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} aria-hidden />
+      {!formulairesOuverts && <AvisFormulaireFerme />}
+
+      {/* Champ piège du contrat (`siteWeb`) : invisible, laissé vide par un humain. */}
+      <input
+        type="text"
+        name="siteWeb"
+        className="hidden"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden
+      />
 
       <Input label="Votre nom" id="nom" autoComplete="name" required placeholder="Nom et prénom" />
       <Input
@@ -90,7 +109,10 @@ function ContactForm() {
 
       {/* Messages d'état montés en permanence : insérés au moment de l'événement, ils
           ne sont pas annoncés de façon fiable par les lecteurs d'écran. Le succès
-          quitte ce formulaire, seul l'échec y vit. */}
+          quitte ce formulaire ; l'échec et l'ouverture de la messagerie y vivent. */}
+      <div role="status" aria-live="polite">
+        {status === 'messagerie' ? <AvisFormulaireFerme etat="messagerie" /> : null}
+      </div>
       <div role="alert" aria-live="assertive" className="min-h-6">
         {status === 'error' ? (
           <p className="text-caption font-semibold text-clay-700">
@@ -100,7 +122,11 @@ function ContactForm() {
       </div>
 
       <Button type="submit" magnetic={false} disabled={status === 'sending'}>
-        {status === 'sending' ? 'Envoi en cours…' : 'Envoyer le message'}
+        {status === 'sending'
+          ? 'Envoi en cours…'
+          : formulairesOuverts
+            ? 'Envoyer le message'
+            : t('formulaire.preparer')}
       </Button>
     </form>
   )
@@ -124,7 +150,7 @@ export default function ContactPage() {
           </h1>
           <p className="max-w-2xl text-body-lg text-ink-500">
             Partenariats, productions, conférences, presse, projections et collaborations de
-            marque. Décris ton projet en quelques lignes : la réponse vient d'une personne,
+            marque. Décrivez votre projet en quelques lignes : la réponse vient d'une personne,
             pas d'un formulaire.
           </p>
         </div>
@@ -150,7 +176,7 @@ export default function ContactPage() {
                 <p className="label-caps text-ink-500">En direct</p>
                 <a
                   href={`mailto:${SITE.email}`}
-                  className="mt-2 block font-display uppercase text-heading-sm text-ink-900 underline-offset-4 hover:underline"
+                  className="mt-2 flex min-h-11 w-fit items-center font-display uppercase text-heading-sm text-ink-900 underline-offset-4 hover:underline"
                 >
                   {SITE.email}
                 </a>

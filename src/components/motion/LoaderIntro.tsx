@@ -10,9 +10,11 @@ import {
 import { SITE } from '@/data/site'
 import { MaskEmblem } from '@/components/motion/MaskEmblem'
 
-const WORD_MS = 520
-const BRAND_MS = 750
-const TOTAL_MS = SITE.tagline.length * WORD_MS + BRAND_MS + 120
+// Contenu visible à ~2,5 s (décision du client, 07/11/2026 ; audit AUD-020 : ~3,4 s avant).
+// Trois mots × 400 ms, le nom 550 ms, sortie 0,5 s. `introDelay` (lib/motion) suit ce total.
+const WORD_MS = 400
+const BRAND_MS = 550
+const TOTAL_MS = SITE.tagline.length * WORD_MS + BRAND_MS + 80
 
 type Phase = 'words' | 'brand'
 
@@ -63,7 +65,7 @@ export function LoaderIntro() {
           if (event.key === 'Tab') event.preventDefault()
         }}
         exit={{ y: '-100%' }}
-        transition={{ duration: 0.75, ease: EASE_QUART }}
+        transition={{ duration: 0.5, ease: EASE_QUART }}
         className="grain fixed inset-0 z-[70] flex flex-col items-center justify-center gap-6 bg-night-900 text-cream-100 sm:gap-10"
       >
         <motion.div

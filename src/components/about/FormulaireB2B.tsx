@@ -1,12 +1,19 @@
 import { useRef, useState } from 'react'
 import { OFFRES } from '@/data/offres'
-import { envoyerFormulaire } from '@/lib/formulaire'
+import { SITE } from '@/data/site'
+import {
+  emailCollaboration,
+  envoyerCollaboration,
+  estRobot,
+  formulairesOuverts,
+} from '@/lib/formulaire'
+import { AvisFormulaireFerme } from '@/components/ui/AvisFormulaireFerme'
 import { Reveal } from '@/components/motion/Reveal'
 import { Input, Select, Textarea } from '@/components/ui/Field'
 import { Button } from '@/components/ui/Button'
 import { useLangue } from '@/i18n/contexteLangue'
 
-type Statut = 'idle' | 'sending' | 'success' | 'error'
+type Statut = 'idle' | 'sending' | 'success' | 'error' | 'messagerie'
 
 /**
  * Formulaire B2B de la page Influence.
@@ -14,6 +21,9 @@ type Statut = 'idle' | 'sending' | 'success' | 'error'
  * Champs du CDC : entreprise, pays, type de collaboration, calendrier, budget
  * optionnel, message. L'email est ajouté : sans lui, aucune réponse n'est possible. Il
  * est signalé comme écart au rapport de tâche.
+ *
+ * Sans API publique configurée, le bouton prépare un e-mail dans la messagerie du
+ * visiteur (décision du client, rapport d'audit V2 § 8.1).
  */
 export function FormulaireB2B() {
   const { t } = useLangue()
@@ -27,9 +37,14 @@ export function FormulaireB2B() {
         className="space-y-6"
         onSubmit={async (evenement) => {
           evenement.preventDefault()
-          if (!formRef.current) return
+          if (!formRef.current || estRobot(formRef.current)) return
+          if (!formulairesOuverts) {
+            window.location.href = emailCollaboration(new FormData(formRef.current), SITE.email)
+            setStatut('messagerie')
+            return
+          }
           setStatut('sending')
-          const ok = await envoyerFormulaire(formRef.current)
+          const ok = await envoyerCollaboration(formRef.current)
           if (ok) {
             setStatut('success')
             formRef.current.reset()
@@ -38,7 +53,7 @@ export function FormulaireB2B() {
           }
         }}
       >
-        <input type="hidden" name="subject" value="Demande de collaboration — Edja Shop" />
+        {!formulairesOuverts && <AvisFormulaireFerme />}
 
         <div className="grid gap-6 sm:grid-cols-2">
           <Input label="Entreprise" id="b2b-entreprise" autoComplete="organization" required />
@@ -60,26 +75,39 @@ export function FormulaireB2B() {
 
         <Textarea label="Votre message" id="b2b-message" required />
 
-        {/* Piège à robots, repris du formulaire de contact : un champ invisible au
-            regard mais lu par les scripts automatiques. */}
-        <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} aria-hidden />
+        {/* Champ piège du contrat (`siteWeb`) : invisible au regard, laissé vide par un
+            humain, rempli par les scripts automatiques. */}
+        <input
+          type="text"
+          name="siteWeb"
+          className="hidden"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden
+        />
 
         <div className="flex flex-wrap items-center gap-4">
           <Button type="submit" magnetic={false} disabled={statut === 'sending'}>
-            {statut === 'sending' ? 'Envoi en cours…' : 'Envoyer la demande'}
+            {statut === 'sending'
+              ? 'Envoi en cours…'
+              : formulairesOuverts
+                ? 'Envoyer la demande'
+                : t('formulaire.preparer')}
           </Button>
-        {/* Messages d'état montés en permanence : créés au moment de l'événement, ils
-            ne sont pas annoncés de façon fiable. */}
-        <div role="status" aria-live="polite" className="min-h-6">
-          {statut === 'success' ? (
-            <p className="text-body text-ink-700">{t('b2b.succes')}</p>
-          ) : null}
-        </div>
-        <div role="alert" aria-live="assertive" className="min-h-6">
-          {statut === 'error' ? (
-            <p className="text-body font-semibold text-clay-700">{t('b2b.erreur')}</p>
-          ) : null}
-        </div>
+          {/* Messages d'état montés en permanence : créés au moment de l'événement, ils
+              ne sont pas annoncés de façon fiable. */}
+          <div role="status" aria-live="polite" className="min-h-6">
+            {statut === 'success' ? (
+              <p className="text-body text-ink-700">{t('b2b.succes')}</p>
+            ) : statut === 'messagerie' ? (
+              <AvisFormulaireFerme etat="messagerie" />
+            ) : null}
+          </div>
+          <div role="alert" aria-live="assertive" className="min-h-6">
+            {statut === 'error' ? (
+              <p className="text-body font-semibold text-clay-700">{t('b2b.erreur')}</p>
+            ) : null}
+          </div>
         </div>
       </form>
     </Reveal>

@@ -77,6 +77,12 @@ const TAGS_ARTICLE: Pick<Tags, 'format' | 'projet'> = {
   projet: 'JOURNAL',
 }
 
+/**
+ * Guides PDF : fournis depuis l’admin (Projets › Guides PDF), jamais écrits ici. Le champ `guide`
+ * reste vide tant qu’aucun PDF n’est livré : les cinq chemins d’origine (guides/guide-sassandra,
+ * -jacqueville, -tai, -tiassale, -adiake.pdf) visaient des fichiers absents, et le site servait
+ * sa propre page HTML à la place (audit AUD-001 / V2-02). Le bouton apparaît dès qu’un guide existe.
+ */
 export const EPISODES: Episode[] = [
   {
     slug: 'le-dernier',
@@ -99,7 +105,6 @@ export const EPISODES: Episode[] = [
     lieu: 'Sassandra',
     pitch: 'L’écologie de luxe et la mémoire du littoral.',
     image: `${import.meta.env.BASE_URL}images/episodes/sassandra.jpg`,
-    guide: `${import.meta.env.BASE_URL}guides/guide-sassandra.pdf`,
     tags: {
       ...TAGS_FILM,
       pays: CÔTE_D_IVOIRE,
@@ -114,7 +119,6 @@ export const EPISODES: Episode[] = [
     lieu: 'Jacqueville',
     pitch: 'Le lagon, l’océan et les hommes de la pêche.',
     image: `${import.meta.env.BASE_URL}images/episodes/jacqueville.jpg`,
-    guide: `${import.meta.env.BASE_URL}guides/guide-jacqueville.pdf`,
     tags: {
       ...TAGS_FILM,
       pays: CÔTE_D_IVOIRE,
@@ -129,7 +133,6 @@ export const EPISODES: Episode[] = [
     lieu: 'Taï',
     pitch: 'La dernière grande forêt primaire et ses chimpanzés.',
     image: `${import.meta.env.BASE_URL}images/episodes/tai.jpg`,
-    guide: `${import.meta.env.BASE_URL}guides/guide-tai.pdf`,
     tags: {
       ...TAGS_FILM,
       pays: CÔTE_D_IVOIRE,
@@ -144,7 +147,6 @@ export const EPISODES: Episode[] = [
     lieu: 'Tiassalé',
     pitch: 'Le Bandama, ses rives et ses histoires.',
     image: `${import.meta.env.BASE_URL}images/episodes/tiassale.jpg`,
-    guide: `${import.meta.env.BASE_URL}guides/guide-tiassale.pdf`,
     tags: {
       ...TAGS_FILM,
       pays: CÔTE_D_IVOIRE,
@@ -159,7 +161,6 @@ export const EPISODES: Episode[] = [
     lieu: 'Adiaké',
     pitch: 'Les îles Ehotilé, entre patrimoine et transmission.',
     image: `${import.meta.env.BASE_URL}images/episodes/adiake.jpg`,
-    guide: `${import.meta.env.BASE_URL}guides/guide-adiake.pdf`,
     tags: {
       ...TAGS_FILM,
       pays: CÔTE_D_IVOIRE,

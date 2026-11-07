@@ -73,7 +73,7 @@ export function Footer() {
             <p className="label-caps text-cream-100/40">{SITE.devise}</p>
             <a
               href={`mailto:${SITE.email}`}
-              className="text-caption text-cream-100/60 underline-offset-4 hover:text-cream-100 hover:underline"
+              className="inline-flex min-h-11 w-fit items-center text-caption text-cream-100/60 underline-offset-4 hover:text-cream-100 hover:underline"
             >
               {SITE.email}
             </a>

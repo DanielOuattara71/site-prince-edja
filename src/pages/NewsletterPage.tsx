@@ -70,13 +70,12 @@ export default function NewsletterPage({ vue }: { vue: VueNewsletter }) {
         {vue === 'preferences' && (
           <div className="space-y-6">
             <p className="text-body-lg text-ink-700">
+              {/* Texte public : l'ancienne version parlait de prestataire et de données,
+                  et finissait sur « À fournir » (texte d'atelier, décision § 8.5). */}
               {l({
-                fr: 'Les préférences de réception arrivent avec le prestataire d’emailing. Les centres d’intérêt sont déjà prévus dans les données ; rien n’est exposé avant ce choix.',
-                en: 'Delivery preferences arrive with the email provider. Interest segments are already prepared in the data; nothing is exposed before that choice.',
+                fr: 'Le choix de vos centres d’intérêt sera bientôt disponible ici.',
+                en: 'Choosing your interests will soon be available here.',
               })}
-            </p>
-            <p className="text-caption text-ink-500">
-              {l({ fr: 'À fournir', en: 'To be provided' })} : {l({ fr: 'prestataire et textes', en: 'provider and copy' })}
             </p>
           </div>
         )}
@@ -85,9 +84,11 @@ export default function NewsletterPage({ vue }: { vue: VueNewsletter }) {
           <div className="space-y-6">
             {fait ? (
               <p className="text-body-lg text-ink-700">
+                {/* Le formulaire n'enregistre rien tant que l'envoi de la lettre n'est pas
+                    branché (mission 3) : « Demande enregistrée » était inexact. */}
                 {l({
-                  fr: 'Demande enregistrée. Elle sera effective une fois le prestataire branché.',
-                  en: 'Request recorded. It will take effect once the provider is connected.',
+                  fr: `Aucun envoi n’est encore programmé : vous ne recevrez rien de notre part. Pour toute question sur vos données, écrivez à ${SITE.email}.`,
+                  en: `No sending is scheduled yet: you will receive nothing from us. For any question about your data, write to ${SITE.email}.`,
                 })}
               </p>
             ) : (

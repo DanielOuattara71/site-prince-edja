@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router'
 import { DESTINATIONS } from '@/data/destinations'
 import { EPISODES, BIJOUX } from '@/data/content'
 import { useSeo } from '@/hooks/useSeo'
-import { useLangue } from '@/i18n/contexteLangue'
+import { descriptionDestination } from '@/lib/descriptions'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -12,17 +12,8 @@ import { LazyImage } from '@/components/media/LazyImage'
 import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 /** Ce que la page destination doit porter et que les données n'ont pas encore. */
-const SECTIONS_A_FOURNIR = [
-  'Photos',
-  'Histoire du lieu',
-  'Personnages',
-  'Carnet de route',
-  'Bonnes adresses',
-]
-
 export default function DestinationPage() {
   const { slug } = useParams<{ slug: string }>()
-  const { l, t } = useLangue()
 
   const destination = DESTINATIONS.find((item) => item.slug === slug)
   const episode = EPISODES.find((item) => item.slug === destination?.episodeSlug)
@@ -31,7 +22,7 @@ export default function DestinationPage() {
     title: destination
       ? `${destination.nom} · X'PLORE Côte d'Ivoire`
       : 'Destination · X\'PLORE',
-    description: episode?.pitch,
+    description: destination ? descriptionDestination(destination.nom, episode) : undefined,
     indexable: Boolean(episode),
   })
 
@@ -85,33 +76,9 @@ export default function DestinationPage() {
         </Container>
       </Section>
 
-      <Section tone="light">
-        <Container className="space-y-10">
-          <div className="space-y-2">
-            <Eyebrow>Le lieu</Eyebrow>
-            <h2 className="font-display uppercase text-display-lg">
-              Ce que le territoire raconte
-              <span aria-hidden className="text-clay-500">.</span>
-            </h2>
-          </div>
-          <p className="max-w-2xl text-body-lg text-ink-700">
-            {l({
-              fr: 'Histoire, personnages, carnet et bonnes adresses seront fournis par la maison. La page est prête à les recevoir sans changement de code.',
-              en: 'History, characters, travel notes and recommendations will be provided by the house. The page is ready to receive them without code changes.',
-            })}
-          </p>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {SECTIONS_A_FOURNIR.map((section) => (
-              <li
-                key={section}
-                className="rounded-xl border border-dashed border-sand-300 px-5 py-4 text-body text-ink-500"
-              >
-                {section} · {t('preuves.aFournir')}
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </Section>
+      {/* Section « Le lieu » (photos, histoire du lieu, personnages, carnet de route,
+          bonnes adresses) : retirée tant qu'aucune n'a de contenu. Une liste de cadres
+          « à fournir » était un texte d'atelier (audit V2-03, décision § 8.5). */}
 
       {produitsLies.length > 0 && (
         <Section tone="light" className="bg-sand-150">
@@ -136,7 +103,7 @@ export default function DestinationPage() {
                       ratio="4/5"
                       className="overflow-hidden rounded-md bg-sand-200"
                     />
-                    <p className="mt-3 px-3 font-display text-[11px] uppercase leading-none tracking-[0.18em] text-ink-900">
+                    <p className="mt-3 px-3 font-display text-caption uppercase leading-none tracking-[0.18em] text-ink-900">
                       {bijou.nom}
                     </p>
                   </Link>

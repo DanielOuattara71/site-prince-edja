@@ -50,7 +50,8 @@ export function introAlreadyPlayed(): boolean {
 
 export function introDelay(): number {
   if (typeof window === 'undefined') return 0
-  return introAlreadyPlayed() ? 0 : 2.35
+  // Le héros démarre quand le loader se retire (LoaderIntro : 3 × 400 + 550 + 80 ms).
+  return introAlreadyPlayed() ? 0 : 1.75
 }
 
 export function markIntroDone(): void {
