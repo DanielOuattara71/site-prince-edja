@@ -3,7 +3,24 @@
   "plugins": ["react", "typescript", "oxc"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "eslint/no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@/data/*", "@/data/**", "**/data/*"],
+            "message": "Couche d'accès (PLAN-DE-LANCEMENT, porte G1) : lire les données par @/acces/*, jamais @/data/* directement."
+          }
+        ]
+      }
+    ]
   },
+  "overrides": [
+    {
+      "files": ["src/acces/**", "src/data/**"],
+      "rules": { "eslint/no-restricted-imports": "off" }
+    }
+  ],
   "ignorePatterns": ["admin/**"]
 }

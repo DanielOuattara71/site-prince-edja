@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router'
 import { motion, useReducedMotion } from 'motion/react'
 import { useLangue } from '@/i18n/contexteLangue'
-import type { EntreeNav } from '@/data/navigation'
+import type { EntreeNav } from '@/acces/site'
 import { DUR, EASE_EXPO } from '@/lib/motion'
 
 interface Props {

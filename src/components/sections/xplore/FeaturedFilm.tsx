@@ -1,4 +1,4 @@
-import { EPISODES } from '@/data/content'
+import { EPISODES } from '@/acces/projets'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'

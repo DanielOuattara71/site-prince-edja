@@ -47,7 +47,7 @@ test('épisode et destination : formulaires déclaratifs contre l’API', async 
   await expect(page.getByRole('heading', { level: 1, name: 'Villes' })).toBeVisible()
 })
 
-test('archive avec sa source, et les onze pages fixes, contre l’API', async ({ page }) => {
+test('archive avec sa source, contre l’API', async ({ page }) => {
   test.setTimeout(120_000)
   await seConnecter(page)
   const marque = String(Date.now()).slice(-6)
@@ -62,7 +62,12 @@ test('archive avec sa source, et les onze pages fixes, contre l’API', async ({
   await page.getByRole('button', { name: 'Enregistrer' }).last().click()
   await expect(page).toHaveURL(/\/archive\/[0-9a-f-]{36}$/)
   await expect(page.getByText(/Aucune source/)).toHaveCount(0)
+})
 
+// Écran retiré du menu et des routes (C2) : parcours conservé, décision en C9
+// (docs/ELEMENTS-RETIRES.md), comme le test unitaire correspondant.
+test.skip('les onze pages fixes, contre l’API', async ({ page }) => {
+  await seConnecter(page)
   await page.goto('/pages')
   const tableau = page.getByRole('table', { name: 'Pages du site' })
   await expect(tableau.getByRole('row')).toHaveCount(12)

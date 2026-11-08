@@ -1,5 +1,5 @@
 import { useSeo } from '@/hooks/useSeo'
-import { ENTREES_404 } from '@/data/navigation'
+import { ENTREES_404 } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'

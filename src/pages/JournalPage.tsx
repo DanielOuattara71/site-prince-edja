@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ARTICLES } from '@/data/content'
+import { ARTICLES } from '@/acces/journal'
 import { categoriesAffichees } from '@/lib/categories'
 import { cn } from '@/lib/cn'
 import { useSeo } from '@/hooks/useSeo'

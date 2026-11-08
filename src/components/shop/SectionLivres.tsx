@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { LIVRES_MOCK } from '@/data/livres'
+import { LIVRES } from '@/acces/boutique'
 import type { Bijou } from '@/types'
 import { formatFCFA } from '@/lib/format'
 import { useLangue } from '@/i18n/contexteLangue'
@@ -25,7 +25,7 @@ import { useLangue } from '@/i18n/contexteLangue'
  *    la section. L'accent de la maison reste sur la pastille, le rouge vit dans
  *    le wordmark.
  *
- * Données : `LIVRES_MOCK` (titres suffixés « (maquette) », fichiers de couverture
+ * Données : `LIVRES` (titres suffixés « (maquette) », fichiers de couverture
  * déjà présents du site). Le jour où le CDC livre la vraie liste, seul le tableau
  * change. Aucune carte n'est un lien : les maquettes n'ont pas de fiche, et une
  * navigation morte serait pire qu'une carte muette.
@@ -93,7 +93,7 @@ export function SectionLivres() {
 
       {/* 4 — la rangée produits, bord à bord comme la capture. */}
       <div className="grid grid-cols-2 gap-[3px] px-4 pb-[52px] sm:px-6 lg:grid-cols-4">
-        {LIVRES_MOCK.map((livre) => (
+        {LIVRES.map((livre) => (
           <CarteLivre key={livre.slug} livre={livre} />
         ))}
       </div>

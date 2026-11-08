@@ -1,5 +1,5 @@
 import { useParams } from 'react-router'
-import { ARTICLES } from '@/data/content'
+import { ARTICLES } from '@/acces/journal'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'

@@ -1,4 +1,6 @@
-import { ARTICLES, BIJOUX, EPISODES, TRAVEL_CITIES } from '@/data/content'
+import { ARTICLES } from '@/acces/journal'
+import { BIJOUX } from '@/acces/boutique'
+import { EPISODES, TRAVEL_CITIES } from '@/acces/projets'
 import type { FormatContenu } from '@/types'
 
 /**

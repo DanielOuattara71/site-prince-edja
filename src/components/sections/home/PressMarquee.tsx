@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { PRESS } from '@/data/content'
+import { PRESS } from '@/acces/preuves'
 import { Container } from '@/components/layout/Container'
 import { Marquee } from '@/components/motion/Marquee'
 import { Eyebrow } from '@/components/ui/Eyebrow'

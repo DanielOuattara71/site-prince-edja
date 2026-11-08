@@ -1,4 +1,4 @@
-import { CATEGORIES, type FamilleCategorie } from '@/data/categories'
+import { CATEGORIES, type FamilleCategorie } from '@/acces/categories'
 
 /**
  * Catégories à afficher sur une page publique (filtres) : celles de l'admin, **visibles** et

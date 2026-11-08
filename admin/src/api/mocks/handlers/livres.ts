@@ -54,7 +54,12 @@ export const handlersLivres = ressourceSimulee<Livre>({
         champ: 'reference',
       })
     }
-    if (o.categorieId) {
+    // Comme le back end : la catégorie d'un livre est obligatoire dès l'enregistrement (colonne
+    // `NOT NULL`, contrat 1.5.0 § 22.3).
+    if (!o.categorieId) {
+      return erreur(422, 'VALIDATION', 'Catégorie obligatoire.', { champ: 'categorieId' })
+    }
+    {
       const categorie = magasin.categories.find((c) => c.id === o.categorieId)
       if (!categorie) {
         return erreur(422, 'VALIDATION', 'Cette catégorie n’existe pas.', { champ: 'categorieId' })

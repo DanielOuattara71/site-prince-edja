@@ -1,4 +1,4 @@
-import { ARTICLES } from '@/data/content'
+import { ARTICLES } from '@/acces/journal'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Stagger } from '@/components/motion/Stagger'

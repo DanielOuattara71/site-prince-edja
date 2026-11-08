@@ -1,4 +1,4 @@
-import coteIvoire from '@/data/geo/cote-ivoire.json'
+import { coteIvoire } from '@/acces/projets'
 
 /**
  * Frontières de la Côte d'Ivoire, en vecteur.

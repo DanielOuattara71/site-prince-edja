@@ -162,6 +162,11 @@ describe('Livres (ECRANS § 4.3)', () => {
       .map((o) => o.textContent)
     expect(options).toContain('Livres & photographie')
     expect(options).not.toContain('Voyage')
+    // La catégorie d'un livre est obligatoire dès l'enregistrement (comme côté back end).
+    const livresPhoto = within(categorie)
+      .getAllByRole('option')
+      .find((o) => o.textContent === 'Livres & photographie') as HTMLOptionElement
+    fireEvent.change(categorie, { target: { value: livresPhoto.value } })
     fireEvent.change(document.getElementById('reference') as HTMLElement, {
       target: { value: 'L01' },
     })
@@ -176,6 +181,7 @@ describe('Livres (ECRANS § 4.3)', () => {
     await waitFor(() => expect(magasin.livres).toHaveLength(1))
     const livre = magasin.livres[0]
     expect(livre?.reference).toBe('L01')
+    expect(livre?.categorieId).toBe(livresPhoto.value)
     expect(livre?.variantes).toHaveLength(1)
     expect(livre?.variantes[0]).toMatchObject({ libelle: 'Broché', prix: null, stock: null })
     expect(livre?.variantes[0]?.id).toBeTruthy()

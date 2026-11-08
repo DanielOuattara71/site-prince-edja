@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { CONTACT_MOTIFS, UNIVERS } from '@/data/content'
-import { SITE } from '@/data/site'
+import { CONTACT_MOTIFS, UNIVERS } from '@/acces/preuves'
+import { SITE } from '@/acces/site'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'

@@ -1,4 +1,4 @@
-import { LANGUES } from '@/data/navigation'
+import { LANGUES } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { cn } from '@/lib/cn'
 

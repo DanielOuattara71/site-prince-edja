@@ -1,5 +1,4 @@
-import { LIVRES_MOCK } from '@/data/livres'
-import { PIECES } from '@/data/shop'
+import { LIVRES, PIECES } from '@/acces/boutique'
 import { categoriesAffichees, slugCategorie } from '@/lib/categories'
 import type { Bijou } from '@/types'
 
@@ -7,7 +6,7 @@ import type { Bijou } from '@/types'
  * Accès unique aux produits de la boutique (SCHEMAS § 12.2, mission 2).
  *
  * Aujourd'hui : filtre, trie et découpe les données locales (bijoux de `PIECES`, livres de
- * `LIVRES_MOCK`). Demain (mission 3, LIAISON partie C) : seul le corps de `obtenirProduits`
+ * `LIVRES`). Demain (mission 3, LIAISON partie C) : seul le corps de `obtenirProduits`
  * changera pour appeler `GET /public/api/v1/boutique/produits` ; la forme de la réponse est déjà
  * celle de l'API : `{ items, page, pageSize, total, totalPages, categories }`.
  *
@@ -68,7 +67,7 @@ export function slugifier(texte: string): string {
 /** Le catalogue complet, bijoux puis livres, dans l'ordre des données. */
 export const CATALOGUE: ProduitCatalogue[] = [
   ...PIECES.map((produit) => ({ type: 'bijou' as const, produit })),
-  ...LIVRES_MOCK.map((produit) => ({ type: 'livre' as const, produit })),
+  ...LIVRES.map((produit) => ({ type: 'livre' as const, produit })),
 ].map((p, rang) => ({ ...p, id: p.produit.slug, rang }))
 
 /** Prix affiché, ou `null` = « sur demande » (prix non confirmé ou absent). */

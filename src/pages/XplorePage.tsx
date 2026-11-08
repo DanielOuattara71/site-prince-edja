@@ -8,7 +8,7 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { AlbumScroll } from '@/components/sections/xplore/AlbumScroll'
 import { FeaturedFilm } from '@/components/sections/xplore/FeaturedFilm'
 import { GuidesGrid } from '@/components/sections/xplore/GuidesGrid'
-import { DESTINATIONS } from '@/data/destinations'
+import { DESTINATIONS } from '@/acces/projets'
 
 // Leaflet (~40 Ko + sa feuille de style) n'est chargé que sur cette page : la carte
 // n'existe nulle part ailleurs, le reste du site ne paie rien.

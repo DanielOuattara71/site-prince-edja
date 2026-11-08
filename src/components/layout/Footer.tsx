@@ -1,6 +1,5 @@
 import { Link } from 'react-router'
-import { FOOTER_NAV } from '@/data/navigation'
-import { SITE } from '@/data/site'
+import { FOOTER_NAV, SITE } from '@/acces/site'
 import { useLocalTime } from '@/hooks/useLocalTime'
 import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'

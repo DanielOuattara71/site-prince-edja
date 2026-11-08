@@ -1,6 +1,5 @@
-import { SITE } from '@/data/site'
-import { DISTINCTIONS } from '@/data/distinctions'
-import { MILESTONES } from '@/data/content'
+import { SITE } from '@/acces/site'
+import { DISTINCTIONS, MILESTONES } from '@/acces/preuves'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'

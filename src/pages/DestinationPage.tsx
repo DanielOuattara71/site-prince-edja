@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router'
-import { DESTINATIONS } from '@/data/destinations'
-import { EPISODES, BIJOUX } from '@/data/content'
+import { DESTINATIONS, EPISODES } from '@/acces/projets'
+import { BIJOUX } from '@/acces/boutique'
 import { useSeo } from '@/hooks/useSeo'
 import { descriptionDestination } from '@/lib/descriptions'
 import { Section } from '@/components/layout/Section'

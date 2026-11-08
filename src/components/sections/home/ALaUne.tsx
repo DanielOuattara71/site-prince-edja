@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
-import { ARTICLES, EPISODES } from '@/data/content'
+import { ARTICLES } from '@/acces/journal'
+import { EPISODES } from '@/acces/projets'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'

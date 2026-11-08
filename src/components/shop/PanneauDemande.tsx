@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { useDemande, envoyerDemande } from '@/lib/demande'
-import { SITE } from '@/data/site'
+import { SITE } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { formatFCFA } from '@/lib/format'
 import { LazyImage } from '@/components/media/LazyImage'

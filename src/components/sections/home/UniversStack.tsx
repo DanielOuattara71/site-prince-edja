@@ -1,4 +1,4 @@
-import { UNIVERS } from '@/data/content'
+import { UNIVERS } from '@/acces/preuves'
 import { cn } from '@/lib/cn'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'

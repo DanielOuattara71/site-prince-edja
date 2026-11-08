@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { render } from '@testing-library/react'
-import { EPISODES } from '@/data/content'
+import { EPISODES } from '@/acces/projets'
 import { GuidesGrid } from './GuidesGrid'
 
 /** Les guides PDF viennent de l'admin (décision du client, 06/11/2026). */

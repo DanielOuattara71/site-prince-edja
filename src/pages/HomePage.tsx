@@ -1,5 +1,5 @@
 import { useSeo } from '@/hooks/useSeo'
-import { SITE } from '@/data/site'
+import { SITE } from '@/acces/site'
 import { Hero } from '@/components/sections/home/Hero'
 import { Preuves } from '@/components/sections/home/Preuves'
 import { ALaUne } from '@/components/sections/home/ALaUne'

@@ -188,3 +188,83 @@ partie du site), § 8.4 (**Edja Shop**). Le 07/11 : § 8.1 (**lien e-mail**), §
 l'agent, règle décrite en C-06), C-15 (**loader à 2,5 s**). Plus aucune décision ouverte sur l'audit V2.
 Déploiement : le workflow GitHub Pages ne définit pas `PUBLIC_API_URL` ; tant qu'il ne le fait pas,
 les formulaires du site en ligne préparent un e-mail au lieu d'envoyer en ligne.
+
+## 15. Site public — S0 et S1 du plan de lancement — 07/11/2026 (branche `correctifs-site`)
+
+- **S0** : `npm audit fix` (sans `--force`) : Vite 8.2.2 → 8.3.6 dans la plage déclarée (`^8.2.2`,
+  `package.json` inchangé), 2 failles hautes du serveur de développement corrigées, `npm audit` à 0.
+- **S1, porte G1 atteinte** : `src/acces/` (six modules : `site`, `journal`, `projets`, `boutique`,
+  `categories`, `preuves`) est le seul lecteur de `src/data/*` ; 60 fichiers basculés, aucun
+  changement de rendu (contrôle navigateur sur 12 routes, carte comprise, 0 erreur de console).
+  Règle oxlint `no-restricted-imports` : un `@/data/*` hors de la couche fait échouer le lint.
+  Modules synchrones plutôt que hooks : LIAISON § C.2 charge l'API à la construction.
+- Vérifié : types, lint (5 avertissements antérieurs), 64 tests, build.
+
+**Question 33** (pour le back end et le responsable du contrat) : le contrat (§ 18) ne décrit pas la
+forme des réponses de `GET /public/api/v1/contenus/{type}` : images en identifiants ou en objets
+`{ url, alt, largeur, hauteur, declinaisons }` (LIAISON § C.4), traductions entières ou résolues dans
+la langue demandée, champs de cycle de vie exposés ou non. Sans cette forme, les adaptateurs « contrat
+→ site » de S2 ne peuvent pas être écrits sans inventer. Seules `boutique/produits` (SCHEMAS § 12.2,
+proposition 1.5.0) et `categories` (1.4.0) sont décrites.
+
+**Question 34** : `scripts/charger-donnees.ts`, `zod` dans le `package.json` du site et le script
+`npm run charger` viennent d'une session antérieure et ne sont pas commités : `zod` n'est justifié
+dans aucun `docs/DEPENDANCES.md`, et le script appelle `/reglages` et `/photos-fixes`, absentes du
+contrat 1.4.0. À reprendre en S2, une fois la question 33 tranchée.
+
+## 16. Back end, intégration admin et contrat 1.5.0 — 07/11/2026
+
+Autorisation du client (« tu es autorisé ») : l'agent travaille aussi dans `prince-edja-api`.
+Détail : `prince-edja-api/docs/DECISIONS.md` B-61 à B-65 et `admin/docs/DECISIONS.md` D-81.
+
+- C6 côté back end (photos fixes administrables), écritures de l'admin acceptées (projets et
+  templates, épisodes, livres), fin du lot 3 et réglages du lot 4, vue publique et Journal en public.
+  Migrations additives 0009 à 0011 ; correctif de la descente de 0005.
+- **Contrat 1.5.0 arrêté** (§ 18.1, § 22.9) ; copies identiques dans les deux dépôts.
+- Test de contrat de l'admin contre l'API réelle : 39 sur 39. Back end : 57 tests unitaires,
+  153 d'intégration, build OK.
+
+Questions tranchées : **20** (contrat 1.5.0 validé par le back end), **21** (variantes d'un livre :
+tableau entier accepté, routes conservées), **31** (projet avec épisodes : suppression refusée,
+`422 RG-32`), **33** (forme des réponses publiques : § 18.1 du contrat). **34** reste ouverte :
+`scripts/charger-donnees.ts` et `zod` du site, à reprendre en S2 selon le § 18.1.
+
+## 17. Site public — S2, première moitié : données lues dans l'API — 08/11/2026
+
+Détail : `admin/docs/DECISIONS.md` D-83 et `prince-edja-api/docs/DECISIONS.md` B-66.
+
+- **Chargeur** (`npm run charger`, `scripts/charger-donnees.ts`) réécrit sur le § 18.1 : toutes les
+  pages de neuf familles de contenus, catégories des trois familles, catalogue d'Edja Shop et fiche
+  de chaque produit ; chaque réponse validée par Zod (`docs/DEPENDANCES.md`), écrite dans
+  `src/data/generated/` (ignoré par Git) avec un manifeste. `/reglages` et `/photos-fixes` ne sont
+  plus appelées.
+- **Couche d'accès** : `PUBLIC_DATA_SOURCE=api` bascule journal, projets, épisodes, destinations,
+  presse, distinctions, jalons, partenaires, offres, catégories, bijoux et livres sur ces fichiers,
+  par des adaptateurs purs (`src/acces/adaptateurs.ts`, 9 tests). Sans la variable, rien ne change :
+  la CI construit toujours avec les données de départ. En mode API, `vite.config.ts` refuse de
+  construire si les fichiers manquent.
+- Vérifié : types, lint (5 avertissements antérieurs), 73 tests, trois constructions (par défaut sans
+  donnée de l'API, mode API sans fichiers → échec, mode API → 0 maquette dans `dist`), navigateur sur
+  19 routes en mode API avec un exemple publié de chaque famille : 0 erreur de console.
+- Corrigés au passage : la fiche d'un **livre** répondait « Objet introuvable » (aussi avec les
+  maquettes) ; Histoires annonçait « Aucun projet dans ce filtre » sans filtre quand le seul projet
+  est à la une.
+
+**Reste pour fermer S2 (porte G4)** : le **prérendu**. Le site reste une application rendue dans le
+navigateur : la source HTML d'une page ne contient pas encore son contenu.
+
+Question **34** tranchée (chargeur et `zod` repris sur le § 18.1, dépendance justifiée).
+
+**Question 35** (contrat) : les listes publiques ne donnent les étiquettes qu'en identifiants
+(`tagIds`). Le site ne peut donc pas remplir `pays` ni `theme` (recherche, filtres, carte des
+projets) : ils restent vides en mode API. Proposition pour 1.6.0 : résoudre les étiquettes comme les
+images, `etiquettes: [{ type, code, libelle }]` dans la langue demandée.
+
+**Question 36** (contrat) : un produit public n'a pas d'identifiant ; une `CibleInterne` vers un
+bijou ne peut pas être résolue par le site (le projet qui la porte retombe sur la page de son
+template). Ajouter `id` aux produits publics, ou résoudre les cibles côté API (`cible.chemin`) ?
+
+**Question 37** (textes) : plusieurs textes d'interface comptent les contenus en dur (« Six routes.
+Six histoires. », « Six étapes, une saison »). Justes pour la saison 1 ; faux dès qu'un épisode est
+ajouté ou retiré dans l'admin. À rendre administrables (textes d'interface) ou à reformuler sans
+nombre ?

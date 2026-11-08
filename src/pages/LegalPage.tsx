@@ -6,7 +6,7 @@ import { Container } from '@/components/layout/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
-import { PAGES_LEGALES } from '@/data/navigation'
+import { PAGES_LEGALES } from '@/acces/site'
 
 export default function LegalPage() {
   const { t, l } = useLangue()

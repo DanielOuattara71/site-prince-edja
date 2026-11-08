@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
-import { OFFRES } from '@/data/offres'
-import { SITE } from '@/data/site'
+import { OFFRES } from '@/acces/preuves'
+import { SITE } from '@/acces/site'
 import {
   emailCollaboration,
   envoyerCollaboration,

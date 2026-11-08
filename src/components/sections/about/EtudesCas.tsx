@@ -1,4 +1,4 @@
-import { ETAPES_CAS } from '@/data/offres'
+import { ETAPES_CAS } from '@/acces/preuves'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'

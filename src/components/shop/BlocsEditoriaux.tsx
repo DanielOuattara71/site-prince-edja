@@ -1,5 +1,5 @@
-import { GALLERY_QUOTE } from '@/data/gallery'
-import { EPISODES } from '@/data/content'
+import { GALLERY_QUOTE } from '@/acces/preuves'
+import { EPISODES } from '@/acces/projets'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'

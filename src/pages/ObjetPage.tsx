@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router'
 import { ArrowLeft, ArrowRight, Minus, Plus } from 'lucide-react'
 import { useSeo } from '@/hooks/useSeo'
 import { descriptionObjet } from '@/lib/descriptions'
-import { PIECES } from '@/data/shop'
+import { LIVRES, PIECES } from '@/acces/boutique'
 import { useDemande } from '@/lib/demande'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
@@ -32,7 +32,9 @@ import { formatFCFA } from '@/lib/format'
  */
 export default function ObjetPage() {
   const { objet: slug } = useParams<{ objet: string }>()
-  const objet = PIECES.find((item) => item.slug === slug)
+  // Les livres sont des produits d'Edja Shop comme les bijoux : leur carte mène ici aussi.
+  const collection = PIECES.some((item) => item.slug === slug) ? PIECES : LIVRES
+  const objet = collection.find((item) => item.slug === slug)
   const { t, l } = useLangue()
   const { present, basculer } = useDemande()
   const choisi = objet ? present(objet.slug) : false
@@ -69,7 +71,8 @@ export default function ObjetPage() {
 
   // Le fil du récit suit l'ordre des numéros ('01' → '10' se classe sans conversion),
   // et tourne en boucle : la dernière pièce ramène à la première, comme un album.
-  const parNumero = [...PIECES].sort((a, b) => a.numero.localeCompare(b.numero))
+  // Un livre enchaîne sur les livres, un bijou sur les bijoux.
+  const parNumero = [...collection].sort((a, b) => a.numero.localeCompare(b.numero))
   const position = parNumero.findIndex((piece) => piece.slug === objet.slug)
   const precedente = parNumero[(position - 1 + parNumero.length) % parNumero.length]
   const suivante = parNumero[(position + 1) % parNumero.length]
@@ -96,7 +99,11 @@ export default function ObjetPage() {
                   <LazyImage
                     key={src}
                     src={src}
-                    alt={index === 0 ? `${objet.nom}, pièce d’Edja Shop` : `${objet.nom}, visuel supplémentaire`}
+                    alt={
+                      index === 0
+                        ? `${objet.nom}, pièce d’Edja Shop`
+                        : `${objet.nom}, visuel supplémentaire`
+                    }
                     className="w-[85vw] shrink-0 aspect-square lg:w-full lg:aspect-[9/12]"
                   />
                 ))}
@@ -107,7 +114,10 @@ export default function ObjetPage() {
                 qui sert la décision tient dans cette colonne. */}
             <div className="col-span-16 lg:col-span-7">
               <div className="lg:sticky lg:top-28">
-                <Link to="/boutique" className="group mb-4 flex min-h-11 w-fit items-center gap-1 tracking-tight text-current">
+                <Link
+                  to="/boutique"
+                  className="group mb-4 flex min-h-11 w-fit items-center gap-1 tracking-tight text-current"
+                >
                   <ArrowLeft
                     aria-hidden
                     className="mr-2 size-4 shrink-0 transition-transform duration-100 group-active:-translate-x-1"
@@ -121,7 +131,9 @@ export default function ObjetPage() {
 
                 <h1 className="mb-5 font-display uppercase text-display-lg leading-[0.92] text-ink-900">
                   {objet.nom}
-                  <span aria-hidden className="text-clay-500">.</span>
+                  <span aria-hidden className="text-clay-500">
+                    .
+                  </span>
                 </h1>
 
                 <p className="mb-5 text-3xl md:mb-4 md:text-5xl">
@@ -179,7 +191,10 @@ export default function ObjetPage() {
                     />
                     <div className="relative z-10 space-y-3 p-6">
                       <p className="label-caps text-clay-600">
-                        {l({ fr: 'La fiche arrive de l’atelier', en: 'The specs card arrives from the workshop' })}
+                        {l({
+                          fr: 'La fiche arrive de l’atelier',
+                          en: 'The specs card arrives from the workshop',
+                        })}
                       </p>
                       <p className="text-body text-ink-700">
                         {l({
@@ -191,7 +206,10 @@ export default function ObjetPage() {
                         to="/contact"
                         className="inline-flex min-h-11 items-center text-caption font-semibold text-clay-600 underline-offset-4 transition-colors hover:text-clay-700 hover:underline"
                       >
-                        {l({ fr: 'Poser une question sur cette pièce', en: 'Ask about this piece' })}
+                        {l({
+                          fr: 'Poser une question sur cette pièce',
+                          en: 'Ask about this piece',
+                        })}
                       </Link>
                     </div>
                   </div>
@@ -202,7 +220,12 @@ export default function ObjetPage() {
                     </p>
                   </div>
                 ) : (
-                  <Button variant="primary" magnetic={false} className="w-full" onClick={() => basculer(objet)}>
+                  <Button
+                    variant="primary"
+                    magnetic={false}
+                    className="w-full"
+                    onClick={() => basculer(objet)}
+                  >
                     {choisi ? t('demande.retirer') : t('carte.ajouter')}
                   </Button>
                 )}
@@ -238,17 +261,29 @@ export default function ObjetPage() {
             <Container>
               <div className="space-y-8 border-t border-sand-200 pt-10">
                 <div className="space-y-2">
-                  <Eyebrow>{l({ fr: 'La collection se lit', en: 'The collection reads on' })}</Eyebrow>
+                  <Eyebrow>
+                    {l({ fr: 'La collection se lit', en: 'The collection reads on' })}
+                  </Eyebrow>
                   <h2 className="font-display uppercase text-display-lg">
                     {l({ fr: 'Le récit continue', en: 'The story goes on' })}
-                    <span aria-hidden className="text-clay-500">.</span>
+                    <span aria-hidden className="text-clay-500">
+                      .
+                    </span>
                   </h2>
                 </div>
 
                 <ul className="grid gap-2 sm:grid-cols-2">
                   {[
-                    { piece: precedente, signe: 'left' as const, libelle: { fr: 'Précédente', en: 'Previous' } },
-                    { piece: suivante, signe: 'right' as const, libelle: { fr: 'Suivante', en: 'Next' } },
+                    {
+                      piece: precedente,
+                      signe: 'left' as const,
+                      libelle: { fr: 'Précédente', en: 'Previous' },
+                    },
+                    {
+                      piece: suivante,
+                      signe: 'right' as const,
+                      libelle: { fr: 'Suivante', en: 'Next' },
+                    },
                   ].map(({ piece, signe, libelle }) => (
                     <li key={piece.slug}>
                       <Link
@@ -259,13 +294,21 @@ export default function ObjetPage() {
                         <AfricanPattern
                           motif="cauri-africain"
                           opacite={0.07}
-                          className={signe === 'left' ? '-bottom-8 -left-8 h-24 w-32' : '-bottom-8 -right-8 h-24 w-32'}
+                          className={
+                            signe === 'left'
+                              ? '-bottom-8 -left-8 h-24 w-32'
+                              : '-bottom-8 -right-8 h-24 w-32'
+                          }
                         />
                         <div className="relative z-10 flex items-center justify-between gap-4">
                           <span className="label-caps flex items-center gap-2 text-ink-500">
-                            {signe === 'left' && <ArrowLeft aria-hidden className="size-4 shrink-0" />}
+                            {signe === 'left' && (
+                              <ArrowLeft aria-hidden className="size-4 shrink-0" />
+                            )}
                             <span>{l(libelle)}</span>
-                            {signe === 'right' && <ArrowRight aria-hidden className="size-4 shrink-0" />}
+                            {signe === 'right' && (
+                              <ArrowRight aria-hidden className="size-4 shrink-0" />
+                            )}
                           </span>
                           <span aria-hidden className="font-display text-display-lg text-sand-300">
                             {piece.numero}

@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { BIJOUX } from '@/data/content'
-import { GALERIE_SHOP } from '@/data/shop'
+import { BIJOUX, GALERIE_SHOP } from '@/acces/boutique'
 import { useSeo } from '@/hooks/useSeo'
 import { usePagination } from '@/hooks/usePagination'
 import { useLangue } from '@/i18n/contexteLangue'

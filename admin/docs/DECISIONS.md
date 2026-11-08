@@ -811,3 +811,54 @@ activé : `left-0` ajouté. Prop `libelleCourt` pour les lignes de liste.
   et ses filtres viennent de celles créées dans l'admin (projets, articles, produits).
 - Hub : « Moteur de rendu public » montre les trois templates (compteur, lien vers la liste filtrée
   `?template=`) et le template d'épisode ; « Nouveau projet » garde le template choisi.
+
+## Branchement sur le vrai back end — 07/11/2026
+
+### D-81 · Contrat 1.5.0 arrêté, l'admin vérifié contre l'API réelle — Arrêtée
+
+- Le back end a implémenté la proposition 1.5.0 (B-61 à B-65 du dépôt `prince-edja-api`) ; le contrat
+  est **arrêté**, amendé au § 22.9 (qui fait foi). Les écarts qui touchent l'admin :
+  - la catégorie d'un **livre** est obligatoire dès l'enregistrement : le champ `categorie` des
+    formulaires déclaratifs accepte `obligatoire`, coché pour les livres ; le faux serveur refuse
+    désormais un livre sans catégorie, comme l'API ;
+  - un résumé de livre ou un libellé de variante non saisi arrive `null` : lu comme vide ;
+  - variantes d'un livre en tableau entier : acceptées par l'API (Q21 tranchée, le formulaire ne change
+    pas) ;
+  - résumé de projet sans `categorie` (nom) ni `nombreEpisodes` : les colonnes affichent « — ».
+- **Test de contrat** `src/api/contrat-reel.test.ts` : le client de l'admin, avec ses schémas, contre
+  l'API de développement (ignoré sans `API_REELLE=1` ; identifiants lus dans l'environnement, jamais
+  écrits). Lectures de toutes les ressources et écritures projet, épisode rattaché, livre et variantes,
+  article catégorisé, puis suppression de ce qui a été créé. Résultat : **39 sur 39**.
+- Reste pour passer l'admin du faux serveur à l'API en développement : désactiver MSW et pointer
+  `VITE_API_URL` vers l'API (étape 10 de LIAISON), puis rejouer les parcours Playwright contre elle.
+
+### D-82 · L'admin tourne sur l'API réelle (LIAISON, étape 10) — Arrêtée
+
+- Mode `api` (`npm run dev:api`, D-47) : aucun faux serveur, `/admin/api/v1` relayé vers l'API locale.
+  Les parcours Playwright (`npm run test:e2e`) tournent contre elle, comptes de développement fournis
+  par l'environnement (`E2E_EDITEUR_*`, `E2E_ADMIN_*`), jamais par le dépôt.
+- `e2e/simplification.spec.ts` (nouveau) : menu à neuf entrées, catégories des trois familles, photos
+  fixes, partenaires, pages légales, audience, réglages et livres servis par l'API ; un projet
+  Programme créé depuis le hub avec sa catégorie, relu après rechargement, puis supprimé.
+- `e2e/recits.spec.ts` : la vérification de l'écran « Pages du site », retiré du menu et des routes en
+  C2, passe dans un test ignoré (décision en C9), comme son test unitaire.
+- Résultat au 08/11/2026 : **12 parcours sur 12** (bureau et mobile ; 8 ignorés : saisies vérifiées sur
+  bureau seulement, et l'écran retiré). Note : le parcours G2 publie un article d'essai à chaque
+  passage dans la base de développement.
+
+### D-83 · Site public : les données viennent de l'API à la construction (S2, LIAISON § C.2) — Arrêtée
+
+- Chargement **à la construction**, jamais à l'affichage : `PUBLIC_API_URL=… npm run charger` écrit
+  `src/data/generated/*.json` (ignorés par Git), puis `PUBLIC_DATA_SOURCE=api npm run build`. Un appel
+  en échec, une réponse hors du § 18.1 ou un fichier absent arrêtent la construction.
+- Les pages ne changent pas : seule la couche `src/acces/` choisit la source (`source.ts`) et adapte
+  la forme publique à celle du site (`adaptateurs.ts`). Sans `PUBLIC_DATA_SOURCE=api`, données de
+  départ : la CI et GitHub Pages ne sont pas touchés tant que le domaine de l'API n'est pas fixé.
+- Un champ absent de l'API reste vide (étiquettes `pays`/`theme`, édition, atelier, village, poids
+  d'un bijou) ; une destination sans coordonnées n'est pas posée sur la carte.
+- **Lien d'un projet** : la `CibleInterne` posée dans l'admin ; sans elle, la page du site qui sert
+  son template — film → `/xplore`, programme → `/taste-and-travel`, bibliothèque → `/archive-afrique`
+  (ce que faisaient déjà les données de départ pour X'PLORE et Taste & Travel).
+- Restent sur les données de départ (non chargées) : identité, navigation, lettre d'information,
+  univers, motifs de contact, audience, villes et programme Taste & Travel, archive, galeries.
+- Reste pour la porte G4 : le prérendu.

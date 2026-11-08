@@ -7,7 +7,7 @@ import {
   markIntroDone,
   REPLAY_INTRO_EVENT,
 } from '@/lib/motion'
-import { SITE } from '@/data/site'
+import { SITE } from '@/acces/site'
 import { MaskEmblem } from '@/components/motion/MaskEmblem'
 
 // Contenu visible à ~2,5 s (décision du client, 07/11/2026 ; audit AUD-020 : ~3,4 s avant).

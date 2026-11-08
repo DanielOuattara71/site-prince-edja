@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { CTA_PRINCIPAL } from '@/data/navigation'
+import { CTA_PRINCIPAL } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { cn } from '@/lib/cn'
 

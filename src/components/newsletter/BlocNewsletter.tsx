@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PROMESSE_NEWSLETTER } from '@/data/newsletter'
+import { PROMESSE_NEWSLETTER } from '@/acces/site'
 import { cn } from '@/lib/cn'
 import {
   consignerIntention,

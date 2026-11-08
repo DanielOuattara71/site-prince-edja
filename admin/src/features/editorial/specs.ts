@@ -926,7 +926,13 @@ export const SPEC_LIVRES: SpecRessource = {
     },
   ],
   lateral: [
-    { type: 'categorie', cle: 'categorieId', libelle: t('livre.categorie'), famille: 'produit' },
+    {
+      type: 'categorie',
+      cle: 'categorieId',
+      libelle: t('livre.categorie'),
+      famille: 'produit',
+      obligatoire: true,
+    },
     { type: 'createur', cle: 'createurId', libelle: t('livre.createur') },
     {
       type: 'texte',

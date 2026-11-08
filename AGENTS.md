@@ -44,7 +44,7 @@ Aucun test, aucun pre-commit hook.
 - **Échelle z-index** (pas de valeurs à côté) : `0` filigranes · `10` pastilles sur image · `20` contrôles d'un module · `30` aperçu flottant · `40` overlay de navigation · `50` barre fixe · `60` bouton flottant de demande · `70` recherche et loader · `80` modales (lightbox, panneau de demande, lien d'évitement) · `9999` curseur. Deux surfaces au même niveau étaient départagées par l'ordre du DOM : c'est ce que cette échelle remplace.
 
 ## Contenu (data-driven)
-`src/data/content.ts` (UNIVERS, EPISODES, TRAVEL_CITIES, BIJOUX, ARTICLES, PRESS, MILESTONES, CONTACT_MOTIFS), `site.ts`, `gallery.ts`, `distinctions.ts`, typés par `src/types/index.ts`. Aucun texte en dur dans un composant.
+`src/data/content.ts` (UNIVERS, EPISODES, TRAVEL_CITIES, BIJOUX, ARTICLES, PRESS, MILESTONES, CONTACT_MOTIFS), `site.ts`, `gallery.ts`, `distinctions.ts`, typés par `src/types/index.ts`, **lus par `src/acces/`** (jamais importés directement par une page). Aucun texte en dur dans un composant.
 `Tags` (`src/types/index.ts`) est le vocabulaire commun : `pays`, `ville`, `theme`, `annee`, `format`, `projet`. Les champs incertains restent **vides** — `BIJOUX` n'a volontairement ni `pays` ni `theme`, car aucune source n'indique la provenance d'une pièce.
 
 ## Direction artistique
@@ -85,9 +85,11 @@ Aucun test, aucun pre-commit hook.
 
 ## Administration et back end
 - **Une seule surface d'admin** : `admin/`, projet npm autonome (React, Vite, TanStack Query, MSW en développement), port 5180. Les trois anciennes surfaces (`/admin` intégré, Decap CMS, `admin-custom/`) sont supprimées. Décisions : `admin/docs/DECISIONS.md`.
-- **`docs/CONTRAT-API.md` fait foi** entre l'admin et le back end (`prince-edja-api`, dépôt séparé, pas encore créé). Aucun code ne précède la version du contrat qui le décrit.
+- **`docs/CONTRAT-API.md` fait foi** entre l'admin et le back end (`prince-edja-api`, dépôt séparé : il existe en local — `/home/ouattara_nadin/projets/prince-edja-api` — mais n'est pas en ligne ; l'agent y travaille sur autorisation du client du 07/11/2026). **Version 1.5.0 arrêtée** ; sa copie dans `prince-edja-api/docs/contrat/` doit rester identique (test du back end). Aucun code ne précède la version du contrat qui le décrit.
+- **Test de contrat de l'admin** : `admin/src/api/contrat-reel.test.ts` lance le client de l'admin contre l'API de développement (`API_REELLE=1`, `VITE_API_URL`, `ADMIN_EMAIL`, `ADMIN_MOT_DE_PASSE` dans l'environnement). Ignoré sinon. 39 sur 39 au 07/11/2026.
 - Sources (analyse conceptuelle, plan, actions de l'admin, workflow) : `docs/SOURCES-DE-REFERENCE.md` — elles vivent **hors du dépôt**. Ordre de développement : `docs/PLAN-DE-LANCEMENT.md`.
-- ⚠️ Le site lit encore `src/data/*` en direct. La couche d'accès (plan, chantier S1) doit adopter les formes du contrat : un bijou a des **variantes** (prix, matière, taille), plus de `commerce` ; les liens internes sont des `CibleInterne`, plus des chaînes libres.
+- **Couche d'accès (S1, porte G1, 07/11/2026)** : le site lit ses données **uniquement** par `src/acces/` (`site`, `journal`, `projets`, `boutique`, `categories`, `preuves`), qui réexporte `src/data/*` aujourd'hui. Une règle oxlint (`no-restricted-imports`) refuse tout `@/data/*` hors de `src/acces/` et `src/data/`. Modules synchrones, pas de hooks : LIAISON § C.2 charge l'API **à la construction** (JSON dans `src/data/generated/`), rien n'est lu au moment de l'affichage.
+- ⚠️ Reste pour S2 : les adaptateurs « forme du contrat → forme du site » (bijou à **variantes** au lieu de `commerce`, liens en `CibleInterne`). La forme des réponses publiques est fixée par le **§ 18.1 du contrat 1.5.0** : aucun champ interne, images en objets `{ url, alt, largeur, hauteur, declinaisons }` (`imageId` → `image`…), une langue (`traduction`), `mediasCorps` pour les corps riches. Les adaptateurs s'écrivent contre cette forme.
 
 ## Gotchas
 - `Eyebrow` (`src/components/ui/Eyebrow.tsx`) est le marqueur de section de cette branche, avec `tone` et, pour un identifiant de contenu (épisode, objet), `num`. La numérotation des sections et son tiret ont été retirés.

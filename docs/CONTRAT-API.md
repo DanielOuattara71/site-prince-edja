@@ -1,6 +1,6 @@
 # CONTRAT-API — Prince EDJA
 
-> **Version 1.4.0 · 05/11/2026 · ARRÊTÉE.**
+> **Version 1.5.0 · 07/11/2026 · ARRÊTÉE.**
 > Contrat de la face d'administration (`/admin/api/v1`) entre l'interface d'admin (`admin/`) et
 > le back end (`prince-edja-api`). La face publique figure en annexe (§ 18), à titre de
 > référence pour le back end et le site.
@@ -1134,6 +1134,46 @@ existe déjà ou non.
 | `GET /site` | — | Identité, navigation, textes d'interface, pages légales publiées, réglages publics (`languesActives`) |
 | `GET /sitemap` | — | Adresses publiables par langue, avec date de modification |
 
+### 18.1 Vue publique des contenus (1.5.0)
+
+Ce que renvoient `GET /contenus/{type}` et `GET /contenus/{type}/{slug}` (`type` : `articles`,
+`episodes`, `projets`, `villes`, `destinations`, `archive`, `distinctions`, `presse`, `galerie`,
+`univers`, `jalons`, `offres`, `etudes-cas`, `partenaires`, `pages`, `pages-legales`) :
+
+- **aucun champ interne** : ni `statut`, `version`, `auteur`, `auteurId`, `champsAFournir`,
+  `languesPresentes`, `dernierMotifRefus`, `creeLe` ;
+- **images résolues** : chaque média devient `ImagePublique | null` — `imageId` et `mediaId` →
+  `image`, `logoId` → `logo`, `avatarId` → `avatar`, `bandeauId` → `bandeau`, `guideMediaId` → `guide`
+  (PDF : `declinaisons` vide), `galerieMediaIds` → `galerie: ImagePublique[]` ;
+- **une langue** : `?langue=` (défaut `fr`) ; la fiche porte `langue` et `traduction` (celle de la
+  langue, sinon `null`) au lieu de `traductions` ; la liste ne garde que les contenus traduits dans
+  cette langue ;
+- les images citées par un corps riche (nœuds `image`) sont jointes dans
+  `mediasCorps: Record<mediaId, ImagePublique>` ;
+- **la liste porte des objets complets**, comme la fiche, plus `slug` et `titre` dans la langue : une
+  ressource sans slug (distinctions, presse, villes, univers, jalons, offres, partenaires, galerie)
+  n'a pas de fiche publique, tout doit venir de sa liste ;
+- un projet porte aussi `categorie: { slug, nom } | null` ; un épisode, `projetSlug`.
+
+```ts
+interface ImagePublique {
+  url: string            // adresse complète (MEDIA_PUBLIC_BASE_URL / Cloudinary) ; jamais écrite par le site
+  alt: string            // dans la langue demandée, sinon FR ; vide pour une image décorative
+  largeur: number | null
+  hauteur: number | null
+  declinaisons: { largeur: number; url: string }[]   // pour srcset
+}
+```
+
+**Articles** (le Journal) : la liste donne `{ id, slug, titre, extrait, categorie, categorieId, image,
+aLaUne, dureeLecture, tagIds, publieLe, modifieLe }` dans la langue, les plus récents d'abord ; la
+fiche donne l'article complet (corps compris).
+
+Routes publiques servies en 1.5.0, en plus du tableau ci-dessus : `GET /categories?famille=&langue=`
+(1.4.0), `GET /boutique/produits` et `/boutique/produits/{slug}` (SCHEMAS § 12.2), `GET /photos-fixes`
+(§ 22.4), `GET /reglages` (`boutiqueEnLigne`, `multiVendeurs`, `languesActives`). **Pas encore servies** :
+`GET /site`, `GET /sitemap`, galeries par emplacement, créateurs, étiquettes.
+
 ---
 
 ## 19. Lots de livraison
@@ -1178,16 +1218,16 @@ développement : la valeur par défaut est sûre et modifiable sans rupture.
 | 1.2.0 | 01/11/2026 | Relevé en écrivant l'admin (D-64, D-65) et le back end (B-46) : `destinations.latitude` et `longitude` deviennent `number \| null` (une destination se crée en brouillon avant ses coordonnées, toujours exigées à la publication) ; le tag pays de la Côte d'Ivoire a le code `cote-d-ivoire` ; `projets` et `villes` acceptent `tri=ordre` (et `titre`). Mineure : une valeur ajoutée en lecture, un tri ajouté. | Responsable technique |
 | 1.3.0 | 01/11/2026 | Relevé en écrivant le lot 3 (B-48, D-67) : `distinctions.annee`, `presse.datePublication`, `presse.lien` et `univers.cible` acceptent `null` en brouillon, toujours exigés à la publication ; les pages n'ont aucune clé de bloc tant que l'inventaire n'est pas fourni. Mineure : des valeurs ajoutées en lecture. | Responsable technique |
 | 1.4.0 | 05/11/2026 | Annexe publique : `GET /categories?famille=&langue=` (catégories visibles et non vides d'une famille). Mineure. | Responsable technique |
-| 1.5.0 | 06/11/2026 | **PROPOSÉE, non arrêtée** : voir § 22. Écrite par l'admin (étapes C2 à C7, E1) d'après SCHEMAS-ENTITES et PROMPT-CORRECTION ; à valider par le back end avant implémentation réelle (D1 à D4, C6). L'admin ne l'utilise que contre le faux serveur. | En attente (admin a proposé) |
+| 1.5.0 | 07/11/2026 | § 22 (proposée par l'admin le 06/11) **arrêtée** avec les amendements du § 22.9, écrits en l'implémentant dans le back end (B-61 à B-65) ; § 18.1 : vue publique des contenus (images résolues, aucun champ interne, une langue) et lecture publique des articles. Vérifié par le test de contrat de l'admin contre l'API réelle (39 sur 39). Mineure : ajouts compatibles. | Responsable technique (admin et back end) |
 
 ---
 
-## 22. Proposition 1.5.0 — extensions demandées par l'admin (PROPOSÉE)
+## 22. Version 1.5.0 — extensions demandées par l'admin (ARRÊTÉE)
 
-> Statut : **proposée, non arrêtée** (§ 0 : « aucune implémentation ne précède la version du contrat
-> qui la décrit » — l'admin l'implémente **contre le faux serveur seulement** ; le back end la
-> valide, l'amende ou la refuse en D1 à D4 et C6). Source de vérité des données : SCHEMAS-ENTITES.
-> Tous les ajouts sont **compatibles** : champs facultatifs en lecture, champs facultatifs en écriture.
+> Statut : **arrêtée le 07/11/2026**. Proposée par l'admin le 06/11 (étapes C2 à C7, E1), implémentée
+> et amendée par le back end (B-61 à B-65) ; **le § 22.9 prime** sur les § 22.1 à 22.8 là où ils
+> diffèrent. Source de vérité des données : SCHEMAS-ENTITES. Tous les ajouts sont **compatibles** :
+> champs facultatifs en lecture, champs facultatifs en écriture.
 
 ### 22.1 Catégories par famille (SCHEMAS § 3, RG-29 à RG-31)
 
@@ -1255,3 +1295,22 @@ masqués, contenu conservé) ; `bandeauId` (image panoramique 21:9) ; `saison` (
 `traductions[l].citation`, `traductions[l].programme`, `traductions[l].festivals` (textes, `null` si vides).
 Résumé de liste : `template`. Filtre : `template`. Exigence de publication du template Programme : au
 moins une escale (`escaleIds`). Catégories de projets de départ : Film, Tourisme, Patrimoine.
+
+### 22.9 Amendements à l'implémentation (07/11/2026, B-61 à B-65) — font foi
+
+| § | Proposé | Arrêté |
+|---|---|---|
+| 22.1 | `DELETE` d'une catégorie utilisée → `409 CATEGORIE_UTILISEE` | Contenant des bijoux : `422 RG-09` (conservé, avec `nombreElements`). Utilisée par des articles, projets ou livres : `409 CATEGORIE_UTILISEE`, `details.nombreElements`. |
+| 22.1 | `nombreElements` | Servi : articles, projets, bijoux, livres, tous statuts. `GET /categories?famille=` accepté par la liste d'équipe. Les catégories publiques de produits comptent bijoux **et** livres publiés. |
+| 22.2 | Résumé de projet : `format`, `avancement`, `categorieId`, `categorie`, `nombreEpisodes` | Servis : `format`, `avancement`, `categorieId`, `template`. Pas `categorie` (nom) ni `nombreEpisodes` : l'admin les déduit ou affiche « — ». |
+| 22.2 | Filtres projets `format`, `avancement`, `categorie` | Servis, plus `template` ; `categorie` porte l'**identifiant**. Épisodes : `projetId`, `destinationId`. Galerie : `emplacement`. Résumé d'épisode : `projetId` seulement. |
+| 22.2 | — | Un projet qui a des épisodes ne se supprime pas : `422 RG-32` (`details.nombre`). Toute référence que la base refuse de rompre → `422 VALIDATION`, jamais `500`. |
+| 22.3 | Variantes d'un livre : tableau entier **ou** routes dédiées | **Les deux.** `PATCH /livres/:id` accepte `variantes` (au moins une) : avec `id` → modifiée, sans `id` → créée, absente → supprimée (sauf si une demande la cite : `422 RG-11`) ; `reference: null` = générée. Les routes `/livres/:id/variantes` restent. |
+| 22.3 | `categorieId` facultatif | **Obligatoire dès la création** (colonne non nulle, comme les bijoux). Un résumé ou un libellé de variante non saisi vaut `null`. |
+| 22.4 | — | Conforme. Les huit emplacements sont semés ; un média assigné ne se supprime pas (`422 RG-08`, usage `emplacements-photos`). |
+| 22.5 | `programmes` | Servi : cinq prochains contenus publiés à date future, toutes ressources. |
+| 22.8 | `template` absent = celui du format | Le serveur **écrit** le template du format quand il n'est pas fourni (migration 0009 : les projets existants l'ont reçu) ; la lecture le donne toujours. |
+| — | Galerie : `mediaId` P | Facultatif en brouillon, exigé à la publication (migration 0010). |
+| — | Audience : `dateValidation: DatePartielle` | Colonne passée en texte (migration 0011). |
+| — | Pages légales | Ensemble fermé : la création est refusée à tous les rôles (`403`). |
+| — | Ressources sans étiquettes (galerie, études de cas, partenaires, pages légales) | `tagIds` accepté seulement vide. |

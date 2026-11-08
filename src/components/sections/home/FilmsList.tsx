@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { EPISODES } from '@/data/content'
+import { EPISODES } from '@/acces/projets'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Stagger } from '@/components/motion/Stagger'

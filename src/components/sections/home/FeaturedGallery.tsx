@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { GALLERY, GALLERY_QUOTE } from '@/data/gallery'
+import { GALLERY, GALLERY_QUOTE } from '@/acces/preuves'
 import { cn } from '@/lib/cn'
 import { Reveal } from '@/components/motion/Reveal'
 import { ParallaxImage } from '@/components/media/ParallaxImage'

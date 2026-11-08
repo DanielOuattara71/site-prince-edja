@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "typecheck": "tsc -b",
     "contraste": "node scripts/contraste.mjs",
+    "charger": "node scripts/charger-donnees.ts",
     "images": "node scripts/optimiser-images.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -42,6 +43,7 @@
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^8.2.2",
-    "vitest": "^5.0.4"
+    "vitest": "^5.0.4",
+    "zod": "4.6.7"
   }
 }

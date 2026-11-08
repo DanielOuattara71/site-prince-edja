@@ -1,7 +1,7 @@
 import { Section } from '@/components/layout/Section'
 import { Marquee } from '@/components/motion/Marquee'
 import { SectionHeading } from '@/components/ui/SectionHeading'
-import { PARTENAIRES } from '@/data/collaborations'
+import { PARTENAIRES } from '@/acces/preuves'
 
 /** w-44 (176 px) + mr-8 (32 px) : largeur d'une tuile et de son écart en piste. */
 const PAS_TUILE = 208

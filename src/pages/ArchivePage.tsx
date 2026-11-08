@@ -1,4 +1,4 @@
-import { ARCHIVE, NAVIGATION_ARCHIVE } from '@/data/archive'
+import { ARCHIVE, NAVIGATION_ARCHIVE } from '@/acces/projets'
 import { useSeo } from '@/hooks/useSeo'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'

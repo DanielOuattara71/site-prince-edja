@@ -1,5 +1,5 @@
-import { TRAVEL_CITIES, TRAVEL_PARTNERS, TRAVEL_PROGRAMME } from '@/data/content'
-import { SITE } from '@/data/site'
+import { TRAVEL_CITIES, TRAVEL_PARTNERS, TRAVEL_PROGRAMME } from '@/acces/projets'
+import { SITE } from '@/acces/site'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'

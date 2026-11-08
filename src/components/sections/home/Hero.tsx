@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'motion/react'
-import { SITE } from '@/data/site'
+import { SITE } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { introDelay, EASE_EXPO } from '@/lib/motion'
 import { Container } from '@/components/layout/Container'

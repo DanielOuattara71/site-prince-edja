@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSeo } from '@/hooks/useSeo'
-import { SITE } from '@/data/site'
+import { SITE } from '@/acces/site'
 import type { CleTraduction } from '@/i18n/dictionnaire'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'

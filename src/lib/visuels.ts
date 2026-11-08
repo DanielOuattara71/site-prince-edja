@@ -11,7 +11,7 @@
  * aucun code ni aucune donnée à modifier.
  */
 
-import { SITE } from '@/data/site'
+import { SITE } from '@/acces/site'
 
 /**
  * Sources alternatives d'une image de contenu.

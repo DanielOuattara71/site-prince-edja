@@ -27,3 +27,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Données chargées depuis l’API à la construction (scripts/charger-donnees.ts, LIAISON § C.2)
+src/data/generated/

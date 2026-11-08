@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import { useNavigate } from 'react-router'
-import type { Destination } from '@/data/destinations'
+import type { Destination } from '@/acces/projets'
 import { coordonneeValide, tracerParcours } from '@/lib/routage'
 import { CADRE_CARTE, COTE_DIVOIRE, BORNES_PAYS as BORNES_DU_PAYS } from '@/lib/geo'
 import { useLangue } from '@/i18n/contexteLangue'

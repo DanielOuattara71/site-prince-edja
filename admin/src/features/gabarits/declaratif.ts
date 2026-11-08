@@ -62,7 +62,12 @@ export type ChampDeclaratif =
   | (Base & { type: 'datePartielle' })
   | (Base & { type: 'relation'; ressource: 'episodes' | 'destinations' | 'offres' | 'projets' })
   /** Catégorie d'une famille (SCHEMAS § 3, RG-29) : liste des catégories de cette famille. */
-  | (Base & { type: 'categorie'; famille: FamilleCategorie })
+  | (Base & {
+      type: 'categorie'
+      famille: FamilleCategorie
+      /** Exigée dès l'enregistrement (colonne obligatoire côté serveur : livres, bijoux). */
+      obligatoire?: boolean
+    })
   /** Créateur d'un produit (RG-20) : créateurs publiés et actifs. */
   | (Base & { type: 'createur' })
   /** Variantes d'un produit (SCHEMAS § 8.4) : tableau édité sur place, au moins une pour publier. */
@@ -498,7 +503,11 @@ export function schemaFormulaire(spec: SpecRessource) {
     for (const champ of tousLesChamps(spec)) {
       const valeur = valeurs[champ.cle]
       const texte = typeof valeur === 'string' ? valeur.trim() : ''
-      if ((champ.type === 'texte' || champ.type === 'choix') && champ.obligatoire && !texte) {
+      if (
+        (champ.type === 'texte' || champ.type === 'choix' || champ.type === 'categorie') &&
+        champ.obligatoire &&
+        !texte
+      ) {
         signaler([champ.cle], `${champ.libelle} : obligatoire.`)
       }
       if (champ.type === 'template' && !texte) signaler([champ.cle], 'Choisissez un template.')

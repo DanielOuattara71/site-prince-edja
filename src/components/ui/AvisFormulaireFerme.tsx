@@ -1,4 +1,4 @@
-import { SITE } from '@/data/site'
+import { SITE } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 
 /**

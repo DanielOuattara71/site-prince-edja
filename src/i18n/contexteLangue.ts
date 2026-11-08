@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { CleTraduction, Langue } from './dictionnaire'
-import type { Libelle } from '@/data/navigation'
+import type { Libelle } from '@/acces/site'
 
 export interface ContexteLangue {
   langue: Langue

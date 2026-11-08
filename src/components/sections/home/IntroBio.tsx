@@ -1,4 +1,4 @@
-import { SITE } from '@/data/site'
+import { SITE } from '@/acces/site'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'
 import { Reveal } from '@/components/motion/Reveal'

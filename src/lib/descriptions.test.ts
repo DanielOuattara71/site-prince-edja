@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { EPISODES } from '@/data/content'
-import { PIECES } from '@/data/shop'
-import { DESTINATIONS } from '@/data/destinations'
+import { EPISODES, DESTINATIONS } from '@/acces/projets'
+import { PIECES } from '@/acces/boutique'
 import { descriptionDestination, descriptionEpisode, descriptionObjet } from '@/lib/descriptions'
 
 /** Audit V2-10 : des descriptions utiles dans les résultats de recherche (≈ 110 à 200 caractères). */

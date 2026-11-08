@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router'
 import { ChevronRight } from 'lucide-react'
-import { filDariane } from '@/data/navigation'
+import { filDariane } from '@/acces/site'
 import { useJsonLd, schemaFilDariane } from '@/hooks/useSeo'
 import { useLangue } from '@/i18n/contexteLangue'
 

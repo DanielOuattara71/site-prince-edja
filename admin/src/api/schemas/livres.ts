@@ -18,7 +18,11 @@ import { montantSchema } from '@/api/schemas/boutique'
 
 export const varianteLivreSchema = z.object({
   id: idSchema,
-  libelle: z.string(),
+  // Le back end crée la variante par défaut sans libellé (`null`) : lu comme vide, à compléter.
+  libelle: z
+    .string()
+    .nullable()
+    .transform((libelle) => libelle ?? ''),
   reference: z.string().nullable(),
   prix: montantSchema.nullable(),
   ancienPrix: montantSchema.nullable(),
@@ -30,7 +34,11 @@ export type VarianteLivre = z.infer<typeof varianteLivreSchema>
 const traductionLivreLecture = z.object({
   slug: slugSchema,
   titre: z.string(),
-  resume: z.string(),
+  // Le back end renvoie `null` pour un résumé non saisi : lu comme vide (champ à compléter).
+  resume: z
+    .string()
+    .nullable()
+    .transform((resume) => resume ?? ''),
 })
 
 export const livreSchema = z.object({

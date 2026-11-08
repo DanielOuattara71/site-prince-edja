@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router'
 import JournalPage from '@/pages/JournalPage'
 import HistoiresPage from '@/pages/HistoiresPage'
 import { FournisseurLangue } from '@/i18n/FournisseurLangue'
-import { ARTICLES } from '@/data/content'
+import { ARTICLES } from '@/acces/journal'
 import { categoriesAffichees, slugCategorie } from '@/lib/categories'
 
 /**

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
-import { PROJETS, type Projet } from '@/data/projets'
+import { PROJETS, type Projet } from '@/acces/projets'
 import { categoriesAffichees } from '@/lib/categories'
 import { useSeo } from '@/hooks/useSeo'
 import { useLangue } from '@/i18n/contexteLangue'
@@ -63,9 +63,7 @@ function CarteProjet({ projet }: { projet: Projet }) {
         </h3>
         <p className="mt-2 text-body text-ink-500">{projet.accroche}</p>
         <p className="label-caps mt-auto pt-4 text-ink-500">
-          {[projet.format, projet.annee, projet.pays[0], projet.statut]
-            .filter(Boolean)
-            .join(' · ')}
+          {[projet.format, projet.annee, projet.pays[0], projet.statut].filter(Boolean).join(' · ')}
         </p>
       </div>
     </>
@@ -139,7 +137,9 @@ export default function HistoiresPage() {
             Des histoires
             <br />
             qui voyagent
-            <span aria-hidden className="text-clay-500">.</span>
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h1>
           <p className="max-w-2xl text-body-lg text-cream-100/75">
             Films, séries, archives et mémoires : la plateforme documentaire de Prince Edja.
@@ -170,9 +170,7 @@ export default function HistoiresPage() {
                   </h2>
                   <p className="max-w-xl text-body-lg text-ink-700">{aLaUne.accroche}</p>
                   <p className="label-caps text-ink-500">
-                    {[aLaUne.format, aLaUne.annee, aLaUne.pays[0]]
-                      .filter(Boolean)
-                      .join(' · ')}
+                    {[aLaUne.format, aLaUne.annee, aLaUne.pays[0]].filter(Boolean).join(' · ')}
                   </p>
                   <span className="group inline-flex items-center gap-2 text-button font-semibold text-clay-600">
                     {l({ fr: 'Voir le projet', en: 'View project' })}
@@ -222,13 +220,17 @@ export default function HistoiresPage() {
               qu'une seule fois (whileInView + once). Sans remontée, les emplacements
               qui apparaissent après le premier déclenchement héritent de `hidden`
               (opacity: 0) et restent à jamais invisibles. */}
-          <Stagger key={filtre ?? 'tous-les-projets'} className="grid grid-cols-2 gap-1 sm:grid-cols-3">
+          <Stagger
+            key={filtre ?? 'tous-les-projets'}
+            className="grid grid-cols-2 gap-1 sm:grid-cols-3"
+          >
             {visibles.map((projet) => (
               <CarteProjet key={projet.slug} projet={projet} />
             ))}
           </Stagger>
 
-          {visibles.length === 0 && (
+          {/* Sans filtre, une grille vide veut dire que le seul projet est déjà à la une. */}
+          {visibles.length === 0 && filtre !== null && (
             <p className="text-body text-ink-500">
               {l({
                 fr: 'Aucun projet dans ce filtre pour l’instant.',

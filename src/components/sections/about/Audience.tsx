@@ -1,4 +1,4 @@
-import { AUDIENCE, AUDIENCE_PROFILS } from '@/data/audience'
+import { AUDIENCE, AUDIENCE_PROFILS } from '@/acces/preuves'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'

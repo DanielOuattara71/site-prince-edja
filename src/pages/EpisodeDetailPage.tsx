@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router'
 import { useSeo, useJsonLd } from '@/hooks/useSeo'
 import { descriptionEpisode } from '@/lib/descriptions'
-import { EPISODES } from '@/data/content'
+import { EPISODES } from '@/acces/projets'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'

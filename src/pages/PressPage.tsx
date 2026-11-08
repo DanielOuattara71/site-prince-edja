@@ -1,5 +1,5 @@
 import type { PressItem } from '@/types'
-import { PRESS } from '@/data/content'
+import { PRESS } from '@/acces/preuves'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
