@@ -19,7 +19,15 @@ function langueInitiale(): Langue {
 }
 
 export function FournisseurLangue({ children }: { children: ReactNode }) {
-  const [langue, setLangue] = useState<Langue>(langueInitiale)
+  // Serveur et premier rendu client identiques ('fr', seule langue publiée aujourd'hui).
+  // La préférence stockée est relue après le montage ; sinon tout le texte exact
+  // divergerait dès que l'utilisateur a choisi 'en'.
+  const [langue, setLangue] = useState<Langue>('fr')
+
+  useEffect(() => {
+    const stockee = langueInitiale()
+    if (stockee !== 'fr') setLangue(stockee)
+  }, [])
 
   // L'attribut lang du document doit dire la vérité : c'est lui qui choisit la voix
   // de synthèse et les règles de césure. Un sélecteur qui ne toucherait que le texte

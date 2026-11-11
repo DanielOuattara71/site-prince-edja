@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() =>
-    typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
-  )
+  // Serveur et premier rendu client identiques. Le média est lu après le montage —
+  // sinon le HTML prérendu et le client divergeraient dès que la fenêtre n'est pas
+  // exactement celle du serveur.
+  const [matches, setMatches] = useState(false)
 
   useEffect(() => {
     const mql = window.matchMedia(query)

@@ -1,5 +1,13 @@
 import { Suspense, lazy } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useLocation, Outlet } from 'react-router'
+import {
+  BrowserRouter,
+  StaticRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  Outlet,
+} from 'react-router'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { DUR, EASE_EXPO, EASE_QUART } from '@/lib/motion'
 import HomePage from '@/pages/HomePage'
@@ -104,63 +112,72 @@ function SiteLayout() {
   )
 }
 
-export default function App() {
+function ArbreRoutes() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <Routes>
-        <Route element={<SiteLayout />}>
-          <Route index element={<HomePage />} />
+    <Routes>
+      <Route element={<SiteLayout />}>
+        <Route index element={<HomePage />} />
 
-          <Route path="/a-propos" element={<AboutPage />} />
+        <Route path="/a-propos" element={<AboutPage />} />
 
-          {/* Ancienne page Influence : son contenu vit dans À propos. La route
+        {/* Ancienne page Influence : son contenu vit dans À propos. La route
               redirige au lieu de disparaître. */}
-          <Route
-            path="/a-propos/influence"
-            element={<Navigate to="/a-propos#audience" replace />}
-          />
+        <Route path="/a-propos/influence" element={<Navigate to="/a-propos#audience" replace />} />
 
-          <Route path="/histoires" element={<HistoiresPage />} />
+        <Route path="/histoires" element={<HistoiresPage />} />
 
-          <Route path="/xplore" element={<XplorePage />} />
+        <Route path="/xplore" element={<XplorePage />} />
 
-          <Route path="/xplore/:slug" element={<EpisodeDetailPage />} />
+        <Route path="/xplore/:slug" element={<EpisodeDetailPage />} />
 
-          <Route path="/taste-and-travel" element={<TasteTravelPage />} />
+        <Route path="/taste-and-travel" element={<TasteTravelPage />} />
 
-          <Route path="/boutique" element={<ShopPage />} />
+        <Route path="/boutique" element={<ShopPage />} />
 
-          <Route path="/boutique/:objet" element={<ObjetPage />} />
+        <Route path="/boutique/:objet" element={<ObjetPage />} />
 
-          <Route path="/journal" element={<JournalPage />} />
+        <Route path="/journal" element={<JournalPage />} />
 
-          <Route path="/journal/:slug" element={<ArticlePage />} />
+        <Route path="/journal/:slug" element={<ArticlePage />} />
 
-          <Route path="/presse" element={<PressPage />} />
+        <Route path="/presse" element={<PressPage />} />
 
-          {/* L'ancienne page « Travailler avec Prince » : son contenu vit désormais
+        {/* L'ancienne page « Travailler avec Prince » : son contenu vit désormais
               dans Contact (univers, motifs, délai de réponse). La route redirige
               au lieu de disparaître — les CTA du header, du footer, du héros et
               des épisodes gardent une cible vivante. */}
-          <Route path="/travailler-ensemble" element={<Navigate to="/contact" replace />} />
+        <Route path="/travailler-ensemble" element={<Navigate to="/contact" replace />} />
 
-          <Route path="/contact" element={<ContactPage />} />
+        <Route path="/contact" element={<ContactPage />} />
 
-          {PAGES_LEGALES.map((page) => (
-            <Route key={page.chemin} path={page.chemin} element={<LegalPage />} />
-          ))}
-          <Route path="/destinations/:slug" element={<DestinationPage />} />
-          <Route path="/archive-afrique" element={<ArchivePage />} />
-          <Route path="/newsletter/confirmation" element={<NewsletterPage vue="confirmation" />} />
-          <Route path="/newsletter/preferences" element={<NewsletterPage vue="preferences" />} />
-          <Route
-            path="/newsletter/desinscription"
-            element={<NewsletterPage vue="desinscription" />}
-          />
+        {PAGES_LEGALES.map((page) => (
+          <Route key={page.chemin} path={page.chemin} element={<LegalPage />} />
+        ))}
+        <Route path="/destinations/:slug" element={<DestinationPage />} />
+        <Route path="/archive-afrique" element={<ArchivePage />} />
+        <Route path="/newsletter/confirmation" element={<NewsletterPage vue="confirmation" />} />
+        <Route path="/newsletter/preferences" element={<NewsletterPage vue="preferences" />} />
+        <Route
+          path="/newsletter/desinscription"
+          element={<NewsletterPage vue="desinscription" />}
+        />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
+  )
+}
+
+export default function App({ routeurStatique }: { routeurStatique?: string } = {}) {
+  return routeurStatique === undefined ? (
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <ArbreRoutes />
     </BrowserRouter>
+  ) : (
+    // Prérendu : location absolue (base comprise) et même préfixe que le client — les liens
+    // doivent rendre exactement la même adresse, sinon hydratation en erreur #418.
+    <StaticRouter basename={import.meta.env.BASE_URL} location={routeurStatique}>
+      <ArbreRoutes />
+    </StaticRouter>
   )
 }

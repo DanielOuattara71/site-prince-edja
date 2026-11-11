@@ -6,7 +6,7 @@ Vite 8 + React 19 + TypeScript ~6.0 (strict) + Tailwind CSS v4 (`@tailwindcss/vi
 ## Commands
 ```bash
 npm run dev          # vite dev server
-npm run build        # tsc -b && contraste && vite build  (typecheck is part of build)
+npm run build        # tsc -b && contraste && vite build  (typecheck is part of build) + prérendu SSR des 48 routes (vite --ssr + scripts/prerender.mjs)
 npm run preview      # preview dist/
 npm run lint         # oxlint (not eslint)
 npm run typecheck    # tsc -b (project references) — retour rapide
@@ -17,6 +17,7 @@ npm run charger      # PUBLIC_API_URL=… → écrit src/data/generated/*.json (
 ```
 Ordre de vérification : `npm run typecheck && npm run lint && npm run test && npm run build`.
 Construction en mode API : `PUBLIC_API_URL=… npm run charger` puis `PUBLIC_DATA_SOURCE=api npm run build`.
+Aperçu local fidèle à l'hébergement GitHub Pages : `node scripts/servir-dist.mjs` (pas `vite preview`, dont la coquille SPA sert l'accueil partout — utile en dev, faux pour une vérification).
 Aucun test, aucun pre-commit hook.
 
 ## CI & branches

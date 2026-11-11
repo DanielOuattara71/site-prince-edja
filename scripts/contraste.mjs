@@ -59,9 +59,7 @@ function canal(valeur) {
 
 function luminance(hex) {
   const n = Number.parseInt(hex.slice(1), 16)
-  return (
-    0.2126 * canal((n >> 16) & 255) + 0.7152 * canal((n >> 8) & 255) + 0.0722 * canal(n & 255)
-  )
+  return 0.2126 * canal((n >> 16) & 255) + 0.7152 * canal((n >> 8) & 255) + 0.0722 * canal(n & 255)
 }
 
 function ratio(a, b) {

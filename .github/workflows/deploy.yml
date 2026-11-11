@@ -1,11 +1,23 @@
 name: Deploy to GitHub Pages
 
+# Push sur `recent` ou `workflow_dispatch` (dont l'API, Q-22) → GitHub Pages.
+# Barrière de qualité avant le build : lint, types, tests (B4). Le build reste
+# par défaut tant que `vars.PUBLIC_API_URL` est vide (l'API n'est pas encore en
+# ligne) ; quand elle le sera, le même job charge les données et construit en
+# PUBLIC_DATA_SOURCE=api. Le signalement de reconstruction à l'API n'a lieu que
+# si un `buildId` est fourni (exemple : prince-edja-api/docs/PUBLICATION.md).
+
 on:
   push:
     branches:
       - recent
 
   workflow_dispatch:
+    inputs:
+      buildId:
+        description: Identifiant de build transmis par l'API (optionnel)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -17,7 +29,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  verifier:
+    name: Barrière de qualité
     runs-on: ubuntu-latest
 
     steps:
@@ -27,14 +40,66 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Lint (oxlint)
+        run: npm run lint
+
+      - name: Types (tsc -b)
+        run: npm run typecheck
+
+      - name: Tests (vitest)
+        run: npm run test
+
+  build:
+    name: Build
+    needs: verifier
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Signaler le début de la reconstruction à l'API
+        if: ${{ inputs.buildId }}
+        env:
+          API_URL: ${{ vars.API_URL }}
+          BUILD_ID: ${{ inputs.buildId }}
+          SECRET: ${{ secrets.BUILD_CALLBACK_SECRET }}
+        shell: bash
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$SECRET" ]; then
+            echo "vars.API_URL ou BUILD_CALLBACK_SECRET absent : pas de signalement."
+            exit 0
+          fi
+          curl -fsS -X POST "$API_URL/internal/api/v1/publication/demarrage" \
+            -H "X-Build-Secret: $SECRET" -H 'Content-Type: application/json' \
+            -d "{\"buildId\":\"$BUILD_ID\"}"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Charger les données depuis l'API (si PUBLIC_API_URL est configurée)
+        if: ${{ vars.PUBLIC_API_URL != '' }}
+        run: npm run charger
+        env:
+          PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
 
       - name: Build
         run: npm run build
+        env:
+          # Sans données chargées, le mode par défaut (src/data/) reste actif.
+          PUBLIC_DATA_SOURCE: ${{ vars.PUBLIC_API_URL != '' && 'api' || '' }}
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -45,6 +110,7 @@ jobs:
           path: ./dist
 
   deploy:
+    name: Deploy
     needs: build
     runs-on: ubuntu-latest
 
@@ -56,3 +122,27 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  finalise:
+    name: Signaler l'état à l'API
+    # Toujours, même si le build ou le déploiement échoue (sinon l'API attend le délai de 15 min).
+    if: ${{ always() && inputs.buildId }}
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Terminer auprès du service de build
+        env:
+          API_URL: ${{ vars.API_URL }}
+          BUILD_ID: ${{ inputs.buildId }}
+          SECRET: ${{ secrets.BUILD_CALLBACK_SECRET }}
+          ETAT: ${{ needs.deploy.result == 'success' && 'reussie' || 'echec' }}
+        shell: bash
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$SECRET" ]; then
+            echo "vars.API_URL ou BUILD_CALLBACK_SECRET absent : pas de signalement."
+            exit 0
+          fi
+          curl -fsS -X POST "$API_URL/internal/api/v1/publication/termine" \
+            -H "X-Build-Secret: $SECRET" -H 'Content-Type: application/json' \
+            -d "{\"buildId\":\"$BUILD_ID\",\"etat\":\"$ETAT\"}"

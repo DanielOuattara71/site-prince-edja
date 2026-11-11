@@ -88,6 +88,16 @@ export const DICTIONNAIRE = {
     'newsletter.pageTitre': 'La lettre du griot',
     'newsletter.preferences': 'Préférences',
     'newsletter.desinscription': 'Me désinscrire',
+    'newsletter.verification': 'Vérification en cours…',
+    'newsletter.confirmationOk': 'Votre adresse est confirmée. Bienvenue dans la lettre du griot.',
+    'newsletter.desinscriptionOk':
+      'Vous êtes désinscrit de la lettre. Vous ne recevrez plus nos e-mails.',
+    'newsletter.lienInvalide':
+      'Ce lien n’est plus valable ou n’a pas été trouvé. Vérifiez le lien reçu par e-mail, ou écrivez à l’adresse de contact.',
+    'newsletter.lienConfirmationRequis':
+      'Le lien de confirmation se trouve dans l’e-mail de confirmation de la lettre.',
+    'newsletter.lienDesinscriptionRequis':
+      'Le lien de désinscription se trouve en bas de chaque e-mail de la lettre, sur une seule ligne.',
 
     'b2b.succes': 'Demande envoyée. La maison répond sous 48 heures ouvrées.',
     'b2b.choisirType': 'Choisissez le type de collaboration',
@@ -234,6 +244,15 @@ export const DICTIONNAIRE = {
     'newsletter.pageTitre': 'The griot letter',
     'newsletter.preferences': 'Preferences',
     'newsletter.desinscription': 'Unsubscribe',
+    'newsletter.verification': 'Checking…',
+    'newsletter.confirmationOk': 'Your address is confirmed. Welcome to the griot letter.',
+    'newsletter.desinscriptionOk': 'You are unsubscribed. You will no longer receive our emails.',
+    'newsletter.lienInvalide':
+      'This link is no longer valid or was not found. Check the link from the email, or write to the contact address.',
+    'newsletter.lienConfirmationRequis':
+      'The confirmation link is in the letter’s confirmation email.',
+    'newsletter.lienDesinscriptionRequis':
+      'The unsubscribe link is at the bottom of each email from the letter.',
 
     'b2b.succes': 'Request sent. The house replies within 48 working hours.',
     'b2b.choisirType': 'Choose the type of partnership',

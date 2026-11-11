@@ -894,3 +894,48 @@ Constat (A5 du PROMPT-SUITE) : `*:Zone.Identifier` (métadonnées Windows de zon
   `version_1..3` ; back end : `main`) ; `main` du site était 1 commit en retard, rattrapé par
   avancement du ref vers `origin/main` (722365a), sans toucher l'arbre ni le réseau. La branche
   `simplification-admin` du back end n'a **aucun upstream** : rien n'est jamais parti vers un remote.
+
+### D-85 · Lettre d'information : double confirmation branchée (B3) — Arrêtée
+
+- `corpsNewsletter` / `envoyerNewsletter` (`src/lib/formulaire.ts`) câblent **tous** les points de
+  collecte (`BlocNewsletter` plein et compact, `FenetreNewsletter`) : `POST /public/api/v1/newsletter`
+  (contrat § 18, consentement { texte, version, source }, `siteWeb` piège), always-`202`, écrit par la
+  maison ; l'accusé d'inscription est envoyé par l'API (dev : non envoyé, logué ; envoi réel = Brevo, C3).
+  Sans `PUBLIC_API_URL`, le repli local documenté est conservé (flou). Avec l'API, l'échec est annoncé
+  (`newsletter.inscriptionEchoue`, déjà dans le dictionnaire) — aucun succès simulé.
+- Les pages `/newsletter/confirmation` et `/newsletter/desinscription` appelaient un texte statique :
+  désormais GET à l'arrivée avec le `jeton` de l'URL (idempotent), états FR/EN ajoutés au dictionnaire
+  (`newsletter.verification`, `confirmationOk`, `desinscriptionOk`, `lienInvalide`,
+  `lienConfirmationRequis`, `lienDesinscriptionRequis`). La fausse saisie d'e-mail de la
+  désinscription (formulaire qui n'enregistrait rien) est retirée : le lien vit au bas de chaque e-mail.
+- Vérifié le 11/11/2026 (API dev, base de dev, navigateur Playwright chromium-1248, Vite
+  `localhost:5173`) : `POST /newsletter` ×4 → 202 ; pages affichées « Votre adresse est confirmée »
+  puis « Vous êtes désinscrit » ; jeton bidon → 422. Les abonnés `b3-2`/`b3-3`/`b3-4@example.com`
+  sont des entrées de TEST (jetons consommés) ; deux messages TEST B3 et une demande de collab sont en
+  base de dev. Le CORS n'autorise que `localhost:5173` (dev) ; la prévisualisation `4173` est refusée —
+  l'origine de production s'ajoute à `ALLOWED_ORIGINS` (déploiement, question 21).
+- **Demande de pièces non branchée** (restée en repli e-mail) : `POST /demandes` exige des UUID de
+  variante introuvables en § 18.1 — question 38 (à valider côté contrat, avec la question 36). B3 :
+  contact ✓, collaboration ✓, lettre ✓, demande ✗ (repli).
+
+### D-86 · CI de déploiement (deploy.yml) : barrière de qualité et reconstruction branchée — Arrêtée
+
+- `deploy.yml` : Job `verifier` (Node 24, `npm ci`, lint, types, tests) avant le build ; build sur
+  Node 24 ; `npm install` → `npm ci` (verrou). Le déploiement GitHub Pages reste inchangé dans son
+  périmètre ; le niveau devient : lint + types + tests verts avant toute mise en production.
+- `npm run charger` ne tourne que si `vars.PUBLIC_API_URL` est définie (variable publique du dépôt,
+  pas un secret) ; le build reste par défaut tant qu'elle est absente — le site déployé aujourd'hui
+  n'est pas touché par cette règle. Préparé, **pas actif** : à poser avec l'API en ligne (question 21).
+- `workflow_dispatch` accepte `buildId` (exemple : `prince-edja-api/docs/PUBLICATION.md`) ; le build
+  envoie `demarrage` si le secret `BUILD_CALLBACK_SECRET` est là, et un job `finalise` (if always())
+  envoie toujours `termine` avec l'état réel — même si le build échoue. Sans buildId : rien de
+  changé pour un push normal sur `recent`.
+- À noter : ce fichier n'a d'effet qu'au prochain push sur `recent` (client, par demande explicite).
+
+### D-87 · Prérendu par route (B1, porte G4) — Arrêtée
+
+- `npm run build` enchaîne : contraste + build client, build SSR (`vite build --ssr src/entry-server.tsx`), prérendu (`scripts/prerender.mjs`) : **48 pages** écrites dans `dist/<route>/index.html` — `<title>`, `description`, `og:*`, canonical, contenu — **sans nouvelle dépendance** (`react-dom/server`, `react-dom/static`).
+- `main.tsx` hydrate si le conteneur porte du HTML, sinon crée la racine (404 en navigation directe) ; `App.tsx` accepte `routeurStatique` : **`StaticRouter` avec `basename`** — même préfixe que le client, sans quoi chaque lien mismatch (#418 partout). Balises SEO déposées au rendu serveur, injectées dans `<head>` (og:url/canonical sous `PUBLIC_SITE_ORIGIN`, sinon la canonique actuelle du dépôt) ; `dist/404.html` (coquille vide) pour le 404 stylé.
+- Pièges levés en vérifiant pour de vrai : `MemoryRouter` sans base (tout mismatch), `window` à l'import de Leaflet (chargement différé dans l'effet), `window` à l'import de `Breadcrumb` (repli SSR), horloge/année/langue/media-queries au rendu (état initial serveur identique au client, ajusté en effet). Lint final : les 5 avertissements historiques tolérés, pas un de plus.
+- Vérifié le 11/11/2026 (build de production, `scripts/servir-dist.mjs` qui reproduit GitHub Pages ; `vite preview` sert la coquille partout, faux pour la recette) : **48/48 routes hydratées sans #418/#422/#423/#425**, navigation client SPA fluide (retour arrière inclus), `curl` de pages : titre/description/og:*/contenu présents. LoaderIntro toujours affiché à l'hydratation puis retiré en effet ; horloge du pied de page affichée à la première frame.
+- Reste connu : en mode API, la page `/newsletter/confirmation?jeton=…` n'est pas prérendue (volontairement) ; OSRM (tracé du parcours) peut être injoignable — chaque segment retombe en ligne droite (`src/lib/routage.ts`) et la carte reste dessinée au cadrage pays.
