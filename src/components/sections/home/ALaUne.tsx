@@ -58,9 +58,7 @@ export function ALaUne() {
 
             <div className="space-y-5 lg:col-span-5">
               <Eyebrow>{une.etiquette}</Eyebrow>
-              <h2 className="font-display uppercase text-display-lg leading-[0.95]">
-                {une.titre}
-              </h2>
+              <h2 className="font-display uppercase text-display-lg leading-[0.95]">{une.titre}</h2>
               <p className="max-w-xl text-body-lg text-ink-700">{une.chapo}</p>
               <span className="text-button font-semibold text-clay-600">
                 {l({ fr: 'Voir', en: 'View' })}

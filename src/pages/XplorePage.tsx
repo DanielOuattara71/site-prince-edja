@@ -25,14 +25,19 @@ export default function XplorePage() {
 
   return (
     <>
-      <Section tone="dark" container={false} padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
+      <Section
+        tone="dark"
+        container={false}
+        padded={false}
+        className="pt-32 pb-20 lg:pt-44 lg:pb-28"
+      >
         <Container className="max-w-3xl space-y-6">
-          <Eyebrow tone="dark">
-            Série documentaire · Saison 1
-          </Eyebrow>
+          <Eyebrow tone="dark">Série documentaire · Saison 1</Eyebrow>
           <h1 className="font-display uppercase text-display-lg">
             Six routes. Six histoires
-            <span aria-hidden className="text-clay-500">.</span>
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h1>
           <Reveal delay={0.1}>
             <blockquote className="border-l-2 border-gold-400 pl-6 font-quote italic leading-snug text-heading-sm text-cream-100 sm:text-heading-md">
@@ -68,12 +73,13 @@ export default function XplorePage() {
             <Eyebrow>La carte</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Six étapes, une saison
-              <span aria-hidden className="text-clay-500">.</span>
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h2>
             <p className="max-w-2xl text-body text-ink-500">
-              Les six étapes de la saison, sur la carte de la Côte d'Ivoire. Cliquez sur
-              une étape pour ouvrir sa fiche. Les saisons suivantes s'ajouteront au même
-              réseau.
+              Les six étapes de la saison, sur la carte de la Côte d'Ivoire. Cliquez sur une étape
+              pour ouvrir sa fiche. Les saisons suivantes s'ajouteront au même réseau.
             </p>
           </div>
           <Suspense

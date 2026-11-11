@@ -10,12 +10,6 @@ export const PROMESSE_NEWSLETTER =
   'Des histoires, des destinations et des fragments d’Afrique que les réseaux sociaux ne permettent pas toujours de raconter.'
 
 /** Segmentation préparée, non exposée (CDC T-152). */
-export const SEGMENTS_NEWSLETTER = [
-  'culture',
-  'voyage',
-  'films',
-  'shop',
-  'professionnels',
-] as const
+export const SEGMENTS_NEWSLETTER = ['culture', 'voyage', 'films', 'shop', 'professionnels'] as const
 
 export type SegmentNewsletter = (typeof SEGMENTS_NEWSLETTER)[number]

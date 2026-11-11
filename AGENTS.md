@@ -6,15 +6,18 @@ Vite 8 + React 19 + TypeScript ~6.0 (strict) + Tailwind CSS v4 (`@tailwindcss/vi
 ## Commands
 ```bash
 npm run dev          # vite dev server
-npm run build        # tsc -b && contraste && vite build  (typecheck is part of build)
+npm run build        # tsc -b && contraste && vite build  (typecheck is part of build) + prérendu SSR des 48 routes (vite --ssr + scripts/prerender.mjs)
 npm run preview      # preview dist/
 npm run lint         # oxlint (not eslint)
 npm run typecheck    # tsc -b (project references) — retour rapide
 npm run contraste    # ratios WCAG des couples palette (échoue le build si sous le seuil)
 npm run images       # convertit les PNG lourds d'un dossier en JPEG/WebP + maj des refs
 npm run test         # vitest run — tests de la logique pure (routage)
+npm run charger      # PUBLIC_API_URL=… → écrit src/data/generated/*.json (validation Zod, contrat § 18.1)
 ```
 Ordre de vérification : `npm run typecheck && npm run lint && npm run test && npm run build`.
+Construction en mode API : `PUBLIC_API_URL=… npm run charger` puis `PUBLIC_DATA_SOURCE=api npm run build`.
+Aperçu local fidèle à l'hébergement GitHub Pages : `node scripts/servir-dist.mjs` (pas `vite preview`, dont la coquille SPA sert l'accueil partout — utile en dev, faux pour une vérification).
 Aucun test, aucun pre-commit hook.
 
 ## CI & branches
@@ -88,8 +91,8 @@ Aucun test, aucun pre-commit hook.
 - **`docs/CONTRAT-API.md` fait foi** entre l'admin et le back end (`prince-edja-api`, dépôt séparé : il existe en local — `/home/ouattara_nadin/projets/prince-edja-api` — mais n'est pas en ligne ; l'agent y travaille sur autorisation du client du 07/11/2026). **Version 1.5.0 arrêtée** ; sa copie dans `prince-edja-api/docs/contrat/` doit rester identique (test du back end). Aucun code ne précède la version du contrat qui le décrit.
 - **Test de contrat de l'admin** : `admin/src/api/contrat-reel.test.ts` lance le client de l'admin contre l'API de développement (`API_REELLE=1`, `VITE_API_URL`, `ADMIN_EMAIL`, `ADMIN_MOT_DE_PASSE` dans l'environnement). Ignoré sinon. 39 sur 39 au 07/11/2026.
 - Sources (analyse conceptuelle, plan, actions de l'admin, workflow) : `docs/SOURCES-DE-REFERENCE.md` — elles vivent **hors du dépôt**. Ordre de développement : `docs/PLAN-DE-LANCEMENT.md`.
-- **Couche d'accès (S1, porte G1, 07/11/2026)** : le site lit ses données **uniquement** par `src/acces/` (`site`, `journal`, `projets`, `boutique`, `categories`, `preuves`), qui réexporte `src/data/*` aujourd'hui. Une règle oxlint (`no-restricted-imports`) refuse tout `@/data/*` hors de `src/acces/` et `src/data/`. Modules synchrones, pas de hooks : LIAISON § C.2 charge l'API **à la construction** (JSON dans `src/data/generated/`), rien n'est lu au moment de l'affichage.
-- ⚠️ Reste pour S2 : les adaptateurs « forme du contrat → forme du site » (bijou à **variantes** au lieu de `commerce`, liens en `CibleInterne`). La forme des réponses publiques est fixée par le **§ 18.1 du contrat 1.5.0** : aucun champ interne, images en objets `{ url, alt, largeur, hauteur, declinaisons }` (`imageId` → `image`…), une langue (`traduction`), `mediasCorps` pour les corps riches. Les adaptateurs s'écrivent contre cette forme.
+- **Couche d'accès (S1, porte G1, 07/11/2026)** : le site lit ses données **uniquement** par `src/acces/` (`site`, `journal`, `projets`, `boutique`, `categories`, `preuves`). Une règle oxlint (`no-restricted-imports`) refuse tout `@/data/*` hors de `src/acces/` et `src/data/`. Modules synchrones, pas de hooks : LIAISON § C.2 charge l'API **à la construction** (JSON dans `src/data/generated/`), rien n'est lu au moment de l'affichage.
+- **Source et adaptateurs (S2, première moitié, 08/11/2026)** : `src/acces/source.ts` choisit la source selon `PUBLIC_DATA_SOURCE=api` — les JSON de `src/data/generated/` écrits par `npm run charger` (validés Zod à l'écriture), sinon les données de départ de `src/data/`. `vite.config.ts` refuse de construire en mode API si les JSON manquent. `src/acces/adaptateurs.ts` convertit la **forme publique de l'API** (contrat 1.5.0 § 18.1 : aucun champ interne, images en objets `{ url, alt, largeur, hauteur, declinaisons }`, une langue (`traduction`), `mediasCorps` pour les corps riches) vers la forme du site ; fonctions pures testées par `adaptateurs.test.ts`. Un champ que l'API ne fournit pas reste **vide**, jamais comblé. Restent à charger depuis l'API (B2 du `docs/PROMPT-SUITE-PRINCE-EDJA.md`) : villes et programme Taste & Travel, archive, univers, audience, motifs de contact, galeries, `/site`, `/reglages`…
 
 ## Gotchas
 - `Eyebrow` (`src/components/ui/Eyebrow.tsx`) est le marqueur de section de cette branche, avec `tone` et, pour un identifiant de contenu (épisode, objet), `num`. La numérotation des sections et son tiret ont été retirés.

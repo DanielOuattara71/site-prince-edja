@@ -94,8 +94,7 @@ export function Input({ label, id, className, hint, error, ...props }: InputProp
 }
 
 interface TextareaProps
-  extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id'>,
-    ChampsCommuns {}
+  extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id'>, ChampsCommuns {}
 
 export function Textarea({ label, id, className, hint, error, rows = 5, ...props }: TextareaProps) {
   return (
@@ -115,9 +114,7 @@ export function Textarea({ label, id, className, hint, error, rows = 5, ...props
 
 // `id` est omis : il est redéfini en obligatoire par `ChampsCommuns`, sinon les deux
 // types étendus n'ont pas le même `id` et l'interface devient inutilisable.
-interface SelectProps
-  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'>,
-    ChampsCommuns {
+interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'>, ChampsCommuns {
   options: string[]
   /** Libellé de l'option neutre. Sans elle, la première valeur est sélectionnée par
    *  défaut et `required` ne peut jamais échouer. */

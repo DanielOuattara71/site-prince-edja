@@ -15,7 +15,10 @@ export function JournalTeaser() {
             eyebrow="Le journal"
             title={
               <>
-                Idées & récits<span aria-hidden className="text-clay-500">.</span>
+                Idées & récits
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </>
             }
             lead="Tourisme, culture, nation branding et mémoires africaines : la lettre de route de Prince Edja."

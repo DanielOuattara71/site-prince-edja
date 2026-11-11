@@ -24,7 +24,12 @@ export function SectionHeading({
       <Eyebrow tone={tone}>{eyebrow}</Eyebrow>
       <Tag className="font-display uppercase text-display-lg">{title}</Tag>
       {lead && (
-        <p className={cn('max-w-2xl text-body-lg', tone === 'light' ? 'text-ink-500' : 'text-cream-100/70')}>
+        <p
+          className={cn(
+            'max-w-2xl text-body-lg',
+            tone === 'light' ? 'text-ink-500' : 'text-cream-100/70',
+          )}
+        >
           {lead}
         </p>
       )}

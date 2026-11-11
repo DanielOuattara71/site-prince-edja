@@ -5,7 +5,14 @@ import { X } from 'lucide-react'
 import { PROMESSE_NEWSLETTER } from '@/acces/site'
 import { Button } from '@/components/ui/Button'
 import { SectionHeading } from '@/components/ui/SectionHeading'
-import { estInscrit, emailValide, consignerIntention, marquerInscrit, VERSION_CONSENTEMENT } from '@/lib/newsletter'
+import {
+  estInscrit,
+  emailValide,
+  consignerIntention,
+  marquerInscrit,
+  VERSION_CONSENTEMENT,
+} from '@/lib/newsletter'
+import { adresseApi, envoyerNewsletter } from '@/lib/formulaire'
 import { useLangue } from '@/i18n/contexteLangue'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { usePiegeFocus } from '@/hooks/usePiegeFocus'
@@ -45,7 +52,7 @@ function pageDeLecture(pathname: string): boolean {
 type Statut = 'idle' | 'erreur' | 'invalide' | 'existe' | 'succes' | 'consentement'
 
 export function FenetreNewsletter() {
-  const { t } = useLangue()
+  const { t, langue } = useLangue()
   const { pathname } = useLocation()
   const [ouverte, setOuverte] = useState(false)
   const [email, setEmail] = useState('')
@@ -104,7 +111,7 @@ export function FenetreNewsletter() {
 
   useLockBodyScroll(ouverte)
 
-  const inscription = (evenement: FormEvent<HTMLFormElement>) => {
+  const inscription = async (evenement: FormEvent<HTMLFormElement>) => {
     evenement.preventDefault()
     if (!emailValide(email)) {
       setStatut('invalide')
@@ -123,14 +130,22 @@ export function FenetreNewsletter() {
       version: VERSION_CONSENTEMENT,
       source: pathname,
     }
-    consignerIntention({
-      email,
-      prenom,
-      pays,
-      consentement: consentementAccepte,
-    })
-    marquerInscrit({ email, prenom, pays, consentement: consentementAccepte })
-    setStatut('succes')
+    const intention = { email, prenom, pays, consentement: consentementAccepte }
+    if (adresseApi() === null) {
+      // Sans API (REPLI documenté) : l'intention reste côté maison, en flou.
+      consignerIntention(intention)
+      marquerInscrit(intention)
+      setStatut('succes')
+      return
+    }
+    const ok = await envoyerNewsletter(intention, t('newsletter.consentement'), pathname, langue)
+    if (ok) {
+      // La maison écrit et confirme par e-mail ; le marqueur local évite toute re-sollicitation.
+      marquerInscrit(intention)
+      setStatut('succes')
+    } else {
+      setStatut('erreur')
+    }
   }
 
   return (
@@ -175,7 +190,9 @@ export function FenetreNewsletter() {
                   title={
                     <>
                       {t('newsletter.titreLongue')}
-                      <span aria-hidden className="text-clay-500">.</span>
+                      <span aria-hidden className="text-clay-500">
+                        .
+                      </span>
                     </>
                   }
                 />
@@ -185,7 +202,7 @@ export function FenetreNewsletter() {
                 </Button>
               </div>
             ) : (
-              <form className="space-y-5" onSubmit={inscription}>
+              <form className="space-y-5" onSubmit={(evenement) => void inscription(evenement)}>
                 <div className="space-y-3">
                   <p className="label-caps text-clay-600">{t('newsletter.titre')}</p>
                   <p className="text-body text-ink-700">{PROMESSE_NEWSLETTER}</p>

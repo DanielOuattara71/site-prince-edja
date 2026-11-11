@@ -21,12 +21,12 @@ export default function ArchivePage() {
     <>
       <Section tone="dark" padded={false} className="pt-32 pb-20 lg:pt-44 lg:pb-28">
         <Container className="space-y-6">
-          <Eyebrow tone="dark">
-            Archive d’Afrique
-          </Eyebrow>
+          <Eyebrow tone="dark">Archive d’Afrique</Eyebrow>
           <h1 className="font-display uppercase text-display-lg text-cream-100">
             Ce que nous ne racontons pas disparaît
-            <span aria-hidden className="text-clay-500">.</span>
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h1>
           <p className="max-w-2xl text-body-lg text-cream-100/75">
             {l({
@@ -43,7 +43,10 @@ export default function ArchivePage() {
             <div className="space-y-2">
               <Eyebrow>La bibliothèque</Eyebrow>
               <h2 className="font-display uppercase text-display-lg">
-                Naviguer par<span aria-hidden className="text-clay-500">.</span>
+                Naviguer par
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </h2>
             </div>
             {/* Les facettes sont annoncées comme telles. Habillées en puces cliquables
@@ -51,7 +54,10 @@ export default function ArchivePage() {
                 filtre qui n'existe pas : elles deviennent des étiquettes. */}
             <div className="flex flex-wrap gap-2">
               {NAVIGATION_ARCHIVE.map((entree) => (
-                <span key={entree} className="label-caps rounded-full bg-sand-200/70 px-4 py-2 text-ink-700">
+                <span
+                  key={entree}
+                  className="label-caps rounded-full bg-sand-200/70 px-4 py-2 text-ink-700"
+                >
                   {entree}
                 </span>
               ))}
@@ -75,7 +81,9 @@ export default function ArchivePage() {
                     </h3>
                   </div>
                   {/* Sujet annoncé, sans contenu encore : mention sobre (décision § 8.5). */}
-                  <p className="label-caps text-ink-500">{l({ fr: 'À venir', en: 'Coming soon' })}</p>
+                  <p className="label-caps text-ink-500">
+                    {l({ fr: 'À venir', en: 'Coming soon' })}
+                  </p>
                 </article>
               </Reveal>
             ))}

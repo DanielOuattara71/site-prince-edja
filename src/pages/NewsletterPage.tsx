@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { useSeo } from '@/hooks/useSeo'
 import { SITE } from '@/acces/site'
 import type { CleTraduction } from '@/i18n/dictionnaire'
 import { useLangue } from '@/i18n/contexteLangue'
+import { adresseApi } from '@/lib/formulaire'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -37,8 +39,22 @@ type LibelleVue = { fr: string; en: string }
  */
 export default function NewsletterPage({ vue }: { vue: VueNewsletter }) {
   const { t, l } = useLangue()
-  const [email, setEmail] = useState('')
-  const [fait, setFait] = useState(false)
+  const [searchParams] = useSearchParams()
+  const [etatLien, setEtatLien] = useState<'idle' | 'ok' | 'echec'>('idle')
+  const jeton = searchParams.get('jeton')
+  const repli = adresseApi() === null
+  const appelleApi = vue === 'confirmation' || vue === 'desinscription'
+
+  /* Le lien de l'e-mail porte le jeton : un GET active (ou désinscrit) l'abonné côté maison,
+     sans session. Rejouer ne change rien (contrat § 18). Sans API configurée, la page garde
+     son texte en flou documenté. */
+  useEffect(() => {
+    if (repli || !jeton || !appelleApi || etatLien !== 'idle') return
+    const chemin = vue === 'confirmation' ? 'confirmation' : 'desinscription'
+    fetch(`${adresseApi()}/public/api/v1/newsletter/${chemin}?jeton=${encodeURIComponent(jeton)}`)
+      .then((reponse) => setEtatLien(reponse.ok ? 'ok' : 'echec'))
+      .catch(() => setEtatLien('echec'))
+  }, [repli, jeton, vue, appelleApi, etatLien])
 
   useSeo({
     title: `${l(VUES[vue].titre)} · ${t('newsletter.pageTitre')} · ${SITE.name}`,
@@ -53,14 +69,27 @@ export default function NewsletterPage({ vue }: { vue: VueNewsletter }) {
       <Container className="max-w-3xl space-y-8">
         <div className="space-y-4">
           <Eyebrow>{t('newsletter.titre')}</Eyebrow>
-          <h1 className="font-display uppercase text-display-lg">
-            {l(VUES[vue].titre)}
-          </h1>
+          <h1 className="font-display uppercase text-display-lg">{l(VUES[vue].titre)}</h1>
         </div>
 
         {vue === 'confirmation' && (
           <div className="space-y-6">
-            <p className="text-body-lg text-ink-700">{t('newsletter.confirme')}</p>
+            {repli ? (
+              <p className="text-body-lg text-ink-700">{t('newsletter.confirme')}</p>
+            ) : !jeton ? (
+              <p className="text-body-lg text-ink-700">{t('newsletter.lienConfirmationRequis')}</p>
+            ) : etatLien === 'idle' ? (
+              <p className="text-body-lg text-ink-700">{t('newsletter.verification')}</p>
+            ) : etatLien === 'ok' ? (
+              <p className="text-body-lg text-ink-700">{t('newsletter.confirmationOk')}</p>
+            ) : (
+              <p className="text-body-lg text-ink-700">
+                {t('newsletter.lienInvalide')}{' '}
+                <a href={`mailto:${SITE.email}`} className="font-semibold underline">
+                  {SITE.email}
+                </a>
+              </p>
+            )}
             <Button to="/" variant="dark">
               {l({ fr: 'Revenir à l’accueil', en: 'Back home' })}
             </Button>
@@ -82,38 +111,29 @@ export default function NewsletterPage({ vue }: { vue: VueNewsletter }) {
 
         {vue === 'desinscription' && (
           <div className="space-y-6">
-            {fait ? (
+            {repli ? (
               <p className="text-body-lg text-ink-700">
-                {/* Le formulaire n'enregistre rien tant que l'envoi de la lettre n'est pas
-                    branché (mission 3) : « Demande enregistrée » était inexact. */}
-                {l({
-                  fr: `Aucun envoi n’est encore programmé : vous ne recevrez rien de notre part. Pour toute question sur vos données, écrivez à ${SITE.email}.`,
-                  en: `No sending is scheduled yet: you will receive nothing from us. For any question about your data, write to ${SITE.email}.`,
-                })}
+                {t('newsletter.lienDesinscriptionRequis')}
               </p>
+            ) : !jeton ? (
+              <p className="text-body-lg text-ink-700">
+                {t('newsletter.lienDesinscriptionRequis')}
+              </p>
+            ) : etatLien === 'idle' ? (
+              <p className="text-body-lg text-ink-700">{t('newsletter.verification')}</p>
+            ) : etatLien === 'ok' ? (
+              <p className="text-body-lg text-ink-700">{t('newsletter.desinscriptionOk')}</p>
             ) : (
-              <form
-                className="flex flex-wrap items-end gap-4"
-                onSubmit={(evenement) => {
-                  evenement.preventDefault()
-                  setFait(true)
-                }}
-              >
-                <label className="block">
-                  <span className="label-caps text-ink-500">{t('newsletter.email')}</span>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(evenement) => setEmail(evenement.target.value)}
-                    className="mt-2 w-full min-w-64 rounded-md border border-sand-200 bg-transparent px-4 py-3 text-body text-ink-900"
-                  />
-                </label>
-                <Button type="submit" variant="dark" magnetic={false}>
-                  {t('newsletter.desinscription')}
-                </Button>
-              </form>
+              <p className="text-body-lg text-ink-700">
+                {t('newsletter.lienInvalide')}{' '}
+                <a href={`mailto:${SITE.email}`} className="font-semibold underline">
+                  {SITE.email}
+                </a>
+              </p>
             )}
+            <Button to="/" variant="dark">
+              {l({ fr: 'Revenir à l’accueil', en: 'Back home' })}
+            </Button>
           </div>
         )}
       </Container>

@@ -74,17 +74,30 @@ export const DICTIONNAIRE = {
     'newsletter.consentementRequis': 'Cette case est obligatoire pour recevoir la lettre.',
     'newsletter.fermer': 'Fermer la fenêtre',
     'newsletter.cta': 'Je m’inscris',
-    'newsletter.confirme': 'Inscription enregistrée. L’e-mail de confirmation vous suivra dès que le service d’envoi sera prêt.',
+    'newsletter.confirme':
+      'Inscription enregistrée. L’e-mail de confirmation vous suivra dès que le service d’envoi sera prêt.',
     'newsletter.metaPreferences': 'Choisissez ce que vous voulez recevoir de la lettre du griot.',
     'newsletter.metaDesinscription': 'Se désinscrire de la lettre du griot.',
-    'newsletter.confirmeCompact': 'Inscription enregistrée. L’e-mail de confirmation vous suivra dès que le service d’envoi sera prêt.',
+    'newsletter.confirmeCompact':
+      'Inscription enregistrée. L’e-mail de confirmation vous suivra dès que le service d’envoi sera prêt.',
     'newsletter.dejaInscrit': 'Cette adresse est déjà inscrite à la lettre du griot.',
     'newsletter.emailInvalide': 'Saisissez une adresse e-mail valide.',
-    'newsletter.inscriptionEchoue': 'L’inscription n’a pas abouti. Réessayez dans un instant ou écrivez à l’adresse de contact directement.',
+    'newsletter.inscriptionEchoue':
+      'L’inscription n’a pas abouti. Réessayez dans un instant ou écrivez à l’adresse de contact directement.',
     'newsletter.retourAccueil': 'Retour à l’accueil',
     'newsletter.pageTitre': 'La lettre du griot',
     'newsletter.preferences': 'Préférences',
     'newsletter.desinscription': 'Me désinscrire',
+    'newsletter.verification': 'Vérification en cours…',
+    'newsletter.confirmationOk': 'Votre adresse est confirmée. Bienvenue dans la lettre du griot.',
+    'newsletter.desinscriptionOk':
+      'Vous êtes désinscrit de la lettre. Vous ne recevrez plus nos e-mails.',
+    'newsletter.lienInvalide':
+      'Ce lien n’est plus valable ou n’a pas été trouvé. Vérifiez le lien reçu par e-mail, ou écrivez à l’adresse de contact.',
+    'newsletter.lienConfirmationRequis':
+      'Le lien de confirmation se trouve dans l’e-mail de confirmation de la lettre.',
+    'newsletter.lienDesinscriptionRequis':
+      'Le lien de désinscription se trouve en bas de chaque e-mail de la lettre, sur une seule ligne.',
 
     'b2b.succes': 'Demande envoyée. La maison répond sous 48 heures ouvrées.',
     'b2b.choisirType': 'Choisissez le type de collaboration',
@@ -96,8 +109,10 @@ export const DICTIONNAIRE = {
     'demande.surDemande': 'Sur demande',
     'demande.retirer': 'Retirer',
     'demande.envoyer': 'Envoyer la demande',
-    'demande.envoyee': 'Votre client de messagerie vient de s’ouvrir avec la sélection. La maison répond avec les disponibilités et les délais.',
-    'demande.explication': 'La collection se vend sur demande : aucun paiement n’a lieu sur ce site. Les prix validés apparaîtront ici le jour où la maison les communiquera.',
+    'demande.envoyee':
+      'Votre client de messagerie vient de s’ouvrir avec la sélection. La maison répond avec les disponibilités et les délais.',
+    'demande.explication':
+      'La collection se vend sur demande : aucun paiement n’a lieu sur ce site. Les prix validés apparaîtront ici le jour où la maison les communiquera.',
     'demande.vider': 'Vider la sélection',
     'demande.declencheur': 'Voir ma sélection',
 
@@ -133,9 +148,11 @@ export const DICTIONNAIRE = {
     'pagination.sur': 'sur',
     'boutique.page': 'Edja Shop — page',
     'b2b.erreur': 'L’envoi a échoué. Écrivez directement à contact@ohenetour.com.',
-    'formulaire.ferme': 'Votre message part depuis votre messagerie : le bouton prépare un e-mail adressé à',
+    'formulaire.ferme':
+      'Votre message part depuis votre messagerie : le bouton prépare un e-mail adressé à',
     'formulaire.preparer': 'Préparer l’e-mail',
-    'formulaire.messagerie': 'Votre messagerie s’ouvre avec le message prêt à partir. Rien ne s’est ouvert ? Écrivez à',
+    'formulaire.messagerie':
+      'Votre messagerie s’ouvre avec le message prêt à partir. Rien ne s’est ouvert ? Écrivez à',
 
     'curseur.voir': 'Voir',
 
@@ -213,17 +230,29 @@ export const DICTIONNAIRE = {
     'newsletter.consentementRequis': 'This box is required to receive the letter.',
     'newsletter.fermer': 'Close the window',
     'newsletter.cta': 'Subscribe',
-    'newsletter.confirme': 'Subscription recorded. The confirmation email will follow once the sending service is ready.',
+    'newsletter.confirme':
+      'Subscription recorded. The confirmation email will follow once the sending service is ready.',
     'newsletter.metaPreferences': 'Choose what you want to receive from the griot letter.',
     'newsletter.metaDesinscription': 'Unsubscribe from the griot letter.',
-    'newsletter.confirmeCompact': 'Subscription recorded. The confirmation email will follow once the sending service is ready.',
+    'newsletter.confirmeCompact':
+      'Subscription recorded. The confirmation email will follow once the sending service is ready.',
     'newsletter.dejaInscrit': 'This address is already subscribed to the griot letter.',
     'newsletter.emailInvalide': 'Please enter a valid email address.',
-    'newsletter.inscriptionEchoue': 'The subscription did not go through. Please try again in a moment or write to the contact address directly.',
+    'newsletter.inscriptionEchoue':
+      'The subscription did not go through. Please try again in a moment or write to the contact address directly.',
     'newsletter.retourAccueil': 'Back home',
     'newsletter.pageTitre': 'The griot letter',
     'newsletter.preferences': 'Preferences',
     'newsletter.desinscription': 'Unsubscribe',
+    'newsletter.verification': 'Checking…',
+    'newsletter.confirmationOk': 'Your address is confirmed. Welcome to the griot letter.',
+    'newsletter.desinscriptionOk': 'You are unsubscribed. You will no longer receive our emails.',
+    'newsletter.lienInvalide':
+      'This link is no longer valid or was not found. Check the link from the email, or write to the contact address.',
+    'newsletter.lienConfirmationRequis':
+      'The confirmation link is in the letter’s confirmation email.',
+    'newsletter.lienDesinscriptionRequis':
+      'The unsubscribe link is at the bottom of each email from the letter.',
 
     'b2b.succes': 'Request sent. The house replies within 48 working hours.',
     'b2b.choisirType': 'Choose the type of partnership',
@@ -235,8 +264,10 @@ export const DICTIONNAIRE = {
     'demande.surDemande': 'On request',
     'demande.retirer': 'Remove',
     'demande.envoyer': 'Send the request',
-    'demande.envoyee': 'Your email client just opened with the selection. The house replies with availability and lead times.',
-    'demande.explication': 'The collection is sold on request: no payment happens on this site. Validated prices will appear here once the house provides them.',
+    'demande.envoyee':
+      'Your email client just opened with the selection. The house replies with availability and lead times.',
+    'demande.explication':
+      'The collection is sold on request: no payment happens on this site. Validated prices will appear here once the house provides them.',
     'demande.vider': 'Clear the selection',
     'demande.declencheur': 'View my selection',
 
@@ -272,9 +303,11 @@ export const DICTIONNAIRE = {
     'pagination.sur': 'of',
     'boutique.page': 'Edja Shop — page',
     'b2b.erreur': 'Sending failed. Write directly to contact@ohenetour.com.',
-    'formulaire.ferme': 'Your message is sent from your own mail app: the button prepares an email to',
+    'formulaire.ferme':
+      'Your message is sent from your own mail app: the button prepares an email to',
     'formulaire.preparer': 'Prepare the email',
-    'formulaire.messagerie': 'Your mail app opens with the message ready to send. Nothing opened? Write to',
+    'formulaire.messagerie':
+      'Your mail app opens with the message ready to send. Nothing opened? Write to',
 
     'curseur.voir': 'View',
 

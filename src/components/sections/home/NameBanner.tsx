@@ -4,7 +4,10 @@ const REPEATS = 4
 
 export function NameBanner() {
   return (
-    <section aria-label="Prince Edja" className="border-y border-cream-100/10 bg-night-900 py-5 lg:py-7">
+    <section
+      aria-label="Prince Edja"
+      className="border-y border-cream-100/10 bg-night-900 py-5 lg:py-7"
+    >
       <h2 className="sr-only">Prince Edja</h2>
       <div aria-hidden>
         <Marquee duration={24}>

@@ -78,7 +78,9 @@ describe('filtres des pages publiques', () => {
     // Les anciens filtres écrits en dur ne sont plus là.
     expect(screen.queryByRole('button', { name: 'Documentaires' })).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Tourisme' }))
-    expect(screen.getByRole('button', { name: 'Tourisme' }).getAttribute('aria-pressed')).toBe('true')
+    expect(screen.getByRole('button', { name: 'Tourisme' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    )
     expect(screen.getByRole('heading', { level: 3, name: 'Taste & Travel' })).toBeTruthy()
   })
 })

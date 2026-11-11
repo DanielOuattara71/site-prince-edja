@@ -55,9 +55,7 @@ export function MegaMenu({ id, entree, ouvert, onFermer }: Props) {
       className="-mt-2.5 absolute left-0 top-full z-50 w-max max-w-[min(90vw,44rem)] pt-3"
     >
       <div className="grain rounded-xl bg-night-900 p-6 text-cream-100 border border-cream-100/25 lg:p-8">
-        {entree.degre && (
-          <p className="label-caps mb-5 text-gold-400">{l(entree.degre)}</p>
-        )}
+        {entree.degre && <p className="label-caps mb-5 text-gold-400">{l(entree.degre)}</p>}
         <ul className="space-y-1">
           {entree.enfants.map((enfant, index) => (
             <li key={enfant.to}>
@@ -70,9 +68,7 @@ export function MegaMenu({ id, entree, ouvert, onFermer }: Props) {
                   }`
                 }
               >
-                <span className="label-caps w-6 shrink-0 text-cream-100/40">
-                  0{index + 1}
-                </span>
+                <span className="label-caps w-6 shrink-0 text-cream-100/40">0{index + 1}</span>
                 <span className="font-display text-heading-sm uppercase tracking-wide">
                   {l(enfant.libelle)}
                 </span>

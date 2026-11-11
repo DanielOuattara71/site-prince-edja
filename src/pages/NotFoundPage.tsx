@@ -18,7 +18,8 @@ export default function NotFoundPage() {
 
   useSeo({
     title: 'Page introuvable · Prince Edja',
-    description: "Cette page n'existe pas ou plus. Retrouvez les histoires, la série X'PLORE et Edja Shop.",
+    description:
+      "Cette page n'existe pas ou plus. Retrouvez les histoires, la série X'PLORE et Edja Shop.",
     indexable: false,
   })
 
@@ -31,7 +32,10 @@ export default function NotFoundPage() {
       <Container className="flex flex-col items-center justify-center gap-8">
         <div className="space-y-4">
           <h1 className="font-display uppercase text-display-xl text-gold-400">
-            404<span aria-hidden className="text-clay-500">.</span>
+            404
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h1>
           <p className="mx-auto max-w-md text-body-lg text-cream-100/70">{t('p404.texte')}</p>
         </div>

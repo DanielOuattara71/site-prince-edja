@@ -6,7 +6,12 @@ export function MaskEmblem({ className }: { className?: string }) {
       aria-label="Masque africain stylisé, emblème Prince Edja"
       className={className}
     >
-      <g stroke="var(--color-night-900)" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round">
+      <g
+        stroke="var(--color-night-900)"
+        strokeWidth="5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      >
         <path
           d="M150 20C235 20 262 118 252 220 244 310 202 400 150 428 98 400 56 310 48 220 38 118 65 20 150 20Z"
           fill="var(--color-clay-500)"
@@ -17,16 +22,8 @@ export function MaskEmblem({ className }: { className?: string }) {
         <path d="M150 116 188 156 150 196 112 156Z" fill="var(--color-gold-400)" strokeWidth="4" />
         <path d="M150 136 168 156 150 176 132 156Z" fill="var(--color-night-900)" strokeWidth="0" />
         <path d="M84 238 116 206M216 238 184 206" strokeWidth="0" />
-        <path
-          d="M84 238C96 214 130 208 144 234"
-          fill="none"
-          strokeWidth="11"
-        />
-        <path
-          d="M216 238C204 214 170 208 156 234"
-          fill="none"
-          strokeWidth="11"
-        />
+        <path d="M84 238C96 214 130 208 144 234" fill="none" strokeWidth="11" />
+        <path d="M216 238C204 214 170 208 156 234" fill="none" strokeWidth="11" />
         <path d="M150 212 174 302 150 318 126 302Z" fill="var(--color-clay-600)" strokeWidth="4" />
         <ellipse cx="150" cy="356" rx="27" ry="15" fill="var(--color-clay-600)" strokeWidth="4" />
       </g>

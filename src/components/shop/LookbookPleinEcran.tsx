@@ -44,14 +44,13 @@ export function LookbookPleinEcran({ images, onOuvrir }: Props) {
         <Eyebrow>La galerie</Eyebrow>
         <h2 className="mt-4 font-display uppercase text-display-lg">
           Regard
-          <span aria-hidden className="text-clay-500">.</span>
+          <span aria-hidden className="text-clay-500">
+            .
+          </span>
         </h2>
       </div>
 
-      <div
-        data-curseur="galerie"
-        className="grid grid-cols-2 gap-2 px-4 pt-10 sm:px-6 sm:pt-12"
-      >
+      <div data-curseur="galerie" className="grid grid-cols-2 gap-2 px-4 pt-10 sm:px-6 sm:pt-12">
         {rangees.map((rangee) =>
           rangee.map((image) => {
             const index = images.indexOf(image)
@@ -64,7 +63,9 @@ export function LookbookPleinEcran({ images, onOuvrir }: Props) {
                 aria-label={`Agrandir ${image.titre} en plein écran`}
                 className={
                   'group relative block overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600 ' +
-                  (rangee.length === 1 ? 'col-span-2 aspect-16/9 sm:aspect-[21/9]' : 'aspect-square')
+                  (rangee.length === 1
+                    ? 'col-span-2 aspect-16/9 sm:aspect-[21/9]'
+                    : 'aspect-square')
                 }
               >
                 <img

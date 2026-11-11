@@ -30,7 +30,12 @@ const VIDE = {
 }
 
 export const ARCHIVE: EntreeArchive[] = [
-  { slug: 'marche-des-femmes-de-grand-bassam', titre: 'Marche des femmes de Grand-Bassam', categorie: 'Événement', ...VIDE },
+  {
+    slug: 'marche-des-femmes-de-grand-bassam',
+    titre: 'Marche des femmes de Grand-Bassam',
+    categorie: 'Événement',
+    ...VIDE,
+  },
   { slug: 'rubino', titre: 'Rubino', categorie: 'Personnage', ...VIDE },
   { slug: 'djidji-ayokwe', titre: 'Djidji Ayôkwé', categorie: 'Personnage', ...VIDE },
   { slug: 'cacao', titre: 'Cacao', categorie: 'Économie', ...VIDE },

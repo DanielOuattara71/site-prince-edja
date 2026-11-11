@@ -30,3 +30,9 @@ dist-ssr
 
 # Données chargées depuis l’API à la construction (scripts/charger-donnees.ts, LIAISON § C.2)
 src/data/generated/
+
+# Métadonnées Windows de zone (téléchargement) — ne jamais commiter (A5, D-84)
+*Zone.Identifier
+# Archives exportées — jamais commitées
+src.zip
+admin/src.zip

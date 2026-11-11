@@ -14,7 +14,10 @@ export function GuidesGrid() {
         <Reveal className="mb-12 max-w-2xl space-y-5">
           <p className="label-caps text-clay-600">Préparer le voyage</p>
           <h2 className="font-display uppercase text-display-lg text-ink-900">
-            Télécharger nos guides<span aria-hidden className="text-clay-500">.</span>
+            Télécharger nos guides
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h2>
         </Reveal>
 

@@ -54,13 +54,7 @@ export const PIECES: Bijou[] = BIJOUX.map((bijou) => ({
 export const piecesDisponibles = PIECES.filter((piece) => piece.commerce?.disponible)
 
 /** Filtres du CDC : catégorie, prix, origine, créateur, disponibilité. */
-export const FILTRES_SHOP = [
-  'catégorie',
-  'prix',
-  'origine',
-  'créateur',
-  'disponibilité',
-] as const
+export const FILTRES_SHOP = ['catégorie', 'prix', 'origine', 'créateur', 'disponibilité'] as const
 
 /**
  * Galerie éditoriale de la boutique.

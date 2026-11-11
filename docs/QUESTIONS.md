@@ -268,3 +268,18 @@ template). Ajouter `id` aux produits publics, ou résoudre les cibles côté API
 Six histoires. », « Six étapes, une saison »). Justes pour la saison 1 ; faux dès qu'un épisode est
 ajouté ou retiré dans l'admin. À rendre administrables (textes d'interface) ou à reformuler sans
 nombre ?
+
+
+**Question 39** (métier, M-01 tranché) : les traductions anglaises sont **objectif** du projet
+(client, 11/11/2026). La `LangueSwitcher` existe déjà côté site public et l'admin porte les
+auxiliaires anglais, mais **aucun contenu éditorial n'est produit en anglais pour l'instant** et
+aucun texte EN ne sera généré à la place d'un texte vérifié par la maison.
+
+**Question 38** (contrat) : pour la demande de pièces d'Edja Shop, `POST /demandes` exige
+`varianteIds` (UUID). Or la vue publique du contrat (§ 18.1, question 13) n'expose **aucun**
+identifiant de produit ni de variante : la demande ne peut pas être branchée depuis le site.
+Le repli reste l'e-mail préparé (`src/lib/demande.tsx`), conforme à la règle « repli conservé ».
+Proposition pour 1.6.0 (avec la question 36) : soit `varianteIds` publics documentés sur la fiche
+(`id` préfixé public ou UUID en clair), soit une cible opaque (`slug` + index de variante, idempotente
+en confiance). À trancher par le responsable du contrat. Vérifié le 11/11/2026 : `400/404` sur
+variante inconnue, `202` par insertion si connue (intégration back end), jamais d'envoi simulé.

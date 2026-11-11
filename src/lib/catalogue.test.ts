@@ -87,11 +87,25 @@ describe('obtenirProduits : découpage', () => {
 describe('obtenirProduits : tris et filtres', () => {
   it('prix croissant et décroissant : « sur demande » toujours en dernier', () => {
     // Prix confirmés pour les quatre premiers, « sur demande » pour les autres.
-    const c = catalogue(6, { prix: (i) => (i < 4 ? [3000, 1000, 2000, 1000][i] ?? null : null) })
+    const c = catalogue(6, { prix: (i) => (i < 4 ? ([3000, 1000, 2000, 1000][i] ?? null) : null) })
     const croissant = obtenirProduits({ tri: 'prix-croissant' }, c).items.map((p) => p.id)
-    expect(croissant).toEqual(['essai-01', 'essai-03', 'essai-02', 'essai-00', 'essai-04', 'essai-05'])
+    expect(croissant).toEqual([
+      'essai-01',
+      'essai-03',
+      'essai-02',
+      'essai-00',
+      'essai-04',
+      'essai-05',
+    ])
     const decroissant = obtenirProduits({ tri: 'prix-decroissant' }, c).items.map((p) => p.id)
-    expect(decroissant).toEqual(['essai-00', 'essai-02', 'essai-01', 'essai-03', 'essai-04', 'essai-05'])
+    expect(decroissant).toEqual([
+      'essai-00',
+      'essai-02',
+      'essai-01',
+      'essai-03',
+      'essai-04',
+      'essai-05',
+    ])
   })
 
   it('tri stable : à égalité, l’identifiant départage, d’un appel à l’autre', () => {
@@ -103,7 +117,10 @@ describe('obtenirProduits : tris et filtres', () => {
   })
 
   it('filtres : type, catégorie (adresse), disponibilité', () => {
-    const c = [...catalogue(6), ...catalogue(2, { type: 'livre' }).map((p) => ({ ...p, id: `l-${p.id}` }))]
+    const c = [
+      ...catalogue(6),
+      ...catalogue(2, { type: 'livre' }).map((p) => ({ ...p, id: `l-${p.id}` })),
+    ]
     expect(obtenirProduits({ type: 'livre' }, c).total).toBe(2)
     expect(obtenirProduits({ categorie: 'mode' }, c).total).toBe(3)
     expect(obtenirProduits({ disponible: true }, c).total).toBe(4)

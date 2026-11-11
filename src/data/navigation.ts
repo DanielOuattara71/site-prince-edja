@@ -204,7 +204,6 @@ export function filDariane(chemin: string): FragmentFil[] {
   return fil
 }
 
-
 /** Les trois portes d'entrée proposées sur la 404 : le strict nécessaire. */
 export const ENTREES_404: LienNav[] = [
   { libelle: { fr: "Série X'PLORE", en: "X'PLORE series" }, to: '/xplore' },
@@ -274,12 +273,7 @@ export const PAGES_LEGALES: PageLegale[] = [
       fr: 'Nature des traceurs utilisés, consentement et modalités de refus.',
       en: 'Nature of trackers used, consent and how to refuse them.',
     },
-    sections: [
-      'Traceurs utilisés',
-      'Consentement',
-      'Modalités de refus',
-      'Durée de conservation',
-    ],
+    sections: ['Traceurs utilisés', 'Consentement', 'Modalités de refus', 'Durée de conservation'],
   },
   {
     chemin: '/cgv',

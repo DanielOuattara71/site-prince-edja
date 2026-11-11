@@ -14,16 +14,7 @@ interface FilmRowProps {
   onLeave: MouseEventHandler<HTMLAnchorElement>
 }
 
-export function FilmRow({
-  numero,
-  titre,
-  lieu,
-  pitch,
-  image,
-  to,
-  onEnter,
-  onLeave,
-}: FilmRowProps) {
+export function FilmRow({ numero, titre, lieu, pitch, image, to, onEnter, onLeave }: FilmRowProps) {
   return (
     <Link
       to={to}
@@ -47,9 +38,7 @@ export function FilmRow({
           ratio="16/10"
           className="mt-4 rounded-md lg:hidden"
         />
-        {pitch && (
-          <p className="mt-2 max-w-md text-caption text-cream-100/60">{pitch}</p>
-        )}
+        {pitch && <p className="mt-2 max-w-md text-caption text-cream-100/60">{pitch}</p>}
       </div>
 
       <div className="flex flex-col items-end gap-2 self-center">

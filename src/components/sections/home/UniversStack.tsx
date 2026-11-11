@@ -20,7 +20,10 @@ export function UniversStack() {
             <>
               Raconter. Explorer.
               <br />
-              Faire rayonner<span aria-hidden className="text-clay-500">.</span>
+              Faire rayonner
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </>
           }
           lead="Six manières de servir le récit africain, du terrain à la scène."

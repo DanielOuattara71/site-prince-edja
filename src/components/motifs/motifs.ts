@@ -11,12 +11,7 @@ import symetrique from '@/assets/motifs/motif-symetrique-04.svg?raw'
  * Il sert de sceau, pas de texture de ruban.
  */
 export type MotifAfricain =
-  | 'linear-01'
-  | 'spiral-02'
-  | 'circulaire-03'
-  | 'symetrique-04'
-  | 'lineaire-05'
-  | 'cauri-africain'
+  'linear-01' | 'spiral-02' | 'circulaire-03' | 'symetrique-04' | 'lineaire-05' | 'cauri-africain'
 
 /**
  * Prépare un SVG fourni pour un rendu décoratif.

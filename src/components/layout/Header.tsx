@@ -93,6 +93,9 @@ export function Header() {
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-transform duration-(--d-base) ease-expo motion-reduce:transition-none',
           visible ? 'translate-y-0' : '-translate-y-[130%]',
+          // En tonalité sombre, une très légère voile nocturne sous la barre garantit un
+          // contraste AA même sur un hero ensoleillé sans changer la lecture du menu.
+          darkTop && !flottante && 'bg-night-900/45',
           lightText && !degagee ? 'text-cream-100' : !degagee ? 'text-ink-900' : '',
           menuOpen && 'text-cream-100',
         )}
@@ -204,7 +207,10 @@ export function Header() {
             {/* Le sélecteur suit la couleur du texte de la barre : crème sur hero
                 sombre, encre sur barre ivoire. Une palette fixe l'aurait rendu
                 invisible sur l'un des deux fonds. */}
-            <LangueSwitcher tone={lightText ? 'sombre' : 'clair'} className="hidden lg:inline-flex" />
+            <LangueSwitcher
+              tone={lightText ? 'sombre' : 'clair'}
+              className="hidden lg:inline-flex"
+            />
 
             <RechercheGlobale
               tone={lightText ? 'sombre' : 'clair'}
@@ -220,7 +226,11 @@ export function Header() {
               disparaîtrait, ink-900 et night-900 étant quasi confondus —, encre sur
               barre ivoire.
             */}
-            <CtaTravailler tone={lightText ? 'sombre' : 'clair'} compact className="hidden lg:inline-flex" />
+            <CtaTravailler
+              tone={lightText ? 'sombre' : 'clair'}
+              compact
+              className="hidden lg:inline-flex"
+            />
 
             <button
               type="button"

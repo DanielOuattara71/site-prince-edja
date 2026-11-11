@@ -28,7 +28,13 @@ export function Breadcrumb({ titreFinal, className }: Props) {
     ? [...fragments.slice(0, -1), { libelle: { fr: titreFinal, en: titreFinal }, to: dernier.to }]
     : fragments
 
-  const base = `${window.location.origin}${import.meta.env.BASE_URL}`
+  // Origine publique pour le JSON-LD : côté navigateur, celle du site ; côté serveur
+  // (prérendu), celle fixée à la construction (`PUBLIC_SITE_ORIGIN`), sinon la canonique
+  // actuelle du dépôt. Le domaine sera tranché en question 21 (B5).
+  const base =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}${import.meta.env.BASE_URL}`
+      : `${(import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://prince-edja.vercel.app').replace(/\/+$/, '')}${import.meta.env.BASE_URL}`
   useJsonLd(schemaFilDariane(avecTitre, langue, base))
 
   return (

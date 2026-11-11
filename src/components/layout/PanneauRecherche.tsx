@@ -112,7 +112,7 @@ export default function PanneauRecherche({ ouvert, onClose }: Props) {
             if (event.target === event.currentTarget) onClose()
           }}
         >
-            <motion.div
+          <motion.div
             ref={surface}
             role="dialog"
             aria-modal="true"
@@ -136,7 +136,9 @@ export default function PanneauRecherche({ ouvert, onClose }: Props) {
                 aria-expanded={total > 0}
                 aria-controls={idListe}
                 aria-autocomplete="list"
-                aria-activedescendant={plats[indexActif] ? `${idChamp}-opt-${indexActif}` : undefined}
+                aria-activedescendant={
+                  plats[indexActif] ? `${idChamp}-opt-${indexActif}` : undefined
+                }
                 aria-describedby={`${idChamp}-aide`}
                 placeholder={t('recherche.champ')}
                 className="min-h-11 w-full bg-transparent text-body-lg placeholder:text-cream-100/40 focus:outline-none"
@@ -178,10 +180,7 @@ export default function PanneauRecherche({ ouvert, onClose }: Props) {
                       const idGroupe = `${idChamp}-grp-${groupe.type}`
                       return (
                         <div key={groupe.type} role="group" aria-labelledby={idGroupe}>
-                          <p
-                            id={idGroupe}
-                            className="label-caps px-4 pb-2 pt-4 text-gold-400"
-                          >
+                          <p id={idGroupe} className="label-caps px-4 pb-2 pt-4 text-gold-400">
                             {t(LIBELLE_TYPE[groupe.type])}
                           </p>
                           {groupe.resultats.map((resultat) => {
@@ -232,6 +231,6 @@ export default function PanneauRecherche({ ouvert, onClose }: Props) {
         </motion.div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   )
 }

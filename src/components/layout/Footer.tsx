@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { useEffect, useState } from 'react'
 import { FOOTER_NAV, SITE } from '@/acces/site'
 import { useLocalTime } from '@/hooks/useLocalTime'
 import { Container } from '@/components/layout/Container'
@@ -9,7 +10,12 @@ import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 export function Footer() {
   const time = useLocalTime()
-  const year = new Date().getFullYear()
+  // Année affichée à la volée côté client ; le serveur n'en sait rien — même hydratation.
+  const [year, setYear] = useState<number | null>(null)
+  useEffect(() => {
+    const premiere = requestAnimationFrame(() => setYear(new Date().getFullYear()))
+    return () => cancelAnimationFrame(premiere)
+  }, [])
   const { l } = useLangue()
 
   return (
@@ -20,7 +26,10 @@ export function Footer() {
             <div className="max-w-2xl space-y-5">
               <p className="label-caps text-gold-400">Contact</p>
               <h2 className="font-display uppercase text-display-lg">
-                Parlons du prochain récit<span aria-hidden className="text-clay-500">.</span>
+                Parlons du prochain récit
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </h2>
             </div>
             <Button to="/contact" variant="primary">
@@ -77,7 +86,7 @@ export function Footer() {
               {SITE.email}
             </a>
             <p className="label-caps text-cream-100/40">
-              © {year} {SITE.name} · Version 1.0
+              © {year ?? '\u2014'} {SITE.name} · Version 1.0
             </p>
           </div>
         </Container>

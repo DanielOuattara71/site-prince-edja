@@ -12,7 +12,19 @@ import type { Partenaire } from '@/data/collaborations'
 import type { Destination } from '@/data/destinations'
 import type { Offre } from '@/data/offres'
 import type { Projet, StatutProjet } from '@/data/projets'
-import type { Article, Bijou, Distinction, Episode, Milestone, PressItem } from '@/types'
+import type { PageLegale } from '@/data/navigation'
+import type { Fiabilite, EntreeArchive } from '@/data/archive'
+import type {
+  Article,
+  Bijou,
+  Distinction,
+  Episode,
+  GalleryItem,
+  Milestone,
+  PressItem,
+  TravelCity,
+  Univers,
+} from '@/types'
 
 // --- Formes publiques (§ 18.1) : seulement ce que le site lit ---
 
@@ -310,6 +322,115 @@ export function versPartenaire(p: PartenairePublic): Partenaire {
 
 export function versOffre(o: OffrePublique): Offre {
   return { titre: titreDe(o), texte: texte(o.traduction, 'texte') }
+}
+
+export interface VillePublic extends ContenuPublic {
+  image?: ImagePublique | null
+}
+
+/** Taste & Travel : les villes source du programme. Une ville n'a pas de slug. */
+export function versVille(v: VillePublic): TravelCity {
+  return {
+    nom: titreDe(v, 'nom'),
+    intention: texte(v.traduction, 'intention'),
+    image: url(v.image),
+    tags: { format: 'destination', projet: 'TASTE_TRAVEL', pays: [], ville: [] },
+  }
+}
+
+export interface ArchivePublique extends ContenuPublic {
+  slug: string
+  categorie: string
+  fiabilite: 'documentee' | 'memoire_orale' | 'interpretation' | null
+  epoque: string | null
+  sources: {
+    libelle: string
+    url: string | null
+    type: 'ecrite' | 'orale' | 'iconographique' | 'autre'
+  }[]
+}
+
+const FIABILITE: Record<ArchivePublique['fiabilite'] & string, Fiabilite> = {
+  documentee: 'documentee',
+  memoire_orale: 'memoire orale',
+  interpretation: 'interpretation',
+}
+
+/** Archive d'Afrique : un texte + au moins une source ; sans source, une entrée n'est pas publiable. */
+export function versArchive(e: ArchivePublique): EntreeArchive {
+  return {
+    slug: slugDe(e),
+    titre: titreDe(e),
+    categorie: e.categorie,
+    texte: texte(e.traduction, 'texte'),
+    sources: (e.sources ?? []).flatMap((s) => (s.libelle ? [s.libelle] : [])),
+    fiabilite: e.fiabilite ? FIABILITE[e.fiabilite] : undefined,
+    epoque: e.epoque ?? undefined,
+    pays: [],
+  }
+}
+
+export interface UniversPublic extends ContenuPublic {
+  numero: string
+  ordre?: number
+  cible?: CibleInterne | null
+}
+
+/** Les six piliers de l'accueil, cliquables vers leur page. */
+export function versUnivers(u: UniversPublic, chemins: CheminsContenus = {}): Univers {
+  return {
+    numero: u.numero,
+    nom: titreDe(u, 'nom'),
+    pitch: texte(u.traduction, 'pitch'),
+    to: cheminDeCible(u.cible, chemins) ?? '#',
+  }
+}
+
+export interface GaleriePublique extends ContenuPublic {
+  emplacement: 'accueil' | 'boutique'
+  cible?: CibleInterne | null
+  lienExterne?: string | null
+  ratio: GalleryItem['ratio']
+  parallaxe?: number | null
+  ordre?: number
+}
+
+/** Galerie éditoriale de l'accueil (`GALLERY`) ou de la boutique (`GALERIE_SHOP`). */
+export function versGalerie(g: GaleriePublique, chemins: CheminsContenus = {}): GalleryItem {
+  const href = cheminDeCible(g.cible, chemins) ?? g.lienExterne ?? ''
+  return {
+    src: url(g.image),
+    alt: g.image?.alt ?? '',
+    to: href,
+    ratio: g.ratio,
+    speed: g.parallaxe ?? 0,
+    label: texte(g.traduction, 'etiquette') || undefined,
+    external: Boolean(g.lienExterne && !g.cible) || undefined,
+  }
+}
+
+/** Pages légales : seules les vues publiques existent côté appelant ; le corps riche est consommé hors adaptateur. */
+export interface PageLegalePublique extends ContenuPublic {
+  cle: string
+  traduction?: { titre?: unknown; resume?: unknown; corps?: unknown } | null
+}
+
+/** Pages légales : squelette complet ; `sections` est vide — le corps riche sert à l'admin, pas aux sections. */
+export function versPageLegale(p: PageLegalePublique): PageLegale {
+  const cle = p.cle
+  return {
+    chemin: `/${cle}` as PageLegale['chemin'],
+    famille: 'Informations légales',
+    titre: {
+      fr: texte(p.traduction, 'titre') || cle,
+      en: cle,
+    },
+    resume: {
+      fr: texte(p.traduction, 'resume'),
+      en: texte(p.traduction, 'resume'),
+    },
+    sections: [],
+  }
 }
 
 export function versCategories(

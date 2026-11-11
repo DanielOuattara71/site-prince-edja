@@ -9,6 +9,34 @@ export interface SeoOptions {
   requete?: string
 }
 
+/**
+ * Prérendu (entry-server) : les pages n'ont pas d'effet à jouer côté serveur, donc pas de
+ * balises à écrire dans un document `document`. Elles les déposent ici ; le script de prérendu
+ * les lit et les injecte dans le HTML. Inerte côté client.
+ */
+export interface BalisePreRendue {
+  titre: string
+  description?: string
+  indexable: boolean
+  url: string
+}
+const collecte: BalisePreRendue[] = []
+let basePreRendue: string | null = null
+
+/** Prérendu uniquement : pose la base `origine` et la route pour ce rendu. */
+export function preparerBalisesPreRendues(route: string, origine: string) {
+  basePreRendue = `${origine.replace(/\/+$/, '')}${route}`
+  collecte.length = 0
+}
+
+/** Prérendu uniquement : récupère les balises déposées pour ce rendu. */
+export function balisesPreRendues(): BalisePreRendue[] {
+  if (basePreRendue === null) return []
+  const copie = [...collecte]
+  collecte.length = 0
+  return copie
+}
+
 function upsertMeta(attr: 'name' | 'property', cle: string, contenu: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${cle}"]`)
   if (!el) {
@@ -27,6 +55,16 @@ function upsertMeta(attr: 'name' | 'property', cle: string, contenu: string) {
  * ancre. Dire que `?utm_source=…` est une autre page créerait des doublons.
  */
 export function useSeo({ title, description, indexable = true, requete = '' }: SeoOptions) {
+  // Prérendu : pas de `document`, les balises sont déposées dans la collecte (inerte sinon).
+  if (import.meta.env.SSR && basePreRendue !== null) {
+    collecte.push({
+      titre: title,
+      ...(description !== undefined ? { description } : {}),
+      indexable,
+      url: `${basePreRendue}${requete}`,
+    })
+  }
+
   useEffect(() => {
     document.title = title
     if (description) {
@@ -35,11 +73,7 @@ export function useSeo({ title, description, indexable = true, requete = '' }: S
     }
 
     upsertMeta('property', 'og:title', title)
-    upsertMeta(
-      'name',
-      'robots',
-      indexable ? 'index, follow' : 'noindex, follow',
-    )
+    upsertMeta('name', 'robots', indexable ? 'index, follow' : 'noindex, follow')
 
     const url = window.location.origin + window.location.pathname + requete
     upsertMeta('property', 'og:url', url)

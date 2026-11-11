@@ -58,11 +58,14 @@ function ContactForm() {
         className="flex h-full flex-col items-start justify-center gap-5 rounded-xl border border-sand-200 bg-sand-100 p-10"
       >
         <p className="font-display uppercase text-heading-md text-ink-900">
-          Message envoyé<span aria-hidden className="text-clay-500">.</span>
+          Message envoyé
+          <span aria-hidden className="text-clay-500">
+            .
+          </span>
         </p>
         <p className="text-body text-ink-500">
-          Merci, l’équipe revient vers vous rapidement. Pour une demande presse urgente,
-          écrivez directement à {SITE.email}.
+          Merci, l’équipe revient vers vous rapidement. Pour une demande presse urgente, écrivez
+          directement à {SITE.email}.
         </p>
         <Button variant="ghost-dark" onClick={() => setStatus('idle')}>
           Envoyer un autre message
@@ -105,7 +108,12 @@ function ContactForm() {
         optionVide="Choisissez votre demande"
         required
       />
-      <Textarea label="Votre message" id="message" required placeholder="Parlons du prochain récit…" />
+      <Textarea
+        label="Votre message"
+        id="message"
+        required
+        placeholder="Parlons du prochain récit…"
+      />
 
       {/* Messages d'état montés en permanence : insérés au moment de l'événement, ils
           ne sont pas annoncés de façon fiable par les lecteurs d'écran. Le succès
@@ -146,12 +154,14 @@ export default function ContactPage() {
           <Eyebrow>Contact</Eyebrow>
           <h1 className="font-display uppercase text-display-lg">
             Parlons du prochain récit
-            <span aria-hidden className="text-clay-500">.</span>
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h1>
           <p className="max-w-2xl text-body-lg text-ink-500">
-            Partenariats, productions, conférences, presse, projections et collaborations de
-            marque. Décrivez votre projet en quelques lignes : la réponse vient d'une personne,
-            pas d'un formulaire.
+            Partenariats, productions, conférences, presse, projections et collaborations de marque.
+            Décrivez votre projet en quelques lignes : la réponse vient d'une personne, pas d'un
+            formulaire.
           </p>
         </div>
 
@@ -188,9 +198,8 @@ export default function ContactPage() {
               <div className="border-t border-sand-200 pt-6">
                 <p className="label-caps text-ink-500">Délai de réponse</p>
                 <p className="mt-2 max-w-md text-body text-ink-700">
-                  Chaque demande reçoit une réponse humaine sous 24 heures ouvrées. Si le
-                  projet n'est pas le bon, on le dit, et on oriente vers quelqu'un pour qui
-                  il l'est.
+                  Chaque demande reçoit une réponse humaine sous 24 heures ouvrées. Si le projet
+                  n'est pas le bon, on le dit, et on oriente vers quelqu'un pour qui il l'est.
                 </p>
               </div>
             </Reveal>
@@ -209,7 +218,9 @@ export default function ContactPage() {
             <Eyebrow>Les univers</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Six maisons dans la maison
-              <span aria-hidden className="text-clay-500">.</span>
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h2>
           </div>
 

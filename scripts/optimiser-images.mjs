@@ -65,10 +65,13 @@ for (const fichier of lister(dossier)) {
   const base = fichier.replace(/\.png$/i, '')
   const image = sharp(fichier).resize(1920, null, { withoutEnlargement: true })
 
-  const info = await image.clone().jpeg({ quality: 82, mozjpeg: true, progressive: true })
+  const info = await image
+    .clone()
+    .jpeg({ quality: 82, mozjpeg: true, progressive: true })
     .toFile(`${base}.jpg`)
   if (avecWebp) {
-    await sharp(fichier).resize(1920, null, { withoutEnlargement: true })
+    await sharp(fichier)
+      .resize(1920, null, { withoutEnlargement: true })
       .webp({ quality: 82 })
       .toFile(`${base}.webp`)
   }
@@ -76,8 +79,17 @@ for (const fichier of lister(dossier)) {
   const avant = statSync(fichier).size
   rmSync(fichier)
   majReferences(
-    join(dirname(fichier), fichier.split('/').pop().replace(/\.png$/i, '.png')).replace(racine + '/', ''),
-    `${dirname(fichier).replace(racine + '/', '')}/${fichier.split('/').pop().replace(/\.png$/i, '.jpg')}`,
+    join(
+      dirname(fichier),
+      fichier
+        .split('/')
+        .pop()
+        .replace(/\.png$/i, '.png'),
+    ).replace(racine + '/', ''),
+    `${dirname(fichier).replace(racine + '/', '')}/${fichier
+      .split('/')
+      .pop()
+      .replace(/\.png$/i, '.jpg')}`,
   )
 
   economie += avant - info.size
@@ -87,4 +99,6 @@ for (const fichier of lister(dossier)) {
   )
 }
 
-console.log(`\n${convertis} fichier(s) converti(s), ${(economie / 1048576).toFixed(1)} Mo économisés.`)
+console.log(
+  `\n${convertis} fichier(s) converti(s), ${(economie / 1048576).toFixed(1)} Mo économisés.`,
+)

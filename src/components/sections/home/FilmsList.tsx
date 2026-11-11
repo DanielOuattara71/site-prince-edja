@@ -22,7 +22,10 @@ export function FilmsList() {
               <>
                 Des films qui changent
                 <br />
-                le regard<span aria-hidden className="text-clay-500">.</span>
+                le regard
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </>
             }
             lead="Six épisodes X’PLORE, une caméra à hauteur d’homme : la Côte d’Ivoire révélée aux Ivoiriens et au monde."

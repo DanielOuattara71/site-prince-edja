@@ -20,11 +20,14 @@ export function EtudesCas() {
         <div className="space-y-2">
           <Eyebrow>Études de cas</Eyebrow>
           <h2 className="font-display uppercase text-display-lg">
-            Un projet, de bout en bout<span aria-hidden className="text-clay-500">.</span>
+            Un projet, de bout en bout
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h2>
           <p className="max-w-2xl text-body text-ink-500">
-            Le template demande huit sections. Aucune étude de cas n'est encore rédigée :
-            le squelette est posé, marqué à fournir.
+            Le template demande huit sections. Aucune étude de cas n'est encore rédigée : le
+            squelette est posé, marqué à fournir.
           </p>
         </div>
 
@@ -44,8 +47,8 @@ export function EtudesCas() {
             Étude de cas à fournir
           </p>
           <p className="mx-auto mt-2 max-w-xl text-body text-ink-500">
-            Client, année, challenge, contenus, diffusion et résultats seront fournis par
-            la maison, puis validés avant publication.
+            Client, année, challenge, contenus, diffusion et résultats seront fournis par la maison,
+            puis validés avant publication.
           </p>
         </div>
 

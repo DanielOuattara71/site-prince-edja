@@ -8,7 +8,8 @@ const utile = (texte: string) => texte.length >= 100 && texte.length <= 220
 
 describe('descriptions de référencement', () => {
   it('épisodes', () => {
-    for (const episode of EPISODES) expect(utile(descriptionEpisode(episode)), episode.slug).toBe(true)
+    for (const episode of EPISODES)
+      expect(utile(descriptionEpisode(episode)), episode.slug).toBe(true)
   })
 
   it('pièces de la boutique', () => {

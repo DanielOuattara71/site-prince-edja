@@ -40,7 +40,9 @@ export function Collaborations() {
           title={
             <>
               Collaboration
-              <span aria-hidden className="text-clay-500">.</span>
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </>
           }
         />

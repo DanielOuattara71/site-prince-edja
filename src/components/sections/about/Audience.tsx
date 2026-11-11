@@ -33,54 +33,59 @@ export function Audience() {
         <div className="space-y-2">
           <Eyebrow>L’audience</Eyebrow>
           <h2 className="font-display uppercase text-display-lg">
-            Qui écoute<span aria-hidden className="text-clay-500">.</span>
+            Qui écoute
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h2>
         </div>
 
         {/* Cadre défilant : à 390 px la colonne « Validé le » débordait de la page
             (audit V2-07). Focusable pour qu'on le fasse défiler au clavier. */}
         {LIGNES.length > 0 && (
-        <div
-          role="region"
-          aria-label="Audience par plateforme"
-          tabIndex={0}
-          // `relative` : le texte `sr-only` des cellules vides est positionné en absolu ;
-          // sans ancêtre positionné, il sortait du cadre et élargissait la page à 390 px.
-          className="relative overflow-x-auto"
-        >
-        <table className="w-full min-w-xl border-t border-sand-200 text-left">
-          <thead>
-            <tr className="label-caps text-ink-500">
-              <th scope="col" className="py-3 pr-4">
-                Plateforme
-              </th>
-              <th scope="col" className="py-3 pr-4">
-                Abonnés
-              </th>
-              <th scope="col" className="py-3 pr-4">
-                Portée mensuelle
-              </th>
-              <th scope="col" className="py-3">
-                Validé le
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {LIGNES.map((ligne) => (
-              <tr key={ligne.plateforme} className="border-t border-sand-200">
-                <td className="py-4 pr-4 text-body text-ink-900">{ligne.plateforme}</td>
-                <td className="py-4 pr-4 text-body text-ink-500 tnum">
-                  {ligne.taille === null ? <NonCommunique /> : formatNombre(ligne.taille)}
-                </td>
-                <td className="py-4 pr-4 text-body text-ink-500 tnum">
-                  {ligne.portee === null ? <NonCommunique /> : formatNombre(ligne.portee)}
-                </td>
-                <td className="py-4 text-caption text-ink-500">{ligne.date ?? <NonCommunique />}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
+          <div
+            role="region"
+            aria-label="Audience par plateforme"
+            tabIndex={0}
+            // `relative` : le texte `sr-only` des cellules vides est positionné en absolu ;
+            // sans ancêtre positionné, il sortait du cadre et élargissait la page à 390 px.
+            className="relative overflow-x-auto"
+          >
+            <table className="w-full min-w-xl border-t border-sand-200 text-left">
+              <thead>
+                <tr className="label-caps text-ink-500">
+                  <th scope="col" className="py-3 pr-4">
+                    Plateforme
+                  </th>
+                  <th scope="col" className="py-3 pr-4">
+                    Abonnés
+                  </th>
+                  <th scope="col" className="py-3 pr-4">
+                    Portée mensuelle
+                  </th>
+                  <th scope="col" className="py-3">
+                    Validé le
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {LIGNES.map((ligne) => (
+                  <tr key={ligne.plateforme} className="border-t border-sand-200">
+                    <td className="py-4 pr-4 text-body text-ink-900">{ligne.plateforme}</td>
+                    <td className="py-4 pr-4 text-body text-ink-500 tnum">
+                      {ligne.taille === null ? <NonCommunique /> : formatNombre(ligne.taille)}
+                    </td>
+                    <td className="py-4 pr-4 text-body text-ink-500 tnum">
+                      {ligne.portee === null ? <NonCommunique /> : formatNombre(ligne.portee)}
+                    </td>
+                    <td className="py-4 text-caption text-ink-500">
+                      {ligne.date ?? <NonCommunique />}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
         {PROFILS.length > 0 && (

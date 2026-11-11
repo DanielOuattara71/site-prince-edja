@@ -109,9 +109,7 @@ export function BijouLightbox({ pieces, index, onChangeIndex }: Props) {
                 <p className="label-caps text-cream-100/60">
                   N° {piece.numero} · {piece.culture}
                 </p>
-                <p className="font-display text-heading-sm uppercase text-cream-100">
-                  {piece.nom}
-                </p>
+                <p className="font-display text-heading-sm uppercase text-cream-100">{piece.nom}</p>
               </div>
 
               {/* Barre unique : navigation groupée d'un côté, retour de l'autre. C'est le

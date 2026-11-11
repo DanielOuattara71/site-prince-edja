@@ -1,34 +1,39 @@
 /**
  * Couche d'accès — projets, épisodes, villes, destinations, archive (PLAN-DE-LANCEMENT S1, S2).
  *
- * Mode API : projets, épisodes et destinations viennent de `GET /public/api/v1/contenus/<type>`,
- * chargés à la construction. Restent lus dans `src/data/` (non chargés en S2) : villes, partenaires
- * et programme Taste & Travel, archive.
- * Le tracé de la Côte d'Ivoire (`coteIvoire`) n'est pas un contenu administrable : c'est un fond de
- * carte (Natural Earth), servi d'ici pour que tout passe par la couche.
+ * Mode API : projets, épisodes, destinations, villes et archive viennent de
+ * `GET /public/api/v1/contenus/<type>`, chargés à la construction. Le tracé de la Côte d'Ivoire
+ * (`coteIvoire`) n'est pas un contenu administrable : c'est un fond de carte (Natural Earth).
  */
 import { EPISODES as EPISODES_DEPART } from '@/data/content'
 import { DESTINATIONS as DESTINATIONS_DEPART, type Destination } from '@/data/destinations'
 import { PROJETS as PROJETS_DEPART, type Projet } from '@/data/projets'
+import { TRAVEL_CITIES as TRAVEL_CITIES_DEPART } from '@/data/content'
+import type { TravelCity } from '@/types'
+import { ARCHIVE as ARCHIVE_DEPART, type EntreeArchive } from '@/data/archive'
 import type { Episode } from '@/types'
 import {
+  versArchive,
   versDestinations,
   versEpisode,
   versProjet,
+  versVille,
+  type ArchivePublique,
   type ArticlePublic,
   type CheminsContenus,
   type DestinationPublique,
   type EpisodePublic,
   type ProjetPublic,
+  type VillePublic,
 } from './adaptateurs'
 import { lireGenere, SOURCE_API } from './source'
 
 export { FILTRES_PROJETS } from '@/data/projets'
 export type { Projet, StatutProjet } from '@/data/projets'
-export { TRAVEL_CITIES, TRAVEL_PARTNERS, TRAVEL_PROGRAMME } from '@/data/content'
+export { TRAVEL_PARTNERS, TRAVEL_PROGRAMME } from '@/data/content'
 export { CADRE_CARTE } from '@/data/destinations'
 export type { Destination } from '@/data/destinations'
-export { ARCHIVE, NAVIGATION_ARCHIVE, publiable } from '@/data/archive'
+export { NAVIGATION_ARCHIVE, publiable } from '@/data/archive'
 export type { Fiabilite, EntreeArchive } from '@/data/archive'
 export { default as coteIvoire } from '@/data/geo/cote-ivoire.json'
 
@@ -62,3 +67,11 @@ export const PROJETS: Projet[] = SOURCE_API
 export const DESTINATIONS: Destination[] = SOURCE_API
   ? versDestinations(lireGenere<DestinationPublique[]>('destinations'), SLUGS_EPISODES)
   : DESTINATIONS_DEPART
+
+export const TRAVEL_CITIES: TravelCity[] = SOURCE_API
+  ? lireGenere<VillePublic[]>('villes').map(versVille)
+  : TRAVEL_CITIES_DEPART
+
+export const ARCHIVE: EntreeArchive[] = SOURCE_API
+  ? lireGenere<ArchivePublique[]>('archive').map(versArchive)
+  : ARCHIVE_DEPART

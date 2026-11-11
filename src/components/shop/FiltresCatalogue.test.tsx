@@ -39,11 +39,17 @@ const pages = Math.ceil(total / 12)
 describe('catalogue paginé', () => {
   it('12 produits en page 1, compteur et « Page 1 sur N »', () => {
     rendre()
-    expect(screen.getByRole('heading', { level: 3, name: new RegExp(`${total} produits`) })).toBeTruthy()
+    expect(
+      screen.getByRole('heading', { level: 3, name: new RegExp(`${total} produits`) }),
+    ).toBeTruthy()
     expect(screen.getAllByText(`Page 1 sur ${pages}`).length).toBeGreaterThan(0)
     const nav = screen.getByRole('navigation', { name: 'Pagination' })
-    expect(within(nav).getByRole('link', { name: 'Page 1' }).getAttribute('aria-current')).toBe('page')
-    expect(within(nav).getByRole('link', { name: 'Page 2' }).getAttribute('href')).toBe('/boutique?page=2')
+    expect(within(nav).getByRole('link', { name: 'Page 1' }).getAttribute('aria-current')).toBe(
+      'page',
+    )
+    expect(within(nav).getByRole('link', { name: 'Page 2' }).getAttribute('href')).toBe(
+      '/boutique?page=2',
+    )
     expect(adresse).toBe('')
   })
 
@@ -66,7 +72,9 @@ describe('catalogue paginé', () => {
     fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'livre' } })
     await waitFor(() => expect(adresse).toBe('?type=livre'))
     const livres = CATALOGUE.filter((p) => p.type === 'livre').length
-    expect(screen.getByRole('heading', { level: 3, name: new RegExp(`${livres} produits`) })).toBeTruthy()
+    expect(
+      screen.getByRole('heading', { level: 3, name: new RegExp(`${livres} produits`) }),
+    ).toBeTruthy()
   })
 
   it('un changement de tri revient aussi à la page 1', async () => {
@@ -79,7 +87,9 @@ describe('catalogue paginé', () => {
     rendre('?q=introuvable-zzz')
     expect(screen.getByText('Aucun produit ne correspond à ces filtres.')).toBeTruthy()
     expect(screen.queryByRole('navigation', { name: 'Pagination' })).toBeNull()
-    fireEvent.click(screen.getAllByRole('button', { name: 'Effacer les filtres' })[0] as HTMLElement)
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Effacer les filtres' })[0] as HTMLElement,
+    )
     await waitFor(() => expect(adresse).toBe(''))
   })
 

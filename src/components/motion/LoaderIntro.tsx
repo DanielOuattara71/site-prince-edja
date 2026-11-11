@@ -20,27 +20,37 @@ type Phase = 'words' | 'brand'
 
 export function LoaderIntro() {
   const reducedMotion = useReducedMotion()
-  const [done, setDone] = useState(() => reducedMotion === true || introAlreadyPlayed())
+  // Même rendu serveur et client : le chargeur est toujours affiché à l'hydratation,
+  // puis retiré en effet si l'intro a déjà été jouée (lecture de localStorage côté client).
+  const [done, setDone] = useState(false)
   const [phase, setPhase] = useState<Phase>('words')
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
-    if (done) return
-
-    const timers: ReturnType<typeof setTimeout>[] = []
-    SITE.tagline.forEach((_, i) => {
-      if (i > 0) timers.push(setTimeout(() => setIndex(i), i * WORD_MS))
-    })
-    timers.push(
-      setTimeout(() => setPhase('brand'), SITE.tagline.length * WORD_MS),
-      setTimeout(() => {
-        markIntroDone()
+    // Même rendu à l'hydratation ; la lecture de localStorage (intro déjà jouée) et
+    // les minuteries de la séquence s'installent à la première frame.
+    const minuter: { actifs: ReturnType<typeof setTimeout>[] } = { actifs: [] }
+    const frame = requestAnimationFrame(() => {
+      if (reducedMotion === true || introAlreadyPlayed()) {
         setDone(true)
-      }, TOTAL_MS),
-    )
-
-    return () => timers.forEach(clearTimeout)
-  }, [done])
+        return
+      }
+      SITE.tagline.forEach((_, i) => {
+        if (i > 0) minuter.actifs.push(setTimeout(() => setIndex(i), i * WORD_MS))
+      })
+      minuter.actifs.push(
+        setTimeout(() => setPhase('brand'), SITE.tagline.length * WORD_MS),
+        setTimeout(() => {
+          markIntroDone()
+          setDone(true)
+        }, TOTAL_MS),
+      )
+    })
+    return () => {
+      cancelAnimationFrame(frame)
+      minuter.actifs.forEach(clearTimeout)
+    }
+  }, [done, reducedMotion])
 
   useEffect(() => {
     const onReplay = () => {
@@ -93,7 +103,10 @@ export function LoaderIntro() {
                 className="font-quote italic text-body-lg text-cream-100/85"
               >
                 {SITE.tagline[index]}
-                <span aria-hidden className="text-gold-400"> …</span>
+                <span aria-hidden className="text-gold-400">
+                  {' '}
+                  …
+                </span>
               </motion.p>
             ) : (
               <motion.h2
@@ -104,7 +117,9 @@ export function LoaderIntro() {
                 className="font-display uppercase text-heading-md tracking-wide text-cream-100"
               >
                 {SITE.name}
-                <span aria-hidden className="text-clay-500">.</span>
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </motion.h2>
             )}
           </AnimatePresence>

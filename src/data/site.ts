@@ -13,12 +13,7 @@ import type { SiteInfo } from '@/types'
  */
 const DARK_TOP_EXACTES = ['/', '/boutique']
 
-const DARK_TOP_PREFIXES = [
-  '/xplore',
-  '/taste-and-travel',
-  '/histoires',
-  '/archive-afrique',
-]
+const DARK_TOP_PREFIXES = ['/xplore', '/taste-and-travel', '/histoires', '/archive-afrique']
 
 export function isDarkTop(pathname: string): boolean {
   if (DARK_TOP_EXACTES.includes(pathname)) return true
@@ -31,8 +26,7 @@ export const SITE: SiteInfo = {
   signature: 'Griot 2.0 · Storyteller · Explorer',
   manifeste: 'Je raconte l’Afrique que je vis, pas celle qu’on m’a racontée.',
   tagline: ['Raconter', 'Transmettre', 'Voyager'],
-  devise:
-    'Faire voyager les regards. Faire vivre les cultures. Faire grandir la mémoire.',
+  devise: 'Faire voyager les regards. Faire vivre les cultures. Faire grandir la mémoire.',
   mission:
     '« Briser les clichés, préserver la mémoire et faire du tourisme un pont entre les peuples. »',
   bio: [

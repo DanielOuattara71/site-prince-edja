@@ -8,6 +8,7 @@ import {
   VERSION_CONSENTEMENT,
   type IntentionNewsletter,
 } from '@/lib/newsletter'
+import { adresseApi, envoyerNewsletter } from '@/lib/formulaire'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionHeading } from '@/components/ui/SectionHeading'
@@ -17,8 +18,6 @@ interface Props {
   compact?: boolean
   className?: string
 }
-
-
 
 /** Consentement rétrospectif : horodaté au moment de l'acceptation, avec la version
  *  du texte et la page d'origine — la trace légale du consentement. */
@@ -31,12 +30,48 @@ function consentementDu(): IntentionNewsletter['consentement'] {
 }
 
 export function BlocNewsletter({ compact = false, className }: Props) {
-  const { t } = useLangue()
+  const { t, langue } = useLangue()
   const [prenom, setPrenom] = useState('')
   const [email, setEmail] = useState('')
   const [pays, setPays] = useState('')
   const [consentement, setConsentement] = useState(false)
   const [envoye, setEnvoye] = useState(false)
+  const [envoi, setEnvoi] = useState(false)
+  const [echec, setEchec] = useState(false)
+
+  /** Envoi de l'inscription. Sans API configurée (REPLI documenté) : l'intention est gardée côté
+   *  maison (localStorage), en flou ; avec l'API : `POST` réel (contrat § 18), e-mail de
+   *  confirmation envoyé par la maison — aucun envoi n'est simulé, l'échec est annoncé. */
+  async function sInscrire(entree: { email: string; prenom?: string; pays?: string }) {
+    if (envoi) return
+    const intention: IntentionNewsletter = {
+      email: entree.email,
+      ...(entree.prenom ? { prenom: entree.prenom } : {}),
+      ...(entree.pays ? { pays: entree.pays } : {}),
+      consentement: consentementDu(),
+    }
+    if (adresseApi() === null) {
+      consignerIntention(intention)
+      marquerInscrit(intention)
+      setEnvoye(true)
+      return
+    }
+    setEnvoi(true)
+    setEchec(false)
+    const ok = await envoyerNewsletter(
+      intention,
+      t('newsletter.consentement'),
+      window.location.pathname,
+      langue,
+    )
+    setEnvoi(false)
+    if (ok) {
+      marquerInscrit(intention)
+      setEnvoye(true)
+    } else {
+      setEchec(true)
+    }
+  }
 
   const valide = prenom.trim() !== '' && emailValide(email) && consentement
   // La variante compacte ne demande qu'un email : exiger `prenom`, qu'elle n'affiche
@@ -56,6 +91,11 @@ export function BlocNewsletter({ compact = false, className }: Props) {
               {t('newsletter.confirmeCompact')}
             </p>
           ) : null}
+          {echec ? (
+            <p className="text-caption font-semibold text-cream-100">
+              {t('newsletter.inscriptionEchoue')}
+            </p>
+          ) : null}
         </div>
         {!envoye && (
           <form
@@ -63,12 +103,7 @@ export function BlocNewsletter({ compact = false, className }: Props) {
             onSubmit={(evenement) => {
               evenement.preventDefault()
               if (!valideCompact) return
-              consignerIntention({
-                email,
-                consentement: consentementDu(),
-              })
-              marquerInscrit({ email, consentement: consentementDu() })
-              setEnvoye(true)
+              void sInscrire({ email })
             }}
           >
             <input
@@ -93,7 +128,7 @@ export function BlocNewsletter({ compact = false, className }: Props) {
 
             <button
               type="submit"
-              disabled={!valideCompact}
+              disabled={!valideCompact || envoi}
               className="inline-flex min-h-11 items-center rounded-full bg-cream-100 px-5 text-caption font-semibold text-night-900 transition-opacity duration-(--d-fast) disabled:opacity-50"
             >
               {t('newsletter.cta')}
@@ -109,12 +144,18 @@ export function BlocNewsletter({ compact = false, className }: Props) {
       {/* `data-bloc-newsletter` : la page porte déjà une invitation pleine, la fenêtre
           surgissante s'efface (FenetreNewsletter, audit AUD-016). La version compacte du
           pied de page ne le pose pas. */}
-      <div data-bloc-newsletter className="rounded-xl border border-sand-200 bg-sand-100 p-8 lg:p-10">
+      <div
+        data-bloc-newsletter
+        className="rounded-xl border border-sand-200 bg-sand-100 p-8 lg:p-10"
+      >
         <SectionHeading
           eyebrow="La lettre du griot"
           title={
             <>
-              Recevoir la lettre<span aria-hidden className="text-clay-500">.</span>
+              Recevoir la lettre
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </>
           }
           lead={PROMESSE_NEWSLETTER}
@@ -128,14 +169,7 @@ export function BlocNewsletter({ compact = false, className }: Props) {
             onSubmit={(evenement) => {
               evenement.preventDefault()
               if (!valide) return
-              consignerIntention({
-                email,
-                prenom,
-                pays,
-                consentement: consentementDu(),
-              })
-              marquerInscrit({ email, prenom, pays, consentement: consentementDu() })
-              setEnvoye(true)
+              void sInscrire({ email, prenom, pays })
             }}
           >
             <div className="grid gap-4 sm:grid-cols-3">
@@ -170,6 +204,12 @@ export function BlocNewsletter({ compact = false, className }: Props) {
               </label>
             </div>
 
+            {echec ? (
+              <p role="alert" className="text-caption font-semibold text-clay-700">
+                {t('newsletter.inscriptionEchoue')}
+              </p>
+            ) : null}
+
             <label className="flex items-baseline gap-3 text-caption text-ink-500">
               <input
                 type="checkbox"
@@ -178,14 +218,12 @@ export function BlocNewsletter({ compact = false, className }: Props) {
                 onChange={(evenement) => setConsentement(evenement.target.checked)}
                 className="mt-0.5 size-4 shrink-0"
               />
-              <span>
-                {t('newsletter.consentement')}
-              </span>
+              <span>{t('newsletter.consentement')}</span>
             </label>
 
             <button
               type="submit"
-              disabled={!valide}
+              disabled={!valide || envoi}
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-night-900 px-6 text-button font-semibold text-cream-100 transition-opacity duration-(--d-fast) hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t('newsletter.cta')}

@@ -58,7 +58,9 @@ export default function AboutPage() {
               <Eyebrow>Prince Edja</Eyebrow>
               <h1 className="font-display uppercase text-display-lg">
                 Raconter l’Afrique depuis l’Afrique
-                <span aria-hidden className="text-clay-500">.</span>
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </h1>
               <p className="max-w-xl text-body-lg text-ink-500">{SITE.role}</p>
 
@@ -135,7 +137,11 @@ export default function AboutPage() {
                 'Consultant en marketing touristique',
               ],
               email: `mailto:${SITE.email}`,
-              address: { '@type': 'PostalAddress', addressLocality: 'Abidjan', addressCountry: 'CI' },
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Abidjan',
+                addressCountry: 'CI',
+              },
               sameAs: [SITE.linkedin],
               award: [
                 ...MILESTONES.filter((m) => m.periode >= '2024').map((m) => m.titre),
@@ -157,7 +163,10 @@ export default function AboutPage() {
               <Eyebrow>Le parcours</Eyebrow>
               <Reveal>
                 <h2 className="font-display uppercase text-display-lg">
-                  Onze ans au service du récit<span aria-hidden className="text-clay-500">.</span>
+                  Onze ans au service du récit
+                  <span aria-hidden className="text-clay-500">
+                    .
+                  </span>
                 </h2>
               </Reveal>
             </div>
@@ -193,11 +202,7 @@ export default function AboutPage() {
         </Container>
       </Section>
 
-      <Section
-        tone="light"
-        className="relative isolate scroll-mt-32 bg-sand-150"
-        id="engagements"
-      >
+      <Section tone="light" className="relative isolate scroll-mt-32 bg-sand-150" id="engagements">
         <Container className="relative space-y-8">
           {/* Le cauri scelle les engagements : mémoire, transmission, image du
               continent. Il se pose à droite du titre, au-dessus des cartes. */}
@@ -210,7 +215,10 @@ export default function AboutPage() {
           <div className="space-y-2">
             <Eyebrow>Ce que je défends</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
-              Cinq engagements<span aria-hidden className="text-clay-500">.</span>
+              Cinq engagements
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h2>
           </div>
           <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -239,11 +247,14 @@ export default function AboutPage() {
           <div className="space-y-2">
             <Eyebrow>Collaborer</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
-              Parlons de votre projet<span aria-hidden className="text-clay-500">.</span>
+              Parlons de votre projet
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h2>
             <p className="max-w-2xl text-body text-ink-500">
-              Entreprise, pays, type de collaboration, calendrier, budget optionnel et
-              message. L'équipe répond directement.
+              Entreprise, pays, type de collaboration, calendrier, budget optionnel et message.
+              L'équipe répond directement.
             </p>
           </div>
           <FormulaireB2B />

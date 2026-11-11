@@ -61,45 +61,43 @@ function Card({ d }: { d: Distinction }) {
             Le gabarit garde son titre visible en permanence : il ne le répète donc
             pas dans le voile. */}
         <>
-            <span
-              aria-hidden
-              className="absolute inset-0 bg-night-900/55 opacity-0 transition-opacity duration-(--d-base) group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100 motion-reduce:transition-none"
-            />
-            <span
-              aria-hidden
-              className="absolute inset-x-6 top-6 h-px origin-left scale-x-0 bg-gold-400 transition-transform duration-(--d-base) ease-expo group-hover:scale-x-100 group-focus-within:scale-x-100 pointer-coarse:scale-x-100 motion-reduce:transition-none"
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 p-6">
-              <div className="translate-y-2 opacity-0 transition-all duration-(--d-base) ease-expo group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 pointer-coarse:translate-y-0 pointer-coarse:opacity-100 motion-reduce:transition-none">
-                <p className="label-caps flex items-center gap-2 text-cream-100">
-                  <span aria-hidden className="size-1.5 rounded-full bg-gold-400" />
-                  {d.delivreePar ?? 'Distinction'}
-                </p>
-                {!placeholder && (
-                  <h3 className="mt-2 font-display uppercase text-heading-sm leading-[0.95] text-cream-100">
-                    {d.titre}
-                  </h3>
-                )}
-                <p className="mt-2 text-caption leading-relaxed text-cream-100/75">
-                  {d.description}
-                </p>
-                {d.url && (
-                  <a
-                    href={d.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="pointer-events-auto mt-3 inline-flex min-h-11 items-center gap-1.5 text-caption font-semibold text-cream-100 underline-offset-4 hover:text-gold-400 hover:underline"
-                  >
-                    Voir la source →
-                  </a>
-                )}
-              </div>
+          <span
+            aria-hidden
+            className="absolute inset-0 bg-night-900/55 opacity-0 transition-opacity duration-(--d-base) group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100 motion-reduce:transition-none"
+          />
+          <span
+            aria-hidden
+            className="absolute inset-x-6 top-6 h-px origin-left scale-x-0 bg-gold-400 transition-transform duration-(--d-base) ease-expo group-hover:scale-x-100 group-focus-within:scale-x-100 pointer-coarse:scale-x-100 motion-reduce:transition-none"
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 p-6">
+            <div className="translate-y-2 opacity-0 transition-all duration-(--d-base) ease-expo group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 pointer-coarse:translate-y-0 pointer-coarse:opacity-100 motion-reduce:transition-none">
+              <p className="label-caps flex items-center gap-2 text-cream-100">
+                <span aria-hidden className="size-1.5 rounded-full bg-gold-400" />
+                {d.delivreePar ?? 'Distinction'}
+              </p>
+              {!placeholder && (
+                <h3 className="mt-2 font-display uppercase text-heading-sm leading-[0.95] text-cream-100">
+                  {d.titre}
+                </h3>
+              )}
+              <p className="mt-2 text-caption leading-relaxed text-cream-100/75">{d.description}</p>
+              {d.url && (
+                <a
+                  href={d.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="pointer-events-auto mt-3 inline-flex min-h-11 items-center gap-1.5 text-caption font-semibold text-cream-100 underline-offset-4 hover:text-gold-400 hover:underline"
+                >
+                  Voir la source →
+                </a>
+              )}
             </div>
-            {!placeholder && (
-              <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-cream-100/80 px-3 py-1 text-caption font-semibold tracking-wide text-ink-700 opacity-0 backdrop-blur transition group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100 motion-reduce:transition-none">
-                Cliquer pour agrandir
-              </span>
-            )}
+          </div>
+          {!placeholder && (
+            <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-cream-100/80 px-3 py-1 text-caption font-semibold tracking-wide text-ink-700 opacity-0 backdrop-blur transition group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100 motion-reduce:transition-none">
+              Cliquer pour agrandir
+            </span>
+          )}
         </>
       </div>
 
@@ -160,7 +158,6 @@ function Agrandissement({ d, onFermer }: { d: Distinction; onFermer: () => void 
   )
 }
 
-
 /**
  * Entête de la section. Fourni par la page appelante : « Des moments qui comptent »
  * convient à la presse, pas à la page À propos, qui parle des distinctions.
@@ -172,7 +169,9 @@ function Entete({ titre, lead }: { titre?: string; lead?: string }) {
       <Eyebrow>Mes distinctions</Eyebrow>
       <h2 className="mt-4 max-w-3xl font-display uppercase text-display-lg">
         {titre}
-        <span aria-hidden className="text-clay-500">.</span>
+        <span aria-hidden className="text-clay-500">
+          .
+        </span>
       </h2>
       {lead && <p className="mt-3 max-w-2xl text-body-lg text-ink-500">{lead}</p>}
     </div>
@@ -201,7 +200,12 @@ export function DistinctionsCarousel({ distinctions, titre, lead, className }: P
     if (!el) return
     const target = Math.max(0, Math.min(items.length - 1, i))
     const child = el.children[target] as HTMLElement | undefined
-    if (child) child.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', inline: 'center', block: 'nearest' })
+    if (child)
+      child.scrollIntoView({
+        behavior: reduced ? 'auto' : 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      })
     setIndex(target)
   }
 
@@ -225,7 +229,7 @@ export function DistinctionsCarousel({ distinctions, titre, lead, className }: P
 
   if (!items.length) {
     return (
-      <section aria-label="Mes distinctions" className={cn("section-y bg-sand-50", className)}>
+      <section aria-label="Mes distinctions" className={cn('section-y bg-sand-50', className)}>
         <Container>
           <p className="text-ink-500">Aucune distinction ajoutée.</p>
         </Container>
@@ -235,7 +239,7 @@ export function DistinctionsCarousel({ distinctions, titre, lead, className }: P
 
   if (reduced) {
     return (
-      <section aria-label="Mes distinctions" className={cn("section-y bg-sand-50", className)}>
+      <section aria-label="Mes distinctions" className={cn('section-y bg-sand-50', className)}>
         <Container>
           <Entete titre={titre} lead={lead} />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -249,7 +253,10 @@ export function DistinctionsCarousel({ distinctions, titre, lead, className }: P
   }
 
   return (
-    <section aria-label="Mes distinctions" className={cn("section-y overflow-hidden bg-sand-50", className)}>
+    <section
+      aria-label="Mes distinctions"
+      className={cn('section-y overflow-hidden bg-sand-50', className)}
+    >
       <Container>
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
@@ -311,11 +318,18 @@ export function DistinctionsCarousel({ distinctions, titre, lead, className }: P
 
           <Reveal delay={0.22} y={12} className="mt-6 flex items-center justify-center gap-3">
             <span className="tnum font-display text-caption tracking-wide text-ink-500">
-              {String(index + 1).padStart(2, '0')} <span className="text-ink-500">/ {String(items.length).padStart(2, '0')}</span>
+              {String(index + 1).padStart(2, '0')}{' '}
+              <span className="text-ink-500">/ {String(items.length).padStart(2, '0')}</span>
             </span>
             <span aria-hidden className="flex gap-1.5">
               {items.map((_, i) => (
-                <span key={i} className={cn('h-1.5 rounded-full transition-all', i === index ? 'w-6 bg-clay-600' : 'w-1.5 bg-sand-200')} />
+                <span
+                  key={i}
+                  className={cn(
+                    'h-1.5 rounded-full transition-all',
+                    i === index ? 'w-6 bg-clay-600' : 'w-1.5 bg-sand-200',
+                  )}
+                />
               ))}
             </span>
           </Reveal>

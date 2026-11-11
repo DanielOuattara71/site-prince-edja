@@ -84,9 +84,7 @@ export default function ShopPage() {
     const piste = rail.current
     if (!piste) return
     const premiere = piste.firstElementChild
-    const largeur = premiere
-      ? premiere.getBoundingClientRect().width + 3
-      : piste.clientWidth * 0.75
+    const largeur = premiere ? premiere.getBoundingClientRect().width + 3 : piste.clientWidth * 0.75
     piste.scrollBy({ left: sens * largeur, behavior: 'smooth' })
   }
 
@@ -97,29 +95,25 @@ export default function ShopPage() {
         dessus. C'est le ressort magazine. Les voiles sont ce qui rend le texte crème
         lisible sur une image dont on ne maîtrise pas la densité.
       */}
-      <Section
-        tone="dark"
-        padded={false}
-        className="relative overflow-hidden bg-forest-950"
-      >
+      <Section tone="dark" padded={false} className="relative overflow-hidden bg-forest-950">
         <HeroCouverture />
 
         <Container className="relative z-10 flex min-h-[78svh] flex-col justify-end pb-20 pt-32 lg:min-h-[86svh] lg:pb-28">
           <div className="space-y-6">
-            <Eyebrow tone="dark">
-              Chaque bijou est une histoire
-            </Eyebrow>
+            <Eyebrow tone="dark">Chaque bijou est une histoire</Eyebrow>
             <h1 className="font-display uppercase text-display-xl leading-[0.92] text-cream-100">
               Chaque bijou
               <br />
               est une histoire
-              <span aria-hidden className="text-clay-500">.</span>
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h1>
             <Reveal delay={0.15}>
               <p className="max-w-xl text-body-lg text-cream-100/75">
-                Un passeport culturel façonné à la main par des artisans ivoiriens.
-                Bronze, laiton et argent deviennent un langage contemporain inspiré
-                des héritages d'Afrique de l'Ouest.
+                Un passeport culturel façonné à la main par des artisans ivoiriens. Bronze, laiton
+                et argent deviennent un langage contemporain inspiré des héritages d'Afrique de
+                l'Ouest.
               </p>
             </Reveal>
           </div>
@@ -173,11 +167,7 @@ export default function ShopPage() {
                 delay={Math.min(index, 4) * 0.06}
                 className="w-[calc(50vw-1px)] shrink-0 snap-start sm:w-[calc(25vw-1px)]"
               >
-                <BijouCard
-                  bijou={bijou}
-                  image={VISUEL_TEST_CARTE}
-                  imageAlt={ALT_TEST_CARTE}
-                />
+                <BijouCard bijou={bijou} image={VISUEL_TEST_CARTE} imageAlt={ALT_TEST_CARTE} />
               </Reveal>
             ))}
           </div>
@@ -218,11 +208,7 @@ export default function ShopPage() {
           la boutique, pas au footer global. */}
       <div aria-hidden className="h-20 bg-sand-50 sm:h-24" />
 
-      <GalerieLightbox
-        images={GALERIE_SHOP}
-        index={galerieIndex}
-        onChangeIndex={setGalerieIndex}
-      />
+      <GalerieLightbox images={GALERIE_SHOP} index={galerieIndex} onChangeIndex={setGalerieIndex} />
     </>
   )
 }

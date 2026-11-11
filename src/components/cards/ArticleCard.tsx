@@ -38,7 +38,9 @@ export function ArticleCard({ article, featured = false, priority = false }: Art
       />
       <div className={featured ? 'space-y-4' : 'mt-5 flex flex-1 flex-col space-y-3'}>
         <div className="flex flex-wrap items-center gap-3">
-          <Tag tone={article.slug === 'afrique-multitude-de-mondes' ? 'sage' : 'light'}>{article.categorie}</Tag>
+          <Tag tone={article.slug === 'afrique-multitude-de-mondes' ? 'sage' : 'light'}>
+            {article.categorie}
+          </Tag>
           {article.statut === 'à venir' && <Badge statut={article.statut} />}
         </div>
         {(article.date || article.lecture) && (

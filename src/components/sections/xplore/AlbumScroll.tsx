@@ -1,5 +1,11 @@
 import { useRef, useState } from 'react'
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import {
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from 'motion/react'
 import { MoveRight } from 'lucide-react'
 import { EPISODES } from '@/acces/projets'
 import type { Episode } from '@/types'
