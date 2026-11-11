@@ -269,6 +269,12 @@ Six histoires. », « Six étapes, une saison »). Justes pour la saison 1 ; fau
 ajouté ou retiré dans l'admin. À rendre administrables (textes d'interface) ou à reformuler sans
 nombre ?
 
+
+**Question 39** (métier, M-01 tranché) : les traductions anglaises sont **objectif** du projet
+(client, 11/11/2026). La `LangueSwitcher` existe déjà côté site public et l'admin porte les
+auxiliaires anglais, mais **aucun contenu éditorial n'est produit en anglais pour l'instant** et
+aucun texte EN ne sera généré à la place d'un texte vérifié par la maison.
+
 **Question 38** (contrat) : pour la demande de pièces d'Edja Shop, `POST /demandes` exige
 `varianteIds` (UUID). Or la vue publique du contrat (§ 18.1, question 13) n'expose **aucun**
 identifiant de produit ni de variante : la demande ne peut pas être branchée depuis le site.
