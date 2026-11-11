@@ -93,7 +93,39 @@ const CONTENUS = [
   'jalons',
   'partenaires',
   'offres',
+  'villes',
+  'archive',
+  'univers',
+  'galerie',
+  'pages-legales',
 ] as const
+
+const imagePubliqueJson = z.object({
+  url: z.string(),
+  alt: z.string(),
+  largeur: z.number().nullable().optional(),
+  hauteur: z.number().nullable().optional(),
+  declinaisons: z.array(z.object({ largeur: z.number(), url: z.string() })),
+})
+
+/** Photos fixes du site (`GET /public/api/v1/photos-fixes`, contrat § 18, § 22.4). */
+const schPhotosFixes = z.object({
+  items: z.array(
+    z.object({
+      cle: z.string(),
+      libelle: z.string(),
+      formatConseille: z.string().nullable(),
+      image: imagePubliqueJson.nullable(),
+    }),
+  ),
+})
+
+/** Réglages publics (`GET /public/api/v1/reglages`, contrat § 18). */
+const schReglages = z.object({
+  boutiqueEnLigne: z.boolean(),
+  multiVendeurs: z.boolean(),
+  languesActives: z.array(z.string()),
+})
 
 export interface ReglagesCharger {
   /** Adresse de base de l'API publique (`https://api.…`). */
@@ -187,6 +219,17 @@ export async function chargerDepuisApi(reglages: ReglagesCharger): Promise<Rappo
     `${JSON.stringify([...fiches.values()], null, 2)}\n`,
   )
   comptes['produits'] = fiches.size
+
+  const photosFixees = await lire('/photos-fixes', schPhotosFixes)
+  await writeFile(
+    resolve(DOSSIER, 'photos-fixes.json'),
+    `${JSON.stringify(photosFixees.items, null, 2)}\n`,
+  )
+  comptes['photos-fixes'] = photosFixees.items.length
+
+  const regle = await lire('/reglages', schReglages)
+  await writeFile(resolve(DOSSIER, 'reglages.json'), `${JSON.stringify(regle, null, 2)}\n`)
+  comptes['reglages'] = Object.keys(regle).length
 
   const rapport: RapportChargement = {
     source: API,

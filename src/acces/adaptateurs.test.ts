@@ -2,17 +2,22 @@ import { describe, expect, it } from 'vitest'
 import {
   cheminDeCible,
   datePartielle,
+  versArchive,
   versArticle,
   versCategories,
   versDestinations,
   versDistinction,
   versEpisode,
+  versGalerie,
   versJalon,
   versOffre,
+  versPageLegale,
   versPartenaire,
   versPresse,
   versProduit,
   versProjet,
+  versUnivers,
+  versVille,
   type ProduitPublic,
   type ProjetPublic,
 } from './adaptateurs'
@@ -250,5 +255,112 @@ describe('adaptateurs de la vue publique (S2)', () => {
       },
     })
     expect(versProduit({ ...produit, prixConfirme: false }).commerce?.prix).toBeNull()
+  })
+})
+
+describe('villes, archive, univers, galerie, pages légales (S2, lot 2)', () => {
+  it('ville : nom/intention de la traduction, image publique', () => {
+    expect(
+      versVille({
+        id: 'v1',
+        image,
+        traduction: { nom: 'Exemple : Conakry', intention: 'Exemple : intention.' },
+      }),
+    ).toMatchObject({
+      nom: 'Exemple : Conakry',
+      intention: 'Exemple : intention.',
+      image: image.url,
+      tags: { format: 'destination', projet: 'TASTE_TRAVEL' },
+    })
+  })
+
+  it('archive : fiabilite normalisée, sources conservées, texte vide tant que non rempli', () => {
+    expect(
+      versArchive({
+        id: 'a1',
+        slug: 'exemple-marche',
+        categorie: 'Marché',
+        fiabilite: 'memoire_orale',
+        epoque: '1970',
+        sources: [
+          { libelle: 'Exemple : source orale', url: null, type: 'orale' },
+          { libelle: 'Exemple : source écrite', url: 'https://exemple.test', type: 'ecrite' },
+        ],
+        traduction: { titre: 'Exemple : marché de Grand-Bassam', texte: 'Exemple : texte.' },
+      }),
+    ).toMatchObject({
+      slug: 'exemple-marche',
+      titre: 'Exemple : marché de Grand-Bassam',
+      categorie: 'Marché',
+      texte: 'Exemple : texte.',
+      fiabilite: 'memoire orale',
+      epoque: '1970',
+      sources: ['Exemple : source orale', 'Exemple : source écrite'],
+    })
+    expect(
+      versArchive({
+        id: 'a2',
+        slug: 'x',
+        categorie: 'x',
+        fiabilite: null,
+        epoque: null,
+        sources: [],
+      }),
+    ).toMatchObject({ sources: [], fiabilite: undefined })
+  })
+
+  it('univers : numéro, titre, destination (page fixe) saut si brisée', () => {
+    expect(
+      versUnivers({
+        id: 'u1',
+        numero: '02',
+        cible: { type: 'page', cle: 'xplore' },
+        traduction: { nom: 'Exemple : explorateur', pitch: 'Exemple : pitch.' },
+      }),
+    ).toMatchObject({ numero: '02', nom: 'Exemple : explorateur', to: '/xplore' })
+    expect(
+      versUnivers({ id: 'u2', numero: '01', cible: null, traduction: { nom: 'Exemple : griot' } })
+        .to,
+    ).toBe('#')
+  })
+
+  it('galerie : image publique, ratio relayée, lien externe marqué', () => {
+    expect(
+      versGalerie({
+        id: 'g1',
+        emplacement: 'accueil',
+        image,
+        lienExterne: 'https://exemple.test',
+        cible: null,
+        ratio: '4/3',
+        parallaxe: 5,
+        ordre: 1,
+        traduction: { etiquette: 'Bouaké' },
+      }),
+    ).toMatchObject({
+      src: image.url,
+      alt: image.alt,
+      ratio: '4/3',
+      speed: 5,
+      to: 'https://exemple.test',
+      label: 'Bouaké',
+      external: true,
+    })
+  })
+
+  it('page légale : chemin, famille, titre ; sections laissées vides', () => {
+    expect(
+      versPageLegale({
+        id: 'pl1',
+        cle: 'confidentialite',
+        traduction: { titre: 'Exemple : confidentialité', resume: 'Exemple : resume.' },
+      }),
+    ).toMatchObject({
+      chemin: '/confidentialite',
+      famille: 'Informations légales',
+      titre: { fr: 'Exemple : confidentialité' },
+      resume: { fr: 'Exemple : resume.' },
+      sections: [],
+    })
   })
 })

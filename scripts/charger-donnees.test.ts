@@ -86,16 +86,20 @@ function fetchSimule(appels: string[]) {
       return reponseJson({ items: [], page, pageSize: 100, total: 0 })
     }
     if (chemin.startsWith('/public/api/v1/categories')) return reponseJson([])
-    if (chemin === '/public/api/v1/boutique/produits') {
-      // Page 2 répète le bijou de la page 1 (cas B-66 avant UNION) : le chargeur dédouble.
-      const items = page === 1 ? [produitBijou, produitLivre] : [produitBijou]
-      return reponseJson({ items, page, pageSize: 48, total: 2, totalPages: 2 })
-    }
     if (chemin.startsWith('/public/api/v1/boutique/produits/pendentif-a')) {
       return reponseJson(ficheDe(produitBijou))
     }
     if (chemin.startsWith('/public/api/v1/boutique/produits/livre-b')) {
       return reponseJson(ficheDe(produitLivre))
+    }
+    if (chemin === '/public/api/v1/photos-fixes') return reponseJson({ items: [] })
+    if (chemin === '/public/api/v1/reglages') {
+      return reponseJson({ boutiqueEnLigne: false, multiVendeurs: false, languesActives: ['fr'] })
+    }
+    if (chemin === '/public/api/v1/boutique/produits') {
+      // Page 2 répète le bijou de la page 1 (cas B-66 avant UNION) : le chargeur dédouble.
+      const items = page === 1 ? [produitBijou, produitLivre] : [produitBijou]
+      return reponseJson({ items, page, pageSize: 48, total: 2, totalPages: 2 })
     }
     throw new Error(`Appel inattendu : ${url}`)
   }

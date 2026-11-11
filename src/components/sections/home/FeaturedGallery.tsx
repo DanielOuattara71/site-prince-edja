@@ -30,9 +30,17 @@ function GalleryCard({ item, className }: { item: GalleryItem; className?: strin
   )
 }
 
-export function FeaturedGallery() {
-  const [itemA, itemB, itemC, itemD, itemE, itemWide] = GALLERY
+/** Colonnes de chaque item de la galerie (6 maximum, sur 12). */
+const SPANS_GALERIE = [
+  'lg:col-span-7',
+  'lg:col-span-7',
+  'lg:col-span-5',
+  'lg:col-span-5',
+  'lg:col-span-7',
+  'lg:col-span-12',
+] as const
 
+export function FeaturedGallery() {
   return (
     <section aria-label="Galerie" data-curseur="galerie" className="section-y bg-sand-50">
       {/* La galerie est pleine largeur : elle sort du `Container` (max-w-7xl) pour
@@ -91,27 +99,15 @@ export function FeaturedGallery() {
           </div>
         </Reveal>
 
-        <Reveal delay={0.08} className="lg:col-span-7">
-          <GalleryCard item={itemA} className="h-full" />
-        </Reveal>
-
-        <Reveal className="lg:col-span-7">
-          <GalleryCard item={itemB} />
-        </Reveal>
-        <Reveal delay={0.08} className="lg:col-span-5">
-          <GalleryCard item={itemC} className="h-full" />
-        </Reveal>
-
-        <Reveal className="lg:col-span-5">
-          <GalleryCard item={itemD} className="h-full" />
-        </Reveal>
-        <Reveal delay={0.08} className="lg:col-span-7">
-          <GalleryCard item={itemE} />
-        </Reveal>
-
-        <Reveal className="lg:col-span-12">
-          <GalleryCard item={itemWide} />
-        </Reveal>
+        {GALLERY.slice(0, SPANS_GALERIE.length).map((item, index) => (
+          <Reveal
+            key={`${item.src}-${index}`}
+            delay={index % 2 ? 0.08 : 0}
+            className={SPANS_GALERIE[index] ?? undefined}
+          >
+            <GalleryCard item={item} className="h-full" />
+          </Reveal>
+        ))}
       </div>
 
       <Reveal className="relative z-10 mx-auto -mt-14 max-w-[80rem] px-4 sm:px-6">
