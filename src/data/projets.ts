@@ -1,4 +1,3 @@
-
 /**
  * Les projets de la page « Histoires » (CDC T-301 à T-304).
  *
@@ -55,8 +54,7 @@ export const PROJETS: Projet[] = [
     categorie: 'Tourisme',
     template: 'programme',
     titre: 'Taste & Travel',
-    accroche:
-      'Émission gastronomique et culturelle : la table comme premier poste frontière.',
+    accroche: 'Émission gastronomique et culturelle : la table comme premier poste frontière.',
     format: 'Émission',
     annee: '',
     pays: ['Côte d’Ivoire'],
@@ -113,7 +111,8 @@ export const PROJETS: Projet[] = [
     categorie: 'Patrimoine',
     template: 'bibliotheque',
     titre: 'Archive d’Afrique',
-    accroche: 'Bibliothèque de mémoires : personnages, événements, traditions, objets et récits oraux.',
+    accroche:
+      'Bibliothèque de mémoires : personnages, événements, traditions, objets et récits oraux.',
     format: 'Archive',
     annee: '',
     pays: [],

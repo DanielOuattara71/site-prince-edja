@@ -155,7 +155,9 @@ export function FiltresCatalogue() {
         <Eyebrow>{l({ fr: 'Le catalogue', en: 'The catalogue' })}</Eyebrow>
         <h2 className="font-display uppercase text-display-lg">
           L'univers de la mode et de la culture à votre porte
-          <span aria-hidden className="text-clay-500">.</span>
+          <span aria-hidden className="text-clay-500">
+            .
+          </span>
         </h2>
       </div>
 

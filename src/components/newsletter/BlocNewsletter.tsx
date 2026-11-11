@@ -18,8 +18,6 @@ interface Props {
   className?: string
 }
 
-
-
 /** Consentement rétrospectif : horodaté au moment de l'acceptation, avec la version
  *  du texte et la page d'origine — la trace légale du consentement. */
 function consentementDu(): IntentionNewsletter['consentement'] {
@@ -109,12 +107,18 @@ export function BlocNewsletter({ compact = false, className }: Props) {
       {/* `data-bloc-newsletter` : la page porte déjà une invitation pleine, la fenêtre
           surgissante s'efface (FenetreNewsletter, audit AUD-016). La version compacte du
           pied de page ne le pose pas. */}
-      <div data-bloc-newsletter className="rounded-xl border border-sand-200 bg-sand-100 p-8 lg:p-10">
+      <div
+        data-bloc-newsletter
+        className="rounded-xl border border-sand-200 bg-sand-100 p-8 lg:p-10"
+      >
         <SectionHeading
           eyebrow="La lettre du griot"
           title={
             <>
-              Recevoir la lettre<span aria-hidden className="text-clay-500">.</span>
+              Recevoir la lettre
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </>
           }
           lead={PROMESSE_NEWSLETTER}
@@ -178,9 +182,7 @@ export function BlocNewsletter({ compact = false, className }: Props) {
                 onChange={(evenement) => setConsentement(evenement.target.checked)}
                 className="mt-0.5 size-4 shrink-0"
               />
-              <span>
-                {t('newsletter.consentement')}
-              </span>
+              <span>{t('newsletter.consentement')}</span>
             </label>
 
             <button

@@ -84,9 +84,7 @@ export function PanneauDemande({ ouvert, onFermer }: { ouvert: boolean; onFermer
                     className="w-20 shrink-0 overflow-hidden rounded-md bg-sand-200"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="label-caps text-ink-900">
-                      {piece.nom}
-                    </p>
+                    <p className="label-caps text-ink-900">{piece.nom}</p>
                     <p className="mt-1 text-caption text-ink-500">
                       {piece.commerce?.prix != null && piece.commerce.prixConfirme
                         ? formatFCFA(piece.commerce.prix)
@@ -134,7 +132,10 @@ export function PanneauDemande({ ouvert, onFermer }: { ouvert: boolean; onFermer
             </button>
           )}
           <p className="sr-only">
-            {l({ fr: 'Aucune transaction n’a lieu sur ce site.', en: 'No transaction happens on this site.' })}
+            {l({
+              fr: 'Aucune transaction n’a lieu sur ce site.',
+              en: 'No transaction happens on this site.',
+            })}
           </p>
         </div>
       </div>

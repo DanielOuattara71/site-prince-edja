@@ -41,9 +41,7 @@ export default function TasteTravelPage() {
 
         <Container>
           <div className="max-w-3xl space-y-6">
-            <Eyebrow tone="dark">
-              Film · Gastronomie · Afrique
-            </Eyebrow>
+            <Eyebrow tone="dark">Film · Gastronomie · Afrique</Eyebrow>
             <h1 className="font-display uppercase text-display-lg">Taste & Travel</h1>
             <Reveal delay={0.1}>
               <blockquote className="border-l-2 border-gold-400 pl-6 font-quote italic leading-snug text-heading-sm text-cream-100 sm:text-heading-md">
@@ -53,9 +51,9 @@ export default function TasteTravelPage() {
             <Reveal delay={0.18}>
               <p className="max-w-2xl text-body-lg text-cream-100/70">
                 Un programme de voyage et de gastronomie porté par Prince Edja : hospitalité,
-                cuisine, culture urbaine et rencontres humaines entre Abidjan, Dakar et Conakry.
-                Une narration premium pour montrer comment les saveurs deviennent une porte
-                d’entrée vers les peuples et les territoires.
+                cuisine, culture urbaine et rencontres humaines entre Abidjan, Dakar et Conakry. Une
+                narration premium pour montrer comment les saveurs deviennent une porte d’entrée
+                vers les peuples et les territoires.
               </p>
             </Reveal>
           </div>
@@ -100,10 +98,7 @@ export default function TasteTravelPage() {
                   <Reveal key={word} delay={index * 0.1}>
                     <p className="font-display uppercase text-display-lg">
                       {word}
-                      <span
-                        aria-hidden
-                        className={index === 2 ? 'text-clay-500' : 'text-gold-400'}
-                      >
+                      <span aria-hidden className={index === 2 ? 'text-clay-500' : 'text-gold-400'}>
                         .
                       </span>
                     </p>
@@ -114,9 +109,9 @@ export default function TasteTravelPage() {
             <Reveal delay={0.15} className="self-end lg:col-span-7">
               <div className="space-y-7">
                 <p className="max-w-xl text-body-lg text-cream-100/70">
-                  Un film conçu pour voyager sur les écrans, dans les festivals, au sein des
-                  hôtels et auprès de tous ceux qui veulent découvrir une Afrique contemporaine
-                  et désirable.
+                  Un film conçu pour voyager sur les écrans, dans les festivals, au sein des hôtels
+                  et auprès de tous ceux qui veulent découvrir une Afrique contemporaine et
+                  désirable.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {TRAVEL_PROGRAMME.map((item) => (
@@ -135,7 +130,9 @@ export default function TasteTravelPage() {
                 <p className="label-caps text-gold-400">Diffusion & partenariats</p>
                 <h2 className="font-display uppercase text-heading-md">
                   Projeter Taste & Travel
-                  <span aria-hidden className="text-clay-500">.</span>
+                  <span aria-hidden className="text-clay-500">
+                    .
+                  </span>
                 </h2>
                 <p className="text-body text-cream-100/70">
                   Festivals, hôtels, institutions : invitez le film sur votre écran ou associez

@@ -130,7 +130,8 @@ export function obtenirProduits(
   const tries = [...filtres].sort(comparer(demande.tri ?? 'nouveautes'))
   const total = tries.length
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
-  const demandee = demande.page && Number.isInteger(demande.page) && demande.page >= 1 ? demande.page : 1
+  const demandee =
+    demande.page && Number.isInteger(demande.page) && demande.page >= 1 ? demande.page : 1
   const page = Math.min(demandee, totalPages)
 
   // Effectifs sur le catalogue complet (même filtré).

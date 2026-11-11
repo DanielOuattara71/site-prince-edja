@@ -26,7 +26,7 @@ export default function EpisodeDetailPage() {
   useSeo({
     title: episode
       ? `${episode.titre} · ${episode.lieu} · X'PLORE`
-      : 'Épisode · X\'PLORE Côte d’Ivoire',
+      : "Épisode · X'PLORE Côte d’Ivoire",
     description: episode ? descriptionEpisode(episode) : undefined,
   })
 
@@ -84,9 +84,7 @@ export default function EpisodeDetailPage() {
           <Eyebrow num={episode.numero} tone="dark">
             Film · {episode.lieu}
           </Eyebrow>
-          <h1 className="font-display uppercase text-display-lg text-cream-100">
-            {episode.titre}
-          </h1>
+          <h1 className="font-display uppercase text-display-lg text-cream-100">{episode.titre}</h1>
           <p className="max-w-2xl text-body-lg text-cream-100/80">{episode.pitch}</p>
           <p className="label-caps text-cream-100/60">
             {['Documentaire', episode.tags.annee, episode.tags.pays?.[0]]
@@ -103,7 +101,9 @@ export default function EpisodeDetailPage() {
             <Eyebrow>Territoire</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               {episode.lieu}
-              <span aria-hidden className="text-clay-500">.</span>
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h2>
           </div>
           <TerritoireEpisode lieu={episode.lieu} />
@@ -118,9 +118,7 @@ export default function EpisodeDetailPage() {
               <div className="flex flex-col items-start justify-between gap-6 rounded-xl border border-sand-200 bg-sand-50 p-8 sm:flex-row sm:items-center">
                 <div className="space-y-2">
                   <Eyebrow>Carnet</Eyebrow>
-                  <h2 className="font-display uppercase text-heading-md">
-                    Le guide de l’étape
-                  </h2>
+                  <h2 className="font-display uppercase text-heading-md">Le guide de l’étape</h2>
                 </div>
                 <Button href={episode.guide} external variant="dark">
                   Télécharger le guide
@@ -137,7 +135,9 @@ export default function EpisodeDetailPage() {
             <Eyebrow>Ce projet</Eyebrow>
             <h2 className="font-display uppercase text-display-lg">
               Le voir, le programmer, le soutenir
-              <span aria-hidden className="text-clay-500">.</span>
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h2>
           </div>
 

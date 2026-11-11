@@ -5,7 +5,13 @@ import { X } from 'lucide-react'
 import { PROMESSE_NEWSLETTER } from '@/acces/site'
 import { Button } from '@/components/ui/Button'
 import { SectionHeading } from '@/components/ui/SectionHeading'
-import { estInscrit, emailValide, consignerIntention, marquerInscrit, VERSION_CONSENTEMENT } from '@/lib/newsletter'
+import {
+  estInscrit,
+  emailValide,
+  consignerIntention,
+  marquerInscrit,
+  VERSION_CONSENTEMENT,
+} from '@/lib/newsletter'
 import { useLangue } from '@/i18n/contexteLangue'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { usePiegeFocus } from '@/hooks/usePiegeFocus'
@@ -175,7 +181,9 @@ export function FenetreNewsletter() {
                   title={
                     <>
                       {t('newsletter.titreLongue')}
-                      <span aria-hidden className="text-clay-500">.</span>
+                      <span aria-hidden className="text-clay-500">
+                        .
+                      </span>
                     </>
                   }
                 />

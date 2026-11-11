@@ -1,7 +1,7 @@
 # PROMPT DE CORRECTION — Admin et back end de Prince EDJA
 
 > **Mode d'emploi (pour Yann, ne fait pas partie du prompt).**
-> 1. Donne à l'IA, dans cet ordre : ce fichier, puis `DOCUMENTATION-GUIDE-IA-PRINCE-EDJA.md`, puis le dossier du projet (admin et back end).
+> 1. Donne à l'IA, dans cet ordre : ce fichier, puis `DOCUMENTATION-GUIDE-IA-PRINCE-EDJA.md`, `SCHEMAS-ENTITES-PRINCE-EDJA.md`, `ECRANS-ADMIN-PRINCE-EDJA.md` et `LIAISON-ET-GUIDE-DE-DEPOT-PRINCE-EDJA.md`, puis le dossier du projet (admin et back end). **En cas de contradiction : SCHEMAS (données) et ECRANS-ADMIN (écrans) l'emportent sur ce fichier.**
 > 2. Elle doit répondre **uniquement par l'étape C0** (état des lieux). Lis sa réponse, puis dis « continue » pour chaque étape suivante.
 > 3. À chaque étape, les tests doivent être verts avant de passer à la suivante.
 > 4. Rien n'est supprimé avant l'étape C9, et seulement si tu le confirmes.
@@ -75,8 +75,8 @@ Le menu reste déclaré à **un seul endroit** (`navigation.ts`), avec une struc
 |---|---|---|
 | **Tableau de bord** | — (`/`) | Voir 6, U10. |
 | **Journal** | Articles (`/articles`) | Ancien « Journal » d'audit renommé en « Activité ». |
-| **Projets** | Projets (`/projets`), Épisodes (`/episodes`), Destinations (`/destinations`), Villes (`/villes`), Archive (`/archive`) | Le champ « guide PDF » est déjà sur la destination et sur l'épisode. Archive d'Afrique : voir 5.4. |
-| **Boutique** | Bijoux (`/bijoux`), Catégories (`/categories`), Créateurs (`/createurs`) | Les créateurs sont **toujours visibles**. Les comptes vendeur restent conditionnés à `multiVendeurs`. |
+| **Projets** | **Pas d'onglets** : l'entrée ouvre un **hub** (voir 5.6, conforme à la photo de référence). Depuis le hub : listes Projets (`/projets`), Épisodes (`/episodes`), Destinations (`/destinations`), Guides PDF, et — sous réserve de validation (ECRANS E1) — Villes (`/villes`), Archive (`/archive`) | Le champ « guide PDF » est déjà sur la destination et sur l'épisode. Archive d'Afrique : voir 5.4. |
+| **Boutique** | Bijoux (`/bijoux`), **Livres** (`/livres`, nouveau), Catégories (`/categories`, trois sections), Créateurs (`/createurs`) | Les créateurs sont **toujours visibles**. Les comptes vendeur restent conditionnés à `multiVendeurs`. |
 | **Médiathèque** | Tous les fichiers (`/medias`), Sur le site (`/galerie`, voir 5.3) | Un seul endroit pour les photos. |
 | **Preuves et presse** | Audience (`/audience`), Distinctions (`/distinctions`), Presse (`/presse`), Partenaires (`/partenaires`) | Alimente la section « Preuves » de l'accueil. |
 | **Boîte de réception** | Messages (`/messages`), Demandes (`/demandes`), Abonnés (`/abonnes`) | L'onglet Abonnés ne change pas (voir 9). |
@@ -95,6 +95,14 @@ Règles : un texte alternatif est exigé pour chaque langue active avant d'assig
 ### 5.4 Archive d'Afrique
 
 L'entité `archive_entree` (avec ses sources) **reste en place**. Dans l'admin, elle devient un onglet **« Archive »** du groupe Projets. On n'ajoute pas d'entrée de menu. Ne fusionne pas `archive_entree` dans `projet`. Le format « Archive » du projet existe déjà (enum `format_projet`) et décrit la mise en page publique d'un projet, pas ses entrées.
+
+### 5.6 Hub « Projets » (référence : la photo fournie par Yann)
+
+Le hub reproduit **exactement** ce que décrit `ECRANS-ADMIN-PRINCE-EDJA.md` §3.1 : deux cartes « Créer un projet » (sous-titre « Contenu, affiche, format, template ») et « Créer un épisode » (« Affiche, synopsis, vidéo, destination ») ; le bloc « Moteur de rendu public » avec les cartes Template Série (X'PLORE), Template Documentaire (Production indépendante), Template Émission (Programme), Template Archive (Patrimoine audiovisuel) et la carte Épisode (« Template unique d'épisode — Utilisé par tous les projets ») ; le bloc « Données partagées » avec les puces Destinations et Guides PDF. Les libellés ne sont **pas reformulés**. Le mot « Template » reste tel quel. Les modèles ne sont pas éditables. Le modèle d'un projet se **déduit de son format** (SCHEMAS §5.1) : aucun champ « template » n'est créé.
+
+### 5.7 Écrans, schémas et pagination (documents de référence)
+
+Chaque écran suit `ECRANS-ADMIN-PRINCE-EDJA.md` (zones, champs, états). Chaque entité suit `SCHEMAS-ENTITES-PRINCE-EDJA.md`. Tu n'ajoutes ni champ ni écran qui n'y figure pas. Les **catégories** couvrent trois familles (articles, projets, produits) ; les **produits** sont des bijoux **et** des livres ; la **boutique publique est paginée** (SCHEMAS §12).
 
 ### 5.5 Ce qui sort du menu et des routes
 
@@ -256,6 +264,14 @@ Yann n'a pas encore choisi entre :
 
 **C1 — Cloudinary** : sections 7.1 et 7.2. Livrable : tests verts, `.env.exemple` à jour, mise en ligne simulée en développement.
 
+**D1 — Catégories (après C1)** : SCHEMAS §3 : colonne `famille`, unicité par famille et langue, amorçage des 8 catégories d'articles et des 8 de produits, `article.categorie_id` avec rapprochement du texte libre, `projet.categorie_id`, règles RG-29 à RG-31, endpoint `GET /public/api/v1/categories?famille=`. Livrable : migrations (montée et descente testées), tests de service, rapport de rapprochement des articles existants (combien rattachés, combien « à compléter »).
+
+**D2 — Projets et épisodes** : SCHEMAS §5 et §6 : `projet_traduction.contenu`, `episode.projet_id`, rapprochement des épisodes existants, RG-32, `projetSlug` dans l'API publique des épisodes. Livrable : migrations, tests, rapport du rapprochement.
+
+**D3 — Livres, variantes, catalogue** : SCHEMAS §8 : table `livre` (+ traduction, galerie, étiquettes), `variante.livre_id` et contrainte XOR (RG-33), sécurité par ligne, vue `produit_catalogue`, endpoints admin `/livres`. Livrable : migrations, tests de cloisonnement vendeur sur les livres, tests de la contrainte.
+
+**D4 — API publique paginée** : SCHEMAS §12.2 : `GET /public/api/v1/boutique/produits` et détail, tri stable, `totalPages`, catégories non vides avec effectifs, RG-34 sur toutes les listes publiques. Livrable : tests (page hors limite, tri « sur demande » en dernier, produit non publié exclu).
+
 **C2 — Menu et groupes d'écrans** : sections 5.1, 5.2, 5.5 (retrait du menu et des routes, pas des fichiers) et 4 (renommage « Journal » / « Activité »). Livrable : 9 entrées, onglets, redirection de `/journal` vers `/activite`, test de navigation par rôle (éditeur, admin, super-admin, vendeur).
 
 **C3 — Formulaires** : U2, U3, U5. Livrable : un seul sélecteur de langue, slug replié, vocabulaire corrigé.
@@ -267,6 +283,10 @@ Yann n'a pas encore choisi entre :
 **C6 — Médiathèque et photos du site** : 5.3, 7.3, U9. Livrable : migration, API, faux serveur, onglet « Sur le site », tests de permissions et de cloisonnement (section 10).
 
 **C7 — Tableau de bord, mobile, accueil** : U10, U11, U12 et 5.4 (onglet Archive).
+
+**E1 — Hub Projets et écrans de contenu** : 5.6, 5.7 et `ECRANS-ADMIN` §2, §3, §4 : hub conforme à la photo, listes avec catégorie, édition d'article avec catégorie, édition de projet (format, catégorie), épisode avec projet, écran Livres, écran Catégories à trois sections. Faux serveur mis à jour. Livrable : parcours navigable, tests des écrans, captures d'écran du hub à comparer à la photo.
+
+**E2 — Liaison** : `LIAISON-ET-GUIDE-DE-DEPOT` partie C, **côté back end seulement** : vérifier que chaque ligne du tableau C.3 correspond à une route existante ; créer les routes manquantes (`photos-fixes`, `reglages`, `categories`, `boutique/produits`) ; exposer des objets image complets. Livrable : tableau C.3 vérifié, tests de contrat.
 
 **C8 — Suppression douce (optionnelle)** : 7.5, sur confirmation seulement.
 
@@ -293,6 +313,10 @@ Yann n'a pas encore choisi entre :
 6. Suppression douce de 30 jours : souhaitée ?
 7. Les tests ignorés pour les ressources retirées : conserver ou supprimer en C9 ?
 8. Domaine personnalisé pour les médias (`MEDIA_PUBLIC_BASE_URL`) : oui ou non ?
+9. Catégories de projets : lesquelles (SCHEMAS Q1) ?
+10. Champs d'un livre et variantes multiples (SCHEMAS Q2, Q3).
+11. Puces Villes et Archive dans « Données partagées » du hub (ECRANS E1).
+12. Les « Guides » de la boutique : produits vendus ou guides PDF (SCHEMAS Q5) ?
 
 ## 15. Première réponse attendue
 

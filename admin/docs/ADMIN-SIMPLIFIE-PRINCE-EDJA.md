@@ -1,3 +1,5 @@
+> **Mise à jour** : le groupe Projets est désormais un **hub** (photo de référence), la Boutique contient **Livres** et des catégories par famille. Les écrans exacts sont dans `ECRANS-ADMIN-PRINCE-EDJA.md` ; ce document garde le « pourquoi » des 9 entrées.
+
 # Admin Prince EDJA — version simplifiée : entrées, rôle de chaque élément, expérience utilisateur
 
 Ce document remplace la liste de 33 entrées de la première version par **9 entrées**. Il sert de base au prompt de simplification pour l'IA de développement (admin et back end).

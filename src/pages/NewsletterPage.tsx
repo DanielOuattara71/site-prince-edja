@@ -53,9 +53,7 @@ export default function NewsletterPage({ vue }: { vue: VueNewsletter }) {
       <Container className="max-w-3xl space-y-8">
         <div className="space-y-4">
           <Eyebrow>{t('newsletter.titre')}</Eyebrow>
-          <h1 className="font-display uppercase text-display-lg">
-            {l(VUES[vue].titre)}
-          </h1>
+          <h1 className="font-display uppercase text-display-lg">{l(VUES[vue].titre)}</h1>
         </div>
 
         {vue === 'confirmation' && (

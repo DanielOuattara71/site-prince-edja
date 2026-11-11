@@ -49,7 +49,10 @@ export function Pagination({
   }
 
   return (
-    <nav aria-label="Pagination" className="flex items-center justify-between gap-2 sm:justify-center">
+    <nav
+      aria-label="Pagination"
+      className="flex items-center justify-between gap-2 sm:justify-center"
+    >
       {fleche(page - 1, t('pagination.precedent'), 'avant')}
       <p className="text-caption text-ink-700 sm:hidden">
         {t('pagination.page')} {page} {t('pagination.sur')} {totalPages}

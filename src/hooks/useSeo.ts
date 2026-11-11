@@ -35,11 +35,7 @@ export function useSeo({ title, description, indexable = true, requete = '' }: S
     }
 
     upsertMeta('property', 'og:title', title)
-    upsertMeta(
-      'name',
-      'robots',
-      indexable ? 'index, follow' : 'noindex, follow',
-    )
+    upsertMeta('name', 'robots', indexable ? 'index, follow' : 'noindex, follow')
 
     const url = window.location.origin + window.location.pathname + requete
     upsertMeta('property', 'og:url', url)

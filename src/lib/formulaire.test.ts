@@ -32,7 +32,13 @@ describe('corps envoyés (contrat § 18)', () => {
   it('contact : le motif vient du champ « demande », le piège s’appelle siteWeb', () => {
     expect(
       corpsContact(
-        donnees({ nom: ' Awa ', email: 'awa@exemple.org', demande: 'Presse', message: 'Bonjour', siteWeb: '' }),
+        donnees({
+          nom: ' Awa ',
+          email: 'awa@exemple.org',
+          demande: 'Presse',
+          message: 'Bonjour',
+          siteWeb: '',
+        }),
       ),
     ).toEqual({
       nom: 'Awa',
@@ -68,13 +74,22 @@ describe('corps envoyés (contrat § 18)', () => {
 describe('repli par e-mail (décision du client, § 8.1)', () => {
   const lire = (lien: string) => {
     const url = new URL(lien)
-    return { a: url.pathname, objet: url.searchParams.get('subject'), corps: url.searchParams.get('body') }
+    return {
+      a: url.pathname,
+      objet: url.searchParams.get('subject'),
+      corps: url.searchParams.get('body'),
+    }
   }
 
   it('contact : destinataire, objet et champs repris, rien de perdu', () => {
     const r = lire(
       emailContact(
-        donnees({ nom: 'Awa K.', email: 'awa@exemple.org', demande: 'Presse', message: 'Ligne 1\nLigne 2 & co' }),
+        donnees({
+          nom: 'Awa K.',
+          email: 'awa@exemple.org',
+          demande: 'Presse',
+          message: 'Ligne 1\nLigne 2 & co',
+        }),
         'contact@ohenetour.com',
       ),
     )
@@ -87,7 +102,14 @@ describe('repli par e-mail (décision du client, § 8.1)', () => {
   it('collaboration : budget absent → pas de ligne vide « Budget »', () => {
     const r = lire(
       emailCollaboration(
-        donnees({ 'b2b-entreprise': 'Maison', 'b2b-pays': 'CI', 'b2b-type': 'Campagne', 'b2b-calendrier': 'Mars', 'b2b-email': 'a@b.ci', 'b2b-message': 'Bonjour' }),
+        donnees({
+          'b2b-entreprise': 'Maison',
+          'b2b-pays': 'CI',
+          'b2b-type': 'Campagne',
+          'b2b-calendrier': 'Mars',
+          'b2b-email': 'a@b.ci',
+          'b2b-message': 'Bonjour',
+        }),
         'contact@ohenetour.com',
       ),
     )

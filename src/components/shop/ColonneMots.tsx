@@ -172,7 +172,9 @@ export function ColonneMots() {
               meure avec le bloc au lieu de le traverser de part en part. */}
           <div
             aria-hidden
-            className={'hidden w-px shrink-0 self-stretch bg-linear-to-b from-transparent via-gold-400/40 to-transparent lg:block'}
+            className={
+              'hidden w-px shrink-0 self-stretch bg-linear-to-b from-transparent via-gold-400/40 to-transparent lg:block'
+            }
           />
 
           <div className="w-full lg:w-auto">

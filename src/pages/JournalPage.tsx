@@ -51,11 +51,14 @@ export default function JournalPage() {
           <div className="max-w-3xl space-y-6">
             <Eyebrow>Le journal</Eyebrow>
             <h1 className="font-display uppercase text-display-lg">
-              Idées & récits<span aria-hidden className="text-clay-500">.</span>
+              Idées & récits
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h1>
             <p className="max-w-2xl text-body-lg text-ink-500">
-              Plus de trente pays. Une seule Afrique. Chaque voyage devient une rencontre, une
-              image et une histoire à transmettre.
+              Plus de trente pays. Une seule Afrique. Chaque voyage devient une rencontre, une image
+              et une histoire à transmettre.
             </p>
           </div>
 
@@ -84,7 +87,10 @@ export default function JournalPage() {
                 Tous les articles
               </button>
               {/* Les catégories de l'admin, visibles et non vides (src/lib/categories.ts). */}
-              {categoriesAffichees('article', ARTICLES.map((a) => a.categorie)).map(({ nom: categorie }) => (
+              {categoriesAffichees(
+                'article',
+                ARTICLES.map((a) => a.categorie),
+              ).map(({ nom: categorie }) => (
                 <button
                   key={categorie}
                   type="button"
@@ -121,12 +127,10 @@ export default function JournalPage() {
               </p>
             )}
           </div>
-
         </Container>
       </Section>
 
       <BlocNewsletter />
-
     </>
   )
 }

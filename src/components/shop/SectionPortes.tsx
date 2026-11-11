@@ -96,7 +96,9 @@ export function SectionPortes({ pieces }: { pieces: Bijou[] }) {
           <Eyebrow>Le porté</Eyebrow>
           <h2 className="font-display uppercase text-display-lg">
             Ce que la pièce devient sur vous
-            <span aria-hidden className="text-clay-500">.</span>
+            <span aria-hidden className="text-clay-500">
+              .
+            </span>
           </h2>
         </div>
 

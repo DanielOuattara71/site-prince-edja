@@ -71,11 +71,7 @@ function construireTuile(
 ): string {
   const motifs = placements
     .map((placement) =>
-      groupe(
-        placement,
-        placement.motif === 'symetrique-04' ? accent : principal,
-        hauteur,
-      ),
+      groupe(placement, placement.motif === 'symetrique-04' ? accent : principal, hauteur),
     )
     .join('')
 
@@ -130,10 +126,7 @@ export function AfricanPatternRibbon({ tone = 'light', className }: AfricanPatte
   return (
     <div
       aria-hidden
-      className={cn(
-        'ruban-motifs pointer-events-none h-11 w-full select-none sm:h-14',
-        className,
-      )}
+      className={cn('ruban-motifs pointer-events-none h-11 w-full select-none sm:h-14', className)}
       style={
         {
           '--ruban-desktop': RUBANS[tone].desktop,

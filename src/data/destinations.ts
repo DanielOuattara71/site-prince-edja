@@ -38,12 +38,12 @@ export interface Destination {
  * précis dans la ville.
  */
 const COORDONNEES: Record<string, { lat: number; lng: number }> = {
-  'Bouaké': { lat: 7.69, lng: -5.03 },
-  'Sassandra': { lat: 4.95, lng: -6.09 },
-  'Jacqueville': { lat: 5.2, lng: -4.42 },
-  'Taï': { lat: 5.87, lng: -7.45 },
-  'Tiassalé': { lat: 5.9, lng: -4.8 },
-  'Adiaké': { lat: 5.29, lng: -3.3 },
+  Bouaké: { lat: 7.69, lng: -5.03 },
+  Sassandra: { lat: 4.95, lng: -6.09 },
+  Jacqueville: { lat: 5.2, lng: -4.42 },
+  Taï: { lat: 5.87, lng: -7.45 },
+  Tiassalé: { lat: 5.9, lng: -4.8 },
+  Adiaké: { lat: 5.29, lng: -3.3 },
 }
 
 /** « N'Zi/Bouaké » du CDC se lit comme l'étape de Bouaké. */

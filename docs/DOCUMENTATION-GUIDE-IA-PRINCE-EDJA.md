@@ -142,13 +142,16 @@ sequenceDiagram
 |---|---|---|---|---|
 | Tableau de bord | — | `/` | `tableau-de-bord` | `tableau-de-bord` |
 | Journal | Articles | `/articles` | `articles` | `articles` |
-| Projets | Projets | `/projets` | `projets` | `editorial` |
+| Projets | **Hub** (pas d'onglets, voir ECRANS §3.1) | `/projets` (racine) | `projets` | `editorial` |
+| | Liste des projets (par format) | `/projets/liste` | `projets` | `editorial` |
 | | Épisodes | `/episodes` | `episodes` | `editorial` |
 | | Destinations | `/destinations` | `destinations` | `editorial` |
-| | Villes | `/villes` | `villes` | `editorial` |
-| | Archive | `/archive` | `archive` | `editorial` |
+| | Guides PDF | `/guides` | `medias` | `medias` |
+| | Villes (si validé) | `/villes` | `villes` | `editorial` |
+| | Archive (si validé) | `/archive` | `archive` | `editorial` |
 | Boutique | Bijoux | `/bijoux` | `bijoux` | `bijoux` |
-| | Catégories | `/categories` | `categories` | `categories` |
+| | Livres (nouveau) | `/livres` | `livres` | nouveau module |
+| | Catégories (articles, projets, produits) | `/categories` | `categories` | `categories` |
 | | Créateurs | `/createurs` | `createurs` | `createurs` |
 | Médiathèque | Tous les fichiers | `/medias` | `medias` | `medias` |
 | | Sur le site | `/galerie` | `galerie`, `emplacements-photos` | `editorial`, nouveau module |
@@ -169,6 +172,13 @@ sequenceDiagram
 > Les noms de ressource viennent de `src/auth/permissions.ts` de l'admin. Vérifie-les à l'étape C0 ; si l'un d'eux diffère de ce tableau, c'est le code qui fait foi et tu corriges ce document.
 
 **Ce qui est retiré de l'admin** (code conservé jusqu'à l'étape C9) : Navigation, Textes d'interface, Motifs de contact, Univers, Jalons, Offres, Études de cas, Pages du site, page de démonstration. Ces contenus vivent dans le code du site public et sont modifiés par le développeur.
+
+### Documents de référence associés
+- Données, catégories, produits (bijoux et livres), pagination : `SCHEMAS-ENTITES-PRINCE-EDJA.md`.
+- Écrans, champs, états : `ECRANS-ADMIN-PRINCE-EDJA.md`.
+- Lien site public ↔ admin, dépôt des fichiers, ordre des prompts : `LIAISON-ET-GUIDE-DE-DEPOT-PRINCE-EDJA.md`.
+- Le hub **Projets** reproduit la photo de référence de Yann : cartes « Créer un projet » / « Créer un épisode », bloc « Moteur de rendu public » (templates déduits du **format**), bloc « Données partagées ».
+- Trois familles de **catégories** (article, projet, produit) ; **produits = bijoux ou livres**, mêmes variantes et mêmes catégories ; la **boutique publique est paginée** (12 par page).
 
 ## 6. Vie d'un contenu
 
@@ -357,6 +367,10 @@ Dans ta réponse, tu distingues **ce que tu as vérifié** de **ce que tu suppos
 | D6 | Tables conservées, code conservé jusqu'à C9 | réversibilité |
 | D7 | Créateurs toujours visibles | chaque bijou a un créateur |
 | D8 | Multi-vendeurs préparé, verrouillé | choix du client |
-| D9 | Archive d'Afrique : onglet du groupe Projets, entité conservée | ne pas casser le modèle des sources |
+| D9 | Archive d'Afrique : entrée du groupe Projets, entité conservée | ne pas casser le modèle des sources |
+| D10 | Catégories par famille (article, projet, produit) dans une seule table | un mécanisme, trois usages |
+| D11 | Produits = bijoux + livres, variante partagée (un seul parent), vue `produit_catalogue` | une boutique, une pagination |
+| D12 | Le template d'un projet se déduit de son format | pas de champ en plus ; conforme à la photo |
+| D13 | API publique paginée dès maintenant ; pagination navigateur tant que < 300 produits | pas de refonte plus tard |
 
-**Questions ouvertes** (à poser à Yann, ne pas trancher seul) : fichiers R2 existants à migrer ? ; offre Cloudinary retenue ; liste exacte des emplacements de photos ; l'éditeur peut-il changer les photos fixes ? ; lettre d'information (Brevo ou onglet « Lettre ») ; suppression douce de 30 jours ; domaine personnalisé pour les médias.
+**Questions ouvertes** (à poser à Yann, ne pas trancher seul) : fichiers R2 existants à migrer ? ; offre Cloudinary retenue ; liste exacte des emplacements de photos ; l'éditeur peut-il changer les photos fixes ? ; lettre d'information (Brevo ou onglet « Lettre ») ; suppression douce de 30 jours ; domaine personnalisé pour les médias ; catégories de projets ; champs d'un livre ; puces Villes et Archive du hub.

@@ -862,3 +862,35 @@ activé : `left-0` ajouté. Prop `libelleCourt` pour les lignes de liste.
 - Restent sur les données de départ (non chargées) : identité, navigation, lettre d'information,
   univers, motifs de contact, audience, villes et programme Taste & Travel, archive, galeries.
 - Reste pour la porte G4 : le prérendu.
+
+### D-84 · Fichiers parasites de docs/ — Arrêtée (choix du client délégué à l'agent le 11/11/2026)
+
+Constat (A5 du PROMPT-SUITE) : `*:Zone.Identifier` (métadonnées Windows de zone) et des doublons
+« (1) »/« (2) » de documents de référence dans les deux dépôts.
+
+- **Zone.Identifier** : supprimés du disque dans les deux dépôts (27 côté site — 3 à la racine,
+  13 dans `docs/`, 11 dans `admin/docs/`… inventaire exact : 27 fichiers non suivis supprimés,
+  y compris `cauri-africain.svg:Zone.Identifier`, `motifs_africains_svg.zip:Zone.Identifier` et
+  `Contemplation sur la vallée*.png:Zone.Identifier` ; 11 supprimés dans le back end, `docs/`).
+  `*Zone.Identifier` ajouté aux deux `.gitignore`. Les 27 copies suivies par git (noms en U+F03A,
+  conversion macOS du « : ») apparaissent comme supprimées dans l'arbre ; la suppression sera
+  effective au prochain commit (A6, sur ordre).
+- **Doublons « documents de référence »** : les copies numérotées — plus récentes, décrivant
+  l'état livré (hub Projets, module Livres, catégories par famille) — promues en nom canonique :
+  `ADMIN-SIMPLIFIE-PRINCE-EDJA`, `DOCUMENTATION-GUIDE-IA-PRINCE-EDJA`, `PROMPT-CORRECTION-PRINCE-EDJA`
+  (la (2)), dans `docs/` **et** dans `admin/docs/`. Aucun contenu perdu : elles reprennent tout le
+  corps des bases, plus les mises à jour ; les bases restent dans l'historique git. Les
+  `PROMPT-CORRECTION-PRINCE-EDJA (1).md`, identiques octet pour octet à la base, supprimés.
+- **Même règle dans le back end** (`docs/` non suivi par git) : les copies numérotées y sont
+  identiques aux versions livrées à l'admin (diffs de formatage uniquement — tableaux alignés) ;
+  promues en nom canonique, le `PROMPT-CORRECTION (1).md` (identique à la base) supprimé. Les
+  anciennes bases du back end n'étaient pas suivies, mais reprennent le contenu des anciennes
+  versions, conservées dans l'historique git du site.
+- **Photos `ressources/photos_retouchees/ChatGPT Image 3 sept. 2026, 13_40_23 (1).png` et `(2).png`** :
+  conservées (photos réelles, hors documents de référence).
+- **Vérification « à jour »** : `git fetch` impossible depuis la machine (github.com injoignable) —
+  positions basées sur le dernier état connu. Toutes les branches locales suivies sont alignées
+  (site : `correctifs-site`, `new`, `recent`, `recent_11`, `recent_2`, `simplification-admin`, `unuse`,
+  `version_1..3` ; back end : `main`) ; `main` du site était 1 commit en retard, rattrapé par
+  avancement du ref vers `origin/main` (722365a), sans toucher l'arbre ni le réseau. La branche
+  `simplification-admin` du back end n'a **aucun upstream** : rien n'est jamais parti vers un remote.

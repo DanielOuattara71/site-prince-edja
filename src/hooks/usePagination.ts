@@ -55,7 +55,10 @@ function abonner(rappel: () => void) {
 export function useEcranLarge(): boolean {
   return useSyncExternalStore(
     abonner,
-    () => (typeof window !== 'undefined' && window.matchMedia ? window.matchMedia(REQUETE_LARGE).matches : false),
+    () =>
+      typeof window !== 'undefined' && window.matchMedia
+        ? window.matchMedia(REQUETE_LARGE).matches
+        : false,
     () => false,
   )
 }

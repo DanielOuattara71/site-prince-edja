@@ -73,9 +73,7 @@ export default function ArticlePage() {
 
           <div className="space-y-4">
             <Eyebrow>{article.categorie}</Eyebrow>
-            <h1 className="font-display uppercase text-display-lg text-balance">
-              {article.titre}
-            </h1>
+            <h1 className="font-display uppercase text-display-lg text-balance">{article.titre}</h1>
             <p className="text-body-lg text-ink-500">{article.extrait}</p>
             {(article.date || article.lecture) && (
               <p className="text-caption text-ink-500">
@@ -92,8 +90,8 @@ export default function ArticlePage() {
           <div className="space-y-2 rounded-xl border border-sand-200 bg-sand-100 p-6">
             <p className="label-caps text-ink-500">Rédaction en cours</p>
             <p className="text-body text-ink-700">
-              Cet article n'est pas encore publié. Il rejoindra le journal dès que sa
-              rédaction est terminée.
+              Cet article n'est pas encore publié. Il rejoindra le journal dès que sa rédaction est
+              terminée.
             </p>
           </div>
 
@@ -114,11 +112,12 @@ export default function ArticlePage() {
             <div className="space-y-2">
               <Eyebrow>À lire ensuite</Eyebrow>
               <h2 className="font-display uppercase text-display-lg">
-                Articles liés<span aria-hidden className="text-clay-500">.</span>
+                Articles liés
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </h2>
-              <p className="text-body text-ink-500">
-                Même thème, même pays ou même projet.
-              </p>
+              <p className="text-body text-ink-500">Même thème, même pays ou même projet.</p>
             </div>
             <Stagger className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
               {lies.map((autre) => (
@@ -130,7 +129,6 @@ export default function ArticlePage() {
       )}
 
       <BlocNewsletter />
-
     </>
   )
 }

@@ -5,29 +5,28 @@ import { MagneticButton } from '@/components/motion/MagneticButton'
 
 type ButtonVariant = 'primary' | 'dark' | 'ghost-light' | 'ghost-dark'
 
-const VARIANT_STYLES: Record<ButtonVariant, { button: string; fill: string; hoverText: string }> =
-  {
-    primary: {
-      button: 'bg-clay-600 text-cream-100',
-      fill: 'bg-clay-700',
-      hoverText: '',
-    },
-    dark: {
-      button: 'bg-ink-900 text-cream-100',
-      fill: 'bg-ink-700',
-      hoverText: '',
-    },
-    'ghost-light': {
-      button: 'border border-cream-100/50 text-cream-100',
-      fill: 'bg-cream-100',
-      hoverText: 'group-hover:text-ink-900',
-    },
-    'ghost-dark': {
-      button: 'border border-ink-900/40 text-ink-900',
-      fill: 'bg-ink-900',
-      hoverText: 'group-hover:text-cream-100',
-    },
-  }
+const VARIANT_STYLES: Record<ButtonVariant, { button: string; fill: string; hoverText: string }> = {
+  primary: {
+    button: 'bg-clay-600 text-cream-100',
+    fill: 'bg-clay-700',
+    hoverText: '',
+  },
+  dark: {
+    button: 'bg-ink-900 text-cream-100',
+    fill: 'bg-ink-700',
+    hoverText: '',
+  },
+  'ghost-light': {
+    button: 'border border-cream-100/50 text-cream-100',
+    fill: 'bg-cream-100',
+    hoverText: 'group-hover:text-ink-900',
+  },
+  'ghost-dark': {
+    button: 'border border-ink-900/40 text-ink-900',
+    fill: 'bg-ink-900',
+    hoverText: 'group-hover:text-cream-100',
+  },
+}
 
 interface ButtonProps {
   children: ReactNode

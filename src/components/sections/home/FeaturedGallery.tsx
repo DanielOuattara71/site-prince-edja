@@ -12,10 +12,7 @@ import type { GalleryItem } from '@/types'
 
 function GalleryCard({ item, className }: { item: GalleryItem; className?: string }) {
   return (
-    <Link
-      to={item.to}
-      className={cn('group relative block overflow-hidden rounded-md', className)}
-    >
+    <Link to={item.to} className={cn('group relative block overflow-hidden rounded-md', className)}>
       <ParallaxImage
         src={item.src}
         alt={item.alt}
@@ -48,7 +45,9 @@ export function FeaturedGallery() {
           title={
             <>
               Chaque image est une route
-              <span aria-hidden className="text-clay-500">.</span>
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </>
           }
           lead="Films, bijoux, portraits : un aperçu du voyage en images. Cliquez pour suivre la route."
@@ -56,65 +55,63 @@ export function FeaturedGallery() {
       </div>
 
       <div className="mx-auto mt-14 grid max-w-[80rem] gap-6 px-4 sm:px-6 lg:grid-cols-12">
-          <Reveal className="lg:col-span-5">
-            <div className="grain relative flex h-full flex-col gap-8 overflow-hidden rounded-xl bg-night-900 p-8 text-cream-100 lg:p-10">
-              {/*
+        <Reveal className="lg:col-span-5">
+          <div className="grain relative flex h-full flex-col gap-8 overflow-hidden rounded-xl bg-night-900 p-8 text-cream-100 lg:p-10">
+            {/*
                 Motif circulaire fourni, posé en crème très atténuée dans le coin libre
                 de la carte. `-z-10` : dans la carte (qui est déjà une pile isolée via
                 `grain`), il passe derrière le texte et le grain reste au-dessus.
               */}
-              <AfricanPattern
-                motif="circulaire-03"
-                couleur="var(--color-cream-100)"
-                opacite={0.07}
-                className="-right-6 -top-6 -z-10 h-28 w-28 lg:h-36 lg:w-36"
-              />
-              <p className="label-caps text-gold-400">Revue de presse</p>
-              <blockquote className="flex-1 font-quote italic leading-snug text-heading-sm">
-                {GALLERY_QUOTE.texte}
-              </blockquote>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <LazyImage
-                    src={GALLERY_QUOTE.avatar}
-                    alt={`Logo ou visuel ${GALLERY_QUOTE.source}`}
-                    className="size-12 shrink-0 rounded-full"
-                  />
-                  <div>
-                    <p className="font-display uppercase text-heading-sm">
-                      {GALLERY_QUOTE.source}
-                    </p>
-                    <p className="label-caps text-cream-100/60">{GALLERY_QUOTE.date}</p>
-                  </div>
+            <AfricanPattern
+              motif="circulaire-03"
+              couleur="var(--color-cream-100)"
+              opacite={0.07}
+              className="-right-6 -top-6 -z-10 h-28 w-28 lg:h-36 lg:w-36"
+            />
+            <p className="label-caps text-gold-400">Revue de presse</p>
+            <blockquote className="flex-1 font-quote italic leading-snug text-heading-sm">
+              {GALLERY_QUOTE.texte}
+            </blockquote>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <LazyImage
+                  src={GALLERY_QUOTE.avatar}
+                  alt={`Logo ou visuel ${GALLERY_QUOTE.source}`}
+                  className="size-12 shrink-0 rounded-full"
+                />
+                <div>
+                  <p className="font-display uppercase text-heading-sm">{GALLERY_QUOTE.source}</p>
+                  <p className="label-caps text-cream-100/60">{GALLERY_QUOTE.date}</p>
                 </div>
-                <ArrowLink href={GALLERY_QUOTE.url} external tone="light" className="shrink-0">
-                  Lire
-                </ArrowLink>
               </div>
+              <ArrowLink href={GALLERY_QUOTE.url} external tone="light" className="shrink-0">
+                Lire
+              </ArrowLink>
             </div>
-          </Reveal>
+          </div>
+        </Reveal>
 
-          <Reveal delay={0.08} className="lg:col-span-7">
-            <GalleryCard item={itemA} className="h-full" />
-          </Reveal>
+        <Reveal delay={0.08} className="lg:col-span-7">
+          <GalleryCard item={itemA} className="h-full" />
+        </Reveal>
 
-          <Reveal className="lg:col-span-7">
-            <GalleryCard item={itemB} />
-          </Reveal>
-          <Reveal delay={0.08} className="lg:col-span-5">
-            <GalleryCard item={itemC} className="h-full" />
-          </Reveal>
+        <Reveal className="lg:col-span-7">
+          <GalleryCard item={itemB} />
+        </Reveal>
+        <Reveal delay={0.08} className="lg:col-span-5">
+          <GalleryCard item={itemC} className="h-full" />
+        </Reveal>
 
-          <Reveal className="lg:col-span-5">
-            <GalleryCard item={itemD} className="h-full" />
-          </Reveal>
-          <Reveal delay={0.08} className="lg:col-span-7">
-            <GalleryCard item={itemE} />
-          </Reveal>
+        <Reveal className="lg:col-span-5">
+          <GalleryCard item={itemD} className="h-full" />
+        </Reveal>
+        <Reveal delay={0.08} className="lg:col-span-7">
+          <GalleryCard item={itemE} />
+        </Reveal>
 
-          <Reveal className="lg:col-span-12">
-            <GalleryCard item={itemWide} />
-          </Reveal>
+        <Reveal className="lg:col-span-12">
+          <GalleryCard item={itemWide} />
+        </Reveal>
       </div>
 
       <Reveal className="relative z-10 mx-auto -mt-14 max-w-[80rem] px-4 sm:px-6">

@@ -169,7 +169,8 @@ export function CurseurGyeNyame() {
 
       if (lien) {
         if (texte) {
-          texte.textContent = lien.getAttribute('data-cursor') ?? langueRef.current({ fr: 'Voir', en: 'View' })
+          texte.textContent =
+            lien.getAttribute('data-cursor') ?? langueRef.current({ fr: 'Voir', en: 'View' })
         }
         noeud.classList.add('curseur--survol')
       } else {

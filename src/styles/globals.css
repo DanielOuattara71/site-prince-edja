@@ -105,7 +105,11 @@
   --curseur-perle-4: var(--color-gold-400);
 
   /* Gradients existants */
-  --grad-cinema: radial-gradient(ellipse at 50% 0%, var(--color-night-800) 0%, var(--color-night-900) 70%);
+  --grad-cinema: radial-gradient(
+    ellipse at 50% 0%,
+    var(--color-night-800) 0%,
+    var(--color-night-900) 70%
+  );
   --grad-vignette: linear-gradient(to bottom, rgba(20, 16, 11, 0) 55%, rgba(20, 16, 11, 0.88) 100%);
   /* Gradients Hero image - optimisés lisibilité sur photo variable */
   --grad-hero-scrim: linear-gradient(
@@ -143,8 +147,18 @@
   );
   --grad-hero-forest: linear-gradient(135deg, rgba(45, 74, 50, 0.18) 0%, rgba(20, 16, 11, 0) 62%);
   /* Gradients accent */
-  --grad-clay: linear-gradient(135deg, var(--color-clay-600) 0%, var(--color-clay-500) 55%, var(--color-gold-400) 100%);
-  --grad-gold-shimmer: linear-gradient(90deg, var(--color-gold-300), var(--color-gold-400), var(--color-gold-500));
+  --grad-clay: linear-gradient(
+    135deg,
+    var(--color-clay-600) 0%,
+    var(--color-clay-500) 55%,
+    var(--color-gold-400) 100%
+  );
+  --grad-gold-shimmer: linear-gradient(
+    90deg,
+    var(--color-gold-300),
+    var(--color-gold-400),
+    var(--color-gold-500)
+  );
   --grad-night: linear-gradient(180deg, var(--color-night-800) 0%, var(--color-night-900) 100%);
   --grad-sand: linear-gradient(180deg, var(--color-sand-50) 0%, var(--color-sand-100) 100%);
   --grad-forest: linear-gradient(180deg, var(--color-forest-700) 0%, var(--color-forest-900) 100%);
@@ -542,7 +556,10 @@ body.curseur-on .perle {
   /* Ombre portée : sur un fond de carte clair, la pastille doit se détacher sans
      changer de couleur — l'or et la nuit restent lisibles tels quels. */
   box-shadow: 0 4px 14px rgb(20 16 11 / 35%);
-  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .marqueur-etape__pastille:hover,

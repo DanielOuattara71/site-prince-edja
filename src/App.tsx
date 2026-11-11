@@ -88,14 +88,7 @@ function SiteLayout() {
       <Header />
 
       <FournisseurDemande>
-        <Suspense
-        fallback={
-          <div
-            className="min-h-svh"
-            aria-busy="true"
-          />
-        }
-      >
+        <Suspense fallback={<div className="min-h-svh" aria-busy="true" />}>
           <AnimatedOutlet />
         </Suspense>
 
@@ -118,10 +111,7 @@ export default function App() {
         <Route element={<SiteLayout />}>
           <Route index element={<HomePage />} />
 
-          <Route
-            path="/a-propos"
-            element={<AboutPage />}
-          />
+          <Route path="/a-propos" element={<AboutPage />} />
 
           {/* Ancienne page Influence : son contenu vit dans À propos. La route
               redirige au lieu de disparaître. */}
@@ -130,64 +120,31 @@ export default function App() {
             element={<Navigate to="/a-propos#audience" replace />}
           />
 
-          <Route
-            path="/histoires"
-            element={<HistoiresPage />}
-          />
+          <Route path="/histoires" element={<HistoiresPage />} />
 
-          <Route
-            path="/xplore"
-            element={<XplorePage />}
-          />
+          <Route path="/xplore" element={<XplorePage />} />
 
-          <Route
-            path="/xplore/:slug"
-            element={<EpisodeDetailPage />}
-          />
+          <Route path="/xplore/:slug" element={<EpisodeDetailPage />} />
 
-          <Route
-            path="/taste-and-travel"
-            element={<TasteTravelPage />}
-          />
+          <Route path="/taste-and-travel" element={<TasteTravelPage />} />
 
-          <Route
-            path="/boutique"
-            element={<ShopPage />}
-          />
+          <Route path="/boutique" element={<ShopPage />} />
 
-          <Route
-            path="/boutique/:objet"
-            element={<ObjetPage />}
-          />
+          <Route path="/boutique/:objet" element={<ObjetPage />} />
 
-          <Route
-            path="/journal"
-            element={<JournalPage />}
-          />
+          <Route path="/journal" element={<JournalPage />} />
 
-          <Route
-            path="/journal/:slug"
-            element={<ArticlePage />}
-          />
+          <Route path="/journal/:slug" element={<ArticlePage />} />
 
-          <Route
-            path="/presse"
-            element={<PressPage />}
-          />
+          <Route path="/presse" element={<PressPage />} />
 
           {/* L'ancienne page « Travailler avec Prince » : son contenu vit désormais
               dans Contact (univers, motifs, délai de réponse). La route redirige
               au lieu de disparaître — les CTA du header, du footer, du héros et
               des épisodes gardent une cible vivante. */}
-          <Route
-            path="/travailler-ensemble"
-            element={<Navigate to="/contact" replace />}
-          />
+          <Route path="/travailler-ensemble" element={<Navigate to="/contact" replace />} />
 
-          <Route
-            path="/contact"
-            element={<ContactPage />}
-          />
+          <Route path="/contact" element={<ContactPage />} />
 
           {PAGES_LEGALES.map((page) => (
             <Route key={page.chemin} path={page.chemin} element={<LegalPage />} />
@@ -196,12 +153,12 @@ export default function App() {
           <Route path="/archive-afrique" element={<ArchivePage />} />
           <Route path="/newsletter/confirmation" element={<NewsletterPage vue="confirmation" />} />
           <Route path="/newsletter/preferences" element={<NewsletterPage vue="preferences" />} />
-          <Route path="/newsletter/desinscription" element={<NewsletterPage vue="desinscription" />} />
-
           <Route
-            path="*"
-            element={<NotFoundPage />}
+            path="/newsletter/desinscription"
+            element={<NewsletterPage vue="desinscription" />}
           />
+
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

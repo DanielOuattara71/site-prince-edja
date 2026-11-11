@@ -122,11 +122,13 @@ export function BlocSuivant() {
             <p className="label-caps text-gold-400">Suivant · La série</p>
             <h2 className="max-w-2xl font-display uppercase text-display-lg">
               X'PLORE
-              <span aria-hidden className="text-clay-500">.</span>
+              <span aria-hidden className="text-clay-500">
+                .
+              </span>
             </h2>
             <p className="max-w-xl text-body-lg text-cream-100/75">
-              Six routes, six histoires, une Côte d'Ivoire filmée à hauteur d'homme. Les
-              objets d’Edja Shop viennent de ces mêmes territoires.
+              Six routes, six histoires, une Côte d'Ivoire filmée à hauteur d'homme. Les objets
+              d’Edja Shop viennent de ces mêmes territoires.
             </p>
             <div className="pt-2">
               {/* `to` et pas `href` : un lien interne rechargé ferait repartir la SPA

@@ -61,9 +61,7 @@ export function BijouCard({ bijou, image, imageAlt }: BijouCardProps) {
         <div className="mt-3 flex items-baseline justify-between gap-3">
           <p className="label-caps text-ink-900">{bijou.nom}</p>
           <p className="flex shrink-0 items-baseline gap-2 text-caption font-light">
-            {promo && (
-              <span className="text-ink-500 line-through">{formatFCFA(ancienPrix)}</span>
-            )}
+            {promo && <span className="text-ink-500 line-through">{formatFCFA(ancienPrix)}</span>}
             <span className={promo ? 'text-promo-500' : 'text-ink-500'}>
               {prix != null ? formatFCFA(prix) : t('demande.surDemande')}
             </span>

@@ -19,9 +19,7 @@ export default function DestinationPage() {
   const episode = EPISODES.find((item) => item.slug === destination?.episodeSlug)
 
   useSeo({
-    title: destination
-      ? `${destination.nom} · X'PLORE Côte d'Ivoire`
-      : 'Destination · X\'PLORE',
+    title: destination ? `${destination.nom} · X'PLORE Côte d'Ivoire` : "Destination · X'PLORE",
     description: destination ? descriptionDestination(destination.nom, episode) : undefined,
     indexable: Boolean(episode),
   })
@@ -48,7 +46,12 @@ export default function DestinationPage() {
 
   return (
     <>
-      <Section tone="dark" padded={false} container={false} className="relative pt-32 pb-20 lg:pt-44 lg:pb-28">
+      <Section
+        tone="dark"
+        padded={false}
+        container={false}
+        className="relative pt-32 pb-20 lg:pt-44 lg:pb-28"
+      >
         <div aria-hidden className="absolute inset-0">
           <img src={episode.image} alt="" className="h-full w-full object-cover" />
           <div className="overlay-cinema absolute inset-0" />
@@ -87,7 +90,9 @@ export default function DestinationPage() {
               <Eyebrow>Passerelle</Eyebrow>
               <h2 className="font-display uppercase text-display-lg">
                 Objets liés à l’étape
-                <span aria-hidden className="text-clay-500">.</span>
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </h2>
             </div>
             <ul className="grid grid-cols-2 gap-1 sm:grid-cols-3">
@@ -115,7 +120,6 @@ export default function DestinationPage() {
       )}
 
       <BlocNewsletter />
-
     </>
   )
 }

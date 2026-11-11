@@ -20,7 +20,10 @@ export function Footer() {
             <div className="max-w-2xl space-y-5">
               <p className="label-caps text-gold-400">Contact</p>
               <h2 className="font-display uppercase text-display-lg">
-                Parlons du prochain récit<span aria-hidden className="text-clay-500">.</span>
+                Parlons du prochain récit
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </h2>
             </div>
             <Button to="/contact" variant="primary">

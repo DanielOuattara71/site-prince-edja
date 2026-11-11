@@ -73,12 +73,7 @@ describe('segmentsDuParcours', () => {
   })
 
   it('écarte un point invalide sans casser l’ordre des autres', () => {
-    const avecErreur = [
-      ETAPES[0],
-      { lat: 999, lng: 0 },
-      ETAPES[1],
-      ETAPES[2],
-    ]
+    const avecErreur = [ETAPES[0], { lat: 999, lng: 0 }, ETAPES[1], ETAPES[2]]
     const segments = segmentsDuParcours(avecErreur)
     expect(segments).toHaveLength(2)
     expect(segments[0].vers).toEqual(ETAPES[1])
@@ -147,9 +142,7 @@ describe('tracerSegment', () => {
   })
 
   it('retombe sur la ligne droite si la réponse est vide', async () => {
-    const fetchService = vi.fn().mockResolvedValue(
-      reponseOsm([[-5.03, 7.69]]),
-    )
+    const fetchService = vi.fn().mockResolvedValue(reponseOsm([[-5.03, 7.69]]))
 
     const tracé = await tracerSegment({ de: ETAPES[0], vers: ETAPES[1] }, fetchService)
 
@@ -195,7 +188,12 @@ describe('tracerParcours', () => {
   it('mélange tracés calculés et lignes droites sans rien perdre', async () => {
     const fetchService = vi
       .fn()
-      .mockResolvedValueOnce(reponseOsm([[0, 0], [1, 1]]))
+      .mockResolvedValueOnce(
+        reponseOsm([
+          [0, 0],
+          [1, 1],
+        ]),
+      )
       .mockRejectedValueOnce(new Error('panne'))
 
     const tracés = await tracerParcours(ETAPES.slice(0, 3), fetchService)
@@ -213,8 +211,20 @@ describe('tracerParcours', () => {
 describe('pointsDuTracé', () => {
   it('réunit tous les points du parcours pour cadrer la carte', () => {
     const tracés = [
-      { coordinates: [[0, 0], [1, 1]] as [number, number][], calcule: true },
-      { coordinates: [[2, 2], [3, 3]] as [number, number][], calcule: false },
+      {
+        coordinates: [
+          [0, 0],
+          [1, 1],
+        ] as [number, number][],
+        calcule: true,
+      },
+      {
+        coordinates: [
+          [2, 2],
+          [3, 3],
+        ] as [number, number][],
+        calcule: false,
+      },
     ]
     expect(pointsDuTracé(tracés)).toHaveLength(4)
     expect(pointsDuTracé(tracés)[3]).toEqual({ lat: 3, lng: 3 })

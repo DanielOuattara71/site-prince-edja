@@ -413,8 +413,7 @@ export const PRESS: PressItem[] = [
     source: 'Ministère du Tourisme',
     date: '31 juillet 2025',
     titre: 'Prince Edja rejoint le cercle des Ambassadeurs',
-    resume:
-      'La reconnaissance institutionnelle s’inscrit dans la stratégie Sublime Côte d’Ivoire.',
+    resume: 'La reconnaissance institutionnelle s’inscrit dans la stratégie Sublime Côte d’Ivoire.',
     url: 'https://tourisme.gouv.ci/accueil/actualites/aboudia-et-prince-edja-rejoignent-le-cercle-prestigieux-des-ambassadeurs-du-tourisme-et-des-loisirs-de-cote-divoire/228',
   },
   {
@@ -459,7 +458,8 @@ export const MILESTONES: Milestone[] = [
   {
     periode: '2015 à 2019',
     titre: 'Azalaï Hotels',
-    description: 'Marketing, communication et développement commercial hôtelier en Afrique de l’Ouest.',
+    description:
+      'Marketing, communication et développement commercial hôtelier en Afrique de l’Ouest.',
   },
   {
     periode: '2024',

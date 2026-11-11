@@ -14,9 +14,7 @@ export default function LegalPage() {
   const page = PAGES_LEGALES.find((entree) => entree.chemin === pathname)
 
   useSeo({
-    title: page
-      ? `${page.titre.fr} · Prince Edja`
-      : 'Page introuvable · Prince Edja',
+    title: page ? `${page.titre.fr} · Prince Edja` : 'Page introuvable · Prince Edja',
     description: page?.resume.fr,
     // Une page dont le contenu n'existe pas encore n'a rien à faire dans l'index :
     // l'indexer montrerait aux moteurs une coquille vide.

@@ -25,7 +25,11 @@ export function MotifAngle({ position = 'tl', opacite = 0.05, className }: Motif
   return (
     <svg
       aria-hidden
-      className={cn('pointer-events-none absolute h-28 w-28 text-ink-900', CLASSES_POSITION[position], className)}
+      className={cn(
+        'pointer-events-none absolute h-28 w-28 text-ink-900',
+        CLASSES_POSITION[position],
+        className,
+      )}
       viewBox="0 0 120 120"
       fill="currentColor"
       style={{ opacity: opacite }}

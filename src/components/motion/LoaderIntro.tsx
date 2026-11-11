@@ -93,7 +93,10 @@ export function LoaderIntro() {
                 className="font-quote italic text-body-lg text-cream-100/85"
               >
                 {SITE.tagline[index]}
-                <span aria-hidden className="text-gold-400"> …</span>
+                <span aria-hidden className="text-gold-400">
+                  {' '}
+                  …
+                </span>
               </motion.p>
             ) : (
               <motion.h2
@@ -104,7 +107,9 @@ export function LoaderIntro() {
                 className="font-display uppercase text-heading-md tracking-wide text-cream-100"
               >
                 {SITE.name}
-                <span aria-hidden className="text-clay-500">.</span>
+                <span aria-hidden className="text-clay-500">
+                  .
+                </span>
               </motion.h2>
             )}
           </AnimatePresence>

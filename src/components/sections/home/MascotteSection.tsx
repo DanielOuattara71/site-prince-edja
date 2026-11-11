@@ -111,8 +111,8 @@ export function MascotteSection() {
 
             <Reveal delay={1.35}>
               <p className="mt-6 max-w-2xl text-body-lg text-ink-500">
-                Des paysages fascinants, des cultures authentiques et des histoires à
-                découvrir. L’aventure commence ici.
+                Des paysages fascinants, des cultures authentiques et des histoires à découvrir.
+                L’aventure commence ici.
               </p>
             </Reveal>
 
@@ -140,7 +140,11 @@ export function MascotteSection() {
               initial={apparanceMascotte}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: DUR.reveal, ease: EASE_EXPO, delay: reducedMotion ? 0 : 0.35 }}
+              transition={{
+                duration: DUR.reveal,
+                ease: EASE_EXPO,
+                delay: reducedMotion ? 0 : 0.35,
+              }}
               className="relative z-10 flex w-full max-w-[20rem] justify-center lg:max-w-[32rem]"
             >
               <motion.img

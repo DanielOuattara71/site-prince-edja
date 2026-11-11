@@ -51,8 +51,7 @@ export const visuelPorte = (slug: string): string =>
  * collection sont livrées.
  */
 export const VISUEL_TEST_CARTE = `${import.meta.env.BASE_URL}images/journal/raconter-pour-exister.jpg`
-export const ALT_TEST_CARTE =
-  'Visuel de test : Prince Edja portant des bagues et parures dorées.'
+export const ALT_TEST_CARTE = 'Visuel de test : Prince Edja portant des bagues et parures dorées.'
 
 /**
  * Photographie de couverture du hero.

@@ -24,7 +24,10 @@ export function Marquee({ children, duration = 36, reverse = false, className }:
     <div className={cn('group overflow-hidden', className)}>
       <div
         style={{ '--marquee-duration': `${duration}s` } as CSSProperties}
-        className={cn('marquee-track flex w-max items-center', reverse && '[animation-direction:reverse]')}
+        className={cn(
+          'marquee-track flex w-max items-center',
+          reverse && '[animation-direction:reverse]',
+        )}
       >
         <div className="flex shrink-0 items-center">{children}</div>
         <div aria-hidden className="flex shrink-0 items-center">
