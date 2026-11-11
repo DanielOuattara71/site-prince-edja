@@ -33,3 +33,6 @@ src/data/generated/
 
 # Métadonnées Windows de zone (téléchargement) — ne jamais commiter (A5, D-84)
 *Zone.Identifier
+# Archives exportées — jamais commitées
+src.zip
+admin/src.zip
