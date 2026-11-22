@@ -36,3 +36,4 @@ src/data/generated/
 # Archives exportées — jamais commitées
 src.zip
 admin/src.zip
+.vercel
