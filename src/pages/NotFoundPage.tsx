@@ -24,16 +24,16 @@ export default function NotFoundPage() {
   })
 
   return (
-    <Section tone="dark" padded={false} className="grain relative isolate">
-      <Container className="relative z-10 flex min-h-svh flex-col items-center justify-center gap-8 text-center">
+    <Section tone="light" padded={false} className="bg-sand-50">
+      <Container className="flex min-h-svh flex-col items-center justify-center gap-8 text-center">
         <div className="space-y-4">
-          <h1 className="font-display uppercase text-display-xl text-gold-400">
+          <h1 className="font-display uppercase text-display-xl text-ink-900">
             404
-            <span aria-hidden className="text-clay-500">
+            <span aria-hidden className="text-clay-600">
               .
             </span>
           </h1>
-          <p className="mx-auto max-w-md text-body-lg text-cream-100/70">{t('p404.texte')}</p>
+          <p className="mx-auto max-w-md text-body-lg text-ink-700">{t('p404.texte')}</p>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
@@ -44,9 +44,9 @@ export default function NotFoundPage() {
           ))}
         </div>
 
-        {/* La section entière est `tone="dark"` : la recherche doit être en ton sombre,
-            sinon son encre se pose sur la nuit et disparaît. */}
-        <RechercheGlobale tone="sombre" />
+        {/* Section claire : la recherche est en ton clair, sinon son encre se pose sur
+            l'ivoire et disparaît. */}
+        <RechercheGlobale tone="clair" />
 
         <Button to="/" variant="primary">
           {t('p404.ou')}
