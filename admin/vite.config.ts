@@ -28,6 +28,7 @@ export default defineConfig(({ command, mode }) => ({
     // `worker-only`, le plugin l'émettrait aussi dans le build : on ne le charge donc
     // jamais pour `vite build` (D-08, contrôlé par `verifier-dist`).
     ...(command === 'serve' && mode !== 'api' ? [msw({ mode: 'worker-only' })] : []),
+    ...(command === 'build' && mode === 'demo' ? [msw({ mode: 'worker-only' })] : []),
   ],
   resolve: {
     alias: {

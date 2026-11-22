@@ -101,11 +101,11 @@ jobs:
           # Sans données chargées, le mode par défaut (src/data/) reste actif.
           PUBLIC_DATA_SOURCE: ${{ vars.PUBLIC_API_URL != '' && 'api' || '' }}
 
-      - name: Build de l'admin (sous /site-prince-edja/admin/)
+      - name: Build de l'admin démo (sous /site-prince-edja/admin/)
         working-directory: admin
         run: |
           npm ci
-          ADMIN_BASE=/site-prince-edja/admin/ npm run build
+          ADMIN_BASE=/site-prince-edja/admin/ npm run build:demo
           cp -r dist ../dist/admin
 
       - name: Setup GitHub Pages

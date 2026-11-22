@@ -226,9 +226,11 @@ Héberger le contenu de `admin/dist/` :
 - `GET /connexion` → se connecter avec le super-admin créé à l'étape 5.3 ;
 - modifier le mot de passe initial.
 
-> ⚠️ **Limite** : sur GitHub Pages, il n'y a ni API ni reverse proxy. L'interface de l'admin
-> s'affiche (pour la **montrer** au client), mais la **connexion et les écritures ne
-> fonctionneront pas** tant que l'API n'est pas hébergée avec un proxy `/admin/api/v1`.
+> ⚠️ **Mode démo sur GitHub Pages** : sans API hébergée, la CI construit l'admin avec
+> `npm run build:demo` (faux serveur MSW intégré **uniquement** à ce build, bandeau
+> « Démonstration — données fictives »). Le client peut donc **se connecter et naviguer**
+> avec les comptes d'exemple, mais **aucune modification n'est enregistrée**. Le build de
+> production réel (`npm run build`, contrôlé par `verifier-dist`) reste sans MSW.
 
 **Contrôle de contrat** (optionnel, contre une API réelle) :
 ```bash
