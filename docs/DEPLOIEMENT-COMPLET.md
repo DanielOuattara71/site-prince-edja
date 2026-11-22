@@ -216,12 +216,19 @@ npm run build        # tsc -b && vite build && node scripts/verifier-dist.mjs
 
 Héberger le contenu de `admin/dist/` :
 
+- **Sur GitHub Pages**, l'admin est intégré au site du dépôt sous
+  `https://danielouattara71.github.io/site-prince-edja/admin/` (la CI construit l'admin avec
+  `ADMIN_BASE=/site-prince-edja/admin/` puis copie `admin/dist/` dans `dist/admin/`).
 - base path : `/admin/` (`ADMIN_BASE`);
 - `VITE_API_URL=/admin/api/v1` (recommandé) avec **reverse proxy** `/admin/api/v1` → API,
   ou une URL absolue HTTPS ;
 - **même origine** entre admin et API pour les cookies de session / CSRF ;
 - `GET /connexion` → se connecter avec le super-admin créé à l'étape 5.3 ;
 - modifier le mot de passe initial.
+
+> ⚠️ **Limite** : sur GitHub Pages, il n'y a ni API ni reverse proxy. L'interface de l'admin
+> s'affiche (pour la **montrer** au client), mais la **connexion et les écritures ne
+> fonctionneront pas** tant que l'API n'est pas hébergée avec un proxy `/admin/api/v1`.
 
 **Contrôle de contrat** (optionnel, contre une API réelle) :
 ```bash
