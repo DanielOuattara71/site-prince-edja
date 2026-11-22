@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { animate, useInView, useReducedMotion } from 'motion/react'
+import {animate, useInView} from 'motion/react'
 import { EASE_EXPO } from '@/lib/motion'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface StatItemProps {
   /** `null` = chiffre non fourni. Le composant affiche alors la mention d'attente. */

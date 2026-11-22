@@ -86,7 +86,7 @@ export default function GuidesPdf() {
     }
     setEnvoi(true)
     try {
-      await medias.envoyer(fichier)
+      await medias.envoyer(fichier, { emplacement: 'Projets — guides PDF' })
       notifier.succes(t('guides.depose'))
       await client.invalidateQueries({ queryKey: ['medias'] })
     } catch (erreur) {

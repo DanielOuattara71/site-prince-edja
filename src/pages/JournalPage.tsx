@@ -10,7 +10,6 @@ import { Stagger } from '@/components/motion/Stagger'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { ArticleCard } from '@/components/cards/ArticleCard'
 import { AfricanPattern } from '@/components/motifs/AfricanPattern'
-import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 export default function JournalPage() {
   useSeo({
@@ -130,7 +129,6 @@ export default function JournalPage() {
         </Container>
       </Section>
 
-      <BlocNewsletter />
     </>
   )
 }

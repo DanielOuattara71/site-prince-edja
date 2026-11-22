@@ -38,6 +38,16 @@ const page = <T extends z.ZodType>(element: T) =>
     total: z.number(),
   })
 
+/** Page complète d'un projet (contrat 1.15.0 § 32.4), déjà assemblée par l'API. */
+const pageProjet = z.object({
+  projet: contenuPublic,
+  episodes: z.array(contenuPublic),
+  destinations: z.array(contenuPublic),
+  villes: z.array(contenuPublic),
+  entrees: z.array(contenuPublic),
+  partenaires: z.array(contenuPublic),
+})
+
 const categorie = z.object({ slug: z.string(), nom: z.string(), compte: z.number() })
 
 const produit = z.looseObject({
@@ -47,6 +57,9 @@ const produit = z.looseObject({
   reference: z.string(),
   image: imagePublique.nullable(),
   categorie: z.object({ slug: z.string(), nom: z.string() }).nullable(),
+  // Contrat 1.10.0 § 27.1 : obligatoire côté lecture publique — un build contre une API plus
+  // ancienne s'arrête ici plutôt que de livrer un site incapable d'envoyer ses demandes.
+  varianteIds: z.array(z.string()),
   prixAffiche: z.number().nullable(),
   prixConfirme: z.boolean(),
   ancienPrix: z.number().nullable(),
@@ -58,11 +71,16 @@ const pageProduits = z.object({
   totalPages: z.number(),
 })
 const ficheProduit = produit.extend({
+  // La fiche du contrat (§ 27.2) porte `variantes[].id`, pas `varianteIds` : elle ne fait
+  // qu'habiller l'entrée de liste déjà collectée (`{...liste, ...fiche}`). Laisser passer
+  // l'absence ici, stricte sur la liste (exigée par le contrat).
+  varianteIds: z.array(z.string()).optional(),
   histoire: z.string().nullable(),
   culture: z.string().nullable(),
   galerie: z.array(imagePublique),
   variantes: z.array(
     z.object({
+      id: z.string(),
       libelle: z.string().nullable(),
       matiere: z.string().nullable(),
       taille: z.string().nullable(),
@@ -127,6 +145,40 @@ const schReglages = z.object({
   languesActives: z.array(z.string()),
 })
 
+/** Identité publique et étiquettes (contrat 1.20.0 § 37). */
+const schSite = z.object({
+  nom: z.string(),
+  email: z.string(),
+  linkedin: z.string().nullable(),
+  linkedinLabel: z.string().nullable(),
+  localisation: z.string().nullable(),
+  role: z.string().nullable(),
+  signature: z.string().nullable(),
+  manifeste: z.string().nullable(),
+  devise: z.string().nullable(),
+  mission: z.string().nullable(),
+  tagline: z.array(z.string()),
+  bio: z.array(z.string()),
+  stats: z.array(
+    z.object({
+      cle: z.string(),
+      libelle: z.string(),
+      valeur: z.number().nullable(),
+      suffixe: z.string().nullable(),
+      dateValidation: z.string().nullable(),
+      source: z.string().nullable(),
+      ordre: z.number(),
+    }),
+  ),
+  heroImage: imagePubliqueJson.nullable(),
+})
+const schEtiquettes = z.object({
+  items: z.array(
+    z.object({ id: z.string(), code: z.string(), type: z.string(), libelle: z.string() }),
+  ),
+  total: z.number(),
+})
+
 export interface ReglagesCharger {
   /** Adresse de base de l'API publique (`https://api.…`). */
   api: string
@@ -179,12 +231,54 @@ export async function chargerDepuisApi(reglages: ReglagesCharger): Promise<Rappo
 
   await mkdir(DOSSIER, { recursive: true })
   const comptes: Record<string, number> = {}
+  let projetsCharges: z.infer<typeof contenuPublic>[] = []
 
   for (const type of CONTENUS) {
-    const items = await toutLeContenu(type)
+    const items: z.infer<typeof contenuPublic>[] = await toutLeContenu(type)
+    if (type === 'articles') {
+      // § 18.1 : la liste ne porte pas le corps, seule la fiche le contient. On habille
+      // chaque entrée avec sa fiche, comme pour les produits, pour que le site puisse
+      // rendre le texte des articles publiés.
+      for (let i = 0; i < items.length; i += 1) {
+        const slug = items[i]?.slug
+        if (!slug) continue
+        const fiche = await lire(
+          `/contenus/articles/${encodeURIComponent(slug)}?langue=${LANGUE}`,
+          contenuPublic.partial({ id: true }),
+        )
+        items[i] = { ...items[i], ...fiche }
+      }
+    }
     await writeFile(resolve(DOSSIER, `${type}.json`), `${JSON.stringify(items, null, 2)}\n`)
     comptes[type] = items.length
+    if (type === 'projets') projetsCharges = items
   }
+
+  // Contrat 1.15.0 § 32.4 : une page par projet, avec ses contenus déjà filtrés.
+  const pagesProjets: Record<string, z.infer<typeof pageProjet>> = {}
+  for (const projet of projetsCharges) {
+    if (!projet.slug) continue
+    pagesProjets[projet.slug] = await lire(
+      `/projets/${encodeURIComponent(projet.slug)}/page?langue=${LANGUE}`,
+      pageProjet,
+    )
+  }
+  await writeFile(
+    resolve(DOSSIER, 'pages-projets.json'),
+    `${JSON.stringify(pagesProjets, null, 2)}\n`,
+  )
+  comptes['pages-projets'] = Object.keys(pagesProjets).length
+
+  // Contrat 1.16.0 § 33.4 : une entrée par emplacement de galerie (accueil, boutique).
+  const galeries: Record<string, unknown> = {}
+  for (const emplacement of ['accueil', 'boutique'] as const) {
+    galeries[emplacement] = await lire(
+      `/galeries?emplacement=${emplacement}&langue=${LANGUE}`,
+      page(contenuPublic),
+    )
+  }
+  await writeFile(resolve(DOSSIER, 'galeries.json'), `${JSON.stringify(galeries, null, 2)}\n`)
+  comptes['galeries'] = Object.keys(galeries).length
 
   for (const famille of ['article', 'projet', 'produit'] as const) {
     const liste = await lire(`/categories?famille=${famille}&langue=${LANGUE}`, z.array(categorie))
@@ -201,6 +295,7 @@ export async function chargerDepuisApi(reglages: ReglagesCharger): Promise<Rappo
   // Depuis C1 (B-67, UNION), la liste est globale : le dédoublonnage ne coûte rien et protège
   // si l'ancienne forme réapparaît (repli).
   const fiches = new Map<string, z.infer<typeof ficheProduit>>()
+  const listes = new Map<string, z.infer<typeof produit>>()
   for (let numero = 1; ; numero += 1) {
     const lue = await lire(
       `/boutique/produits?langue=${LANGUE}&pageSize=48&page=${numero}`,
@@ -208,7 +303,8 @@ export async function chargerDepuisApi(reglages: ReglagesCharger): Promise<Rappo
     )
     for (const p of lue.items) {
       const cle = `${p.type}:${p.slug}`
-      if (fiches.has(cle)) continue
+      if (listes.has(cle)) continue
+      listes.set(cle, p)
       const chemin = `/boutique/produits/${encodeURIComponent(p.slug)}?type=${p.type}&langue=${LANGUE}`
       fiches.set(cle, await lire(chemin, ficheProduit))
     }
@@ -216,7 +312,16 @@ export async function chargerDepuisApi(reglages: ReglagesCharger): Promise<Rappo
   }
   await writeFile(
     resolve(DOSSIER, 'produits.json'),
-    `${JSON.stringify([...fiches.values()], null, 2)}\n`,
+    `${JSON.stringify(
+      [...fiches.entries()].map(([cle, fiche]) => ({
+        // L'entrée de liste porte `varianteIds` (contrat 1.10.0 § 27.1) ; la fiche l'habille
+        // (§ 27.2 : `variantes[].id`). Les champs communs restent cohérents (même API, même instant).
+        ...listes.get(cle),
+        ...fiche,
+      })),
+      null,
+      2,
+    )}\n`,
   )
   comptes['produits'] = fiches.size
 
@@ -230,6 +335,17 @@ export async function chargerDepuisApi(reglages: ReglagesCharger): Promise<Rappo
   const regle = await lire('/reglages', schReglages)
   await writeFile(resolve(DOSSIER, 'reglages.json'), `${JSON.stringify(regle, null, 2)}\n`)
   comptes['reglages'] = Object.keys(regle).length
+
+  const identite = await lire(`/site?langue=${LANGUE}`, schSite)
+  await writeFile(resolve(DOSSIER, 'site.json'), `${JSON.stringify(identite, null, 2)}\n`)
+  comptes['site'] = 1
+
+  const etiquettes = await lire(`/etiquettes?langue=${LANGUE}`, schEtiquettes)
+  await writeFile(
+    resolve(DOSSIER, 'etiquettes.json'),
+    `${JSON.stringify(etiquettes.items, null, 2)}\n`,
+  )
+  comptes['etiquettes'] = etiquettes.items.length
 
   const rapport: RapportChargement = {
     source: API,

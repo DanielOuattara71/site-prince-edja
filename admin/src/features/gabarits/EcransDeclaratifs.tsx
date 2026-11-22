@@ -1,6 +1,6 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowUpDown } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { useWatch } from 'react-hook-form'
 import { Link, useSearchParams } from 'react-router'
 import { cles } from '@/api/cles'
@@ -10,6 +10,9 @@ import { LANGUES, type Langue } from '@/api/schemas/communs'
 import { useSession } from '@/auth/contexte-session'
 import { peut } from '@/auth/permissions'
 import { ApercuSite } from '@/components/apercu/ApercuSite'
+import { RenduCorps } from '@/components/apercu/RenduCorps'
+import ProjetEnTete from '@/features/projets/ProjetEnTete'
+import type { CorpsRiche } from '@/api/schemas/corps-riche'
 import { ChampTraduit } from '@/components/formulaire/ChampTraduit'
 import { suggestionAdresse } from '@/components/formulaire/langue-formulaire'
 import { ChampAdresse, SectionAvancee } from '@/components/formulaire/SectionAvancee'
@@ -249,7 +252,7 @@ function EditeurDeclaratif({
               />
             ))}
         </fieldset>
-        <ActionsLaterales editeur={editeur} libelles={libelles} />
+        <ActionsLaterales editeur={editeur} libelles={libelles} sansEnregistrement />
       </aside>
     </form>
   )
@@ -268,8 +271,20 @@ function EditeurDeclaratif({
       versChamp={(champ) =>
         /^traductions\.(fr|en)$/.test(champ) ? `${champ}.${spec.champTitre}` : champ
       }
+      avant={ressourceAvant(spec, editeur.contenu)}
     />
   )
+}
+
+/** En-têtes spécifiques à une fiche (projets : photo d'affiche + métadonnées). */
+function ressourceAvant(
+  spec: SpecRessource,
+  contenu: unknown,
+): ReactNode | undefined {
+  if (spec.ressource !== 'projets') return undefined
+  // Le contenu de l'écran déclaratif est son historique/valeur : le traductions et les champs
+  // passent par lui. On le rend accepte structurellement (cf. ProjetEnTete).
+  return <ProjetEnTete contenu={contenu as Parameters<typeof ProjetEnTete>[0]['contenu']} />
 }
 
 /**
@@ -316,6 +331,20 @@ function ApercuDeclaratif({ spec, valeurs }: { spec: SpecRessource; valeurs: Val
                   className="aspect-[3/2] w-full rounded-xl bg-sand-200 object-cover"
                 />
               ) : null}
+              {/* Le corps riche (principal « corps ») se rend tel quel : la liste blanche
+                  de `RenduCorps` garantit l'innocuité (aucun HTML brut interprété). */}
+              {spec.principal
+                .filter((champ) => champ.type === 'corps')
+                .map((champ) => {
+                  const contenu = traduction[champ.cle]
+                  return (
+                    <RenduCorps
+                      key={champ.cle}
+                      corps={contenu as CorpsRiche | null | undefined}
+                      langue={langue}
+                    />
+                  )
+                })}
               {spec.traduits
                 .filter((c) => c.cle !== spec.champTitre && traduction[c.cle]?.trim())
                 .map((c) => (

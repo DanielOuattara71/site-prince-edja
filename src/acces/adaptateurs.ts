@@ -31,8 +31,8 @@ import type {
 export interface ImagePublique {
   url: string
   alt: string
-  largeur?: number | null
-  hauteur?: number | null
+  largeur: number | null
+  hauteur: number | null
   declinaisons: { largeur: number; url: string }[]
 }
 
@@ -53,12 +53,18 @@ export interface ArticlePublic extends ContenuPublic {
   categorie?: string | null
   dureeLecture?: number | null
   publieLe?: string | null
+  /** PDF joint à l'article (contrat 1.12.0 § 29.3), si présent. */
+  pdf?: ImagePublique | null
 }
 
 export interface EpisodePublic extends ContenuPublic {
   numero: string
   guide?: ImagePublique | null
   projetSlug?: string | null
+  /** Cible de liaison vers le projet (contrat 1.6.0 § 23.3). */
+  projetId?: string | null
+  /** Illustrations complémentaires, ordonnées (contrat 1.6.0 § 23.2). */
+  illustrations?: ImagePublique[]
 }
 
 export type CibleInterne =
@@ -74,6 +80,9 @@ export interface ProjetPublic extends ContenuPublic {
   cible?: CibleInterne | null
   template?: Projet['template'] | null
   categorie?: { slug: string; nom: string } | null
+  /** 1.15.0 § 32.5 : le héros de la page publique lit ces champs du projet, pas un texte figé. */
+  citation?: string | null
+  bandeau?: ImagePublique | null
 }
 
 export interface DestinationPublique extends ContenuPublic {
@@ -112,6 +121,8 @@ export interface ProduitPublic {
   reference: string
   image: ImagePublique | null
   categorie: { slug: string; nom: string } | null
+  /** UUID des variantes (contrat 1.10.0 § 27.1) — exposés pour `POST /demandes`. */
+  varianteIds: string[]
   prixAffiche: number | null
   prixConfirme: boolean
   ancienPrix: number | null
@@ -119,7 +130,7 @@ export interface ProduitPublic {
   histoire?: string | null
   culture?: string | null
   galerie?: ImagePublique[]
-  variantes?: { matiere: string | null; taille: string | null }[]
+  variantes?: { id: string; matiere: string | null; taille: string | null }[]
   createur?: {
     nom: string
     pays: string | null
@@ -211,6 +222,9 @@ export function versArticle(a: ArticlePublic): Article {
     image: url(a.image),
     date: a.publieLe ? a.publieLe.slice(0, 10) : undefined,
     lecture: a.dureeLecture ?? undefined,
+    pdf: a.pdf?.url,
+    // Le corps vient de la traduction publique (§ 18.1) ; vide en données de départ.
+    corps: a.traduction?.['corps'] ?? undefined,
     tags: { format: 'article', projet: 'JOURNAL' },
   }
 }
@@ -224,6 +238,8 @@ export function versEpisode(e: EpisodePublic): Episode {
     pitch: texte(e.traduction, 'pitch'),
     image: url(e.image),
     guide: e.guide?.url,
+    projetId: e.projetId ?? null,
+    illustrations: e.illustrations ?? [],
     // Les épisodes du site sont ceux de X'PLORE (/xplore/:slug).
     tags: { format: 'film', projet: 'XPLORE' },
   }
@@ -242,7 +258,11 @@ const PAGE_DU_TEMPLATE: Record<Projet['template'], string> = {
   bibliotheque: '/archive-afrique',
 }
 
-export function versProjet(p: ProjetPublic, chemins: CheminsContenus = {}): Projet {
+export function versProjet(
+  p: ProjetPublic,
+  chemins: CheminsContenus = {},
+  options: { routeParDefaut?: string } = {},
+): Projet {
   const template = p.template ?? 'film'
   return {
     slug: slugDe(p),
@@ -256,8 +276,13 @@ export function versProjet(p: ProjetPublic, chemins: CheminsContenus = {}): Proj
     image: url(p.image),
     categorie: p.categorie?.nom ?? '',
     template,
+    citation: texte(p.traduction, 'citation'),
+    bandeau: url(p.bandeau),
     aFournir: false,
-    route: cheminDeCible(p.cible, chemins) ?? PAGE_DU_TEMPLATE[template],
+    route:
+      cheminDeCible(p.cible, chemins) ??
+      options.routeParDefaut ??
+      PAGE_DU_TEMPLATE[template],
   }
 }
 
@@ -395,6 +420,22 @@ export interface GaleriePublique extends ContenuPublic {
   ordre?: number
 }
 
+/** Entrée de la galerie boutique (contrat 1.16.0 § 33), dans la forme du lookbook du site. */
+export function versGalerieBoutique(g: GaleriePublique): {
+  src: string
+  alt: string
+  titre: string
+  legende?: string
+} {
+  const traduction = g.traduction
+  return {
+    src: url(g.image),
+    alt: g.image?.alt ?? '',
+    titre: texte(traduction, 'titre'),
+    ...(texte(traduction, 'legende') ? { legende: texte(traduction, 'legende') } : {}),
+  }
+}
+
 /** Galerie éditoriale de l'accueil (`GALLERY`) ou de la boutique (`GALERIE_SHOP`). */
 export function versGalerie(g: GaleriePublique, chemins: CheminsContenus = {}): GalleryItem {
   const href = cheminDeCible(g.cible, chemins) ?? g.lienExterne ?? ''
@@ -461,6 +502,7 @@ export function versProduit(p: ProduitPublic): Bijou {
       prix: p.prixConfirme ? p.prixAffiche : null,
       ancienPrix: p.prixConfirme ? p.ancienPrix : null,
       prixConfirme: p.prixConfirme,
+      varianteIds: p.varianteIds ?? [],
       matieres: uniques(variantes.map((v) => v.matiere)),
       tailles: uniques(variantes.map((v) => v.taille)),
       // Hors du contrat public 1.5.0 : vides plutôt que devinés.

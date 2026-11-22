@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/cn'
 
 interface LazyImageProps {
@@ -24,6 +24,13 @@ export function LazyImage({
   imgClassName,
 }: LazyImageProps) {
   const [loaded, setLoaded] = useState(priority)
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  // L'image peut être déjà en cache à l'hydratation (SSR pré-rendu) : l'événement `onLoad`
+  // n'aurait jamais de récepteur. `complete` couvre ce cas.
+  useEffect(() => {
+    if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) setLoaded(true)
+  }, [])
 
   return (
     <figure
@@ -31,6 +38,7 @@ export function LazyImage({
       style={ratio ? { aspectRatio: ratio } : undefined}
     >
       <img
+        ref={imgRef}
         src={src}
         srcSet={srcSet}
         sizes={sizes}

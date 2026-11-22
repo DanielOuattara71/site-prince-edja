@@ -80,11 +80,34 @@ export function sujetDemande(pieces: Bijou[]): string {
   return `Demande de devis · ${noms}`
 }
 
+/**
+ * Les `varianteIds` à transmettre au contrat (`POST /demandes`) : toutes les variantes des
+ * pièces choisies, sans doublon. Postées, elles donnent une ligne par pièce dans la boîte de
+ * réception — aujourd'hui chaque pièce publiée porte exactement une variante.
+ *
+ * Un tableau vide signifie « la sélection ne peut pas être postée » (données locales sans
+ * identifiants serveur) : le panneau retombe alors sur la messagerie.
+ */
+export function varianteIdsDe(pieces: Bijou[]): string[] {
+  const ids = pieces.flatMap((piece) => piece.commerce?.varianteIds ?? [])
+  return [...new Set(ids)]
+}
+
 /** Ouverture du client de messagerie avec la sélection prête à envoyer. */
-export function envoyerDemande(pieces: Bijou[], email: string) {
+export function envoyerDemande(pieces: Bijou[], email: string, donnees?: FormData) {
   const lignes = pieces.map((piece) => `- ${piece.nom} (réf. ${piece.numero})`).join('\n')
+  const expediteur = donnees
+    ? [
+        '',
+        `Nom : ${String(donnees.get('nom') ?? '').trim()}`,
+        `E-mail : ${String(donnees.get('email') ?? '').trim()}`,
+        String(donnees.get('message') ?? '').trim(),
+      ]
+        .filter((ligne) => ligne !== '')
+        .join('\n')
+    : ''
   const corps = encodeURIComponent(
-    `Bonjour,\n\nJe souhaite obtenir des informations sur les pièces suivantes :\n${lignes || '- (aucune pièce sélectionnée)'}\n\nMerci d'indiquer les disponibilités, les matières et les délais.\n\n`,
+    `Bonjour,\n\nJe souhaite obtenir des informations sur les pièces suivantes :\n${lignes || '- (aucune pièce sélectionnée)'}\n${expediteur}\n\nMerci d'indiquer les disponibilités, les matières et les délais.\n\n`,
   )
   window.location.href = `mailto:${email}?subject=${encodeURIComponent(sujetDemande(pieces))}&body=${corps}`
 }

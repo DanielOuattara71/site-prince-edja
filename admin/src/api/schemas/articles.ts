@@ -39,6 +39,8 @@ export const articleSchema = z.object({
   /** Catégorie de la famille `article` (SCHEMAS § 3.4, NOUVEAU). */
   categorieId: idSchema.nullable().optional(),
   imageId: idSchema.nullable(),
+  /** Contrat 1.12.0 § 29.1 : média de type `application/pdf`, joint à l'article. */
+  pdfId: idSchema.nullable().optional(),
   tagIds: z.array(idSchema),
   aLaUne: z.boolean(),
   dureeLecture: z.number().int().positive().nullable(),
@@ -57,6 +59,7 @@ export const traductionArticleEcriture = z.strictObject({
 })
 
 const champsArticleEcriture = {
+  pdfId: idSchema.nullable().optional(),
   // Nom de la catégorie choisie : les huit de départ, ou une catégorie ajoutée dans Catégories.
   categorie: z.string().trim().min(1, 'Catégorie obligatoire.').max(80),
   categorieId: idSchema.nullable().optional(),

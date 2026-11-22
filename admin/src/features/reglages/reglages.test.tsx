@@ -87,8 +87,7 @@ describe('lot 4 — écrans singletons', () => {
     unmount()
   })
 
-  // Écran retiré du menu et des routes (C2) : test conservé, décision en C9 (docs/ELEMENTS-RETIRES.md).
-  it.skip('/navigation s’affiche sans violation sérieuse', async () => {
+  it('/navigation s’affiche sans violation sérieuse', async () => {
     const { container, unmount } = await ouvrir('admin', '/navigation')
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Navigation du site' }),
@@ -97,8 +96,7 @@ describe('lot 4 — écrans singletons', () => {
     unmount()
   })
 
-  // Écran retiré du menu et des routes (C2) : test conservé, décision en C9 (docs/ELEMENTS-RETIRES.md).
-  it.skip('/textes-interface s’affiche sans violation sérieuse', async () => {
+  it('/textes-interface s’affiche sans violation sérieuse', async () => {
     const { container, unmount } = await ouvrir('admin', '/textes-interface')
     expect(
       await screen.findByRole('heading', { level: 1, name: /Textes d’interface/ }),

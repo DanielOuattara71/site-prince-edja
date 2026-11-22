@@ -5,7 +5,7 @@ import { magasin } from '@/api/mocks/magasin'
 import { violationsGraves } from '@/test/axe'
 import { connecter, utiliserFauxServeur, type RoleEssai } from '@/test/faux-serveur'
 
-/** E1 : hub Projets (photo de référence), listes par format, épisodes rattachés, Livres. */
+/** E1 : liste des projets, cartes de création, listes par format, épisodes rattachés, Livres. */
 
 utiliserFauxServeur()
 afterEach(() => window.history.pushState({}, '', '/'))
@@ -17,57 +17,10 @@ async function ouvrir(role: RoleEssai, chemin: string) {
 }
 const titre = (nom: string | RegExp) => screen.findByRole('heading', { level: 1, name: nom })
 
-describe('hub Projets (ECRANS § 3.1)', () => {
-  it('libellés exacts de la photo, compteurs, aucune violation axe', async () => {
-    const { container } = await ouvrir('admin', '/projets')
-    await titre('Projets')
-    expect(
-      screen.getByText('Créez et organisez vos projets, épisodes et leur affichage public.'),
-    ).toBeTruthy()
-    const creerProjet = screen.getByRole('link', { name: /Créer un projet/ })
-    expect(creerProjet.textContent).toContain('Contenu, affiche, format, template')
-    expect(creerProjet.getAttribute('href')).toBe('/projets/nouveau')
-    expect(screen.getByRole('link', { name: /Créer un épisode/ }).textContent).toContain(
-      'Affiche, synopsis, vidéo, destination',
-    )
-    expect(screen.getByRole('heading', { level: 2, name: 'Moteur de rendu public' })).toBeTruthy()
-    expect(
-      screen.getByText(
-        'Chaque projet choisit son template ; tous les épisodes partagent un template unique.',
-      ),
-    ).toBeTruthy()
-    // Trois templates, chacun avec son projet de référence (PROPOSITION-TEMPLATES-PROJETS § 4).
-    for (const [carte, reference] of [
-      ['Template Film', 'Comme X’PLORE'],
-      ['Template Programme', 'Comme Taste & Travel'],
-      ['Template Bibliothèque', 'Comme Archive d’Afrique'],
-    ] as const) {
-      const lien = screen.getByRole('link', { name: new RegExp(carte) })
-      expect(lien.textContent).toContain(reference)
-      expect(lien.getAttribute('href')).toMatch(/^\/projets\/liste\?template=/)
-    }
-    const episode = screen.getByRole('link', { name: /Template unique d'épisode/ })
-    expect(episode.textContent).toContain('Utilisé par tous les projets')
-    expect(episode.getAttribute('href')).toBe('/episodes')
-    expect(screen.getByText('Les mises en page sont gérées dans le code du site.')).toBeTruthy()
-    const donnees = screen.getByRole('heading', { level: 2, name: 'Données partagées' })
-    const bloc = donnees.closest('section') as HTMLElement
-    for (const puce of ['Destinations', 'Guides PDF', 'Villes', 'Archive'])
-      expect(within(bloc).getByRole('link', { name: new RegExp(puce) })).toBeTruthy()
-    // Un compteur par carte : le projet d'exemple utilise le template Film.
-    await waitFor(() =>
-      expect(screen.getByRole('link', { name: /Template Film/ }).textContent).toContain('1 projet'),
-    )
-    expect(await violationsGraves(container)).toEqual([])
-  })
-
-  it('une carte ouvre la liste de son template ; « Nouveau projet » garde le template', async () => {
-    await ouvrir('admin', '/projets')
-    fireEvent.click(await screen.findByRole('link', { name: /Template Programme/ }))
-    expect(await titre('Template Programme')).toBeTruthy()
-    expect(window.location.pathname).toBe('/projets/liste')
-    const fil = screen.getByRole('navigation', { name: /Fil d’Ariane/ })
-    expect(within(fil).getByRole('link', { name: 'Projets' }).getAttribute('href')).toBe('/projets')
+describe('liste des projets', () => {
+  it('« Nouveau projet » garde le template choisi dans le filtre', async () => {
+    await ouvrir('admin', '/projets/liste?template=programme')
+    expect(await titre('Liste des projets')).toBeTruthy()
     const creer = screen.getByRole('link', { name: 'Nouveau projet' })
     expect(creer.getAttribute('href')).toBe('/projets/nouveau?template=programme')
     fireEvent.click(creer)
@@ -77,6 +30,20 @@ describe('hub Projets (ECRANS § 3.1)', () => {
     // Champs propres au template Programme : escales et programme ; pas de saison (Film).
     expect(screen.getByRole('group', { name: 'Escales' })).toBeTruthy()
     expect(screen.queryByLabelText(/^Saison/)).toBeNull()
+  })
+})
+
+describe('création depuis la liste des projets', () => {
+  it('les deux cartes « Créer » sont en tête de /projets', async () => {
+    const { container } = await ouvrir('admin', '/projets')
+    expect(await titre('Liste des projets')).toBeTruthy()
+    const creerProjet = screen.getByRole('link', { name: /Créer un projet/ })
+    expect(creerProjet.textContent).toContain('Contenu, affiche, format, template')
+    expect(creerProjet.getAttribute('href')).toBe('/projets/nouveau')
+    const creerEpisode = screen.getByRole('link', { name: /Créer un épisode/ })
+    expect(creerEpisode.textContent).toContain('Affiche, synopsis, vidéo, destination')
+    expect(creerEpisode.getAttribute('href')).toBe('/episodes/nouveau')
+    expect(await violationsGraves(container)).toEqual([])
   })
 })
 
@@ -95,15 +62,14 @@ describe('templates de projet (PROPOSITION-TEMPLATES-PROJETS)', () => {
     ).toBe(true)
   })
 
-  it('changer de template dit ce qui apparaît et ce qui ne s’affiche plus, sans rien effacer', async () => {
+  it('le template est bloqué dès qu’un projet existe', async () => {
     const projet = magasin.projets[0]
     if (!projet) throw new Error('Jeu d’exemple absent.')
     await ouvrir('admin', `/projets/${projet.id}`)
-    fireEvent.click(await screen.findByRole('radio', { name: /Template Bibliothèque/ }))
-    const alerte = await screen.findByText(/Changer de template ne supprime aucune donnée/)
-    const bloc = alerte.parentElement as HTMLElement
-    expect(bloc.textContent).toContain('Entrées documentées')
-    expect(bloc.textContent).toContain('Carte des étapes')
+    // Le projet a un template assigné : le choix est bloqué et un message le dit.
+    expect(await screen.findByText(/Verrouillé — le template est assigné au projet et ne change plus./)).toBeTruthy()
+    const radios = screen.getAllByRole('radio', { name: /Template \w+/ }) as HTMLInputElement[]
+    expect(radios.every((r) => r.disabled)).toBe(true)
   })
 
   it('un projet enregistré sans template prend celui de son format', async () => {
@@ -134,12 +100,31 @@ describe('templates de projet (PROPOSITION-TEMPLATES-PROJETS)', () => {
 })
 
 describe('projets et épisodes (ECRANS § 3.3, § 3.4)', () => {
+  it.each([
+    ['bibliotheque', 'Entrées de la bibliothèque', 'Nouvelle entrée d’archive', 'archive'],
+    ['programme', 'Escales du programme', 'Villes', '/villes'],
+  ] as const)('un projet %s ne propose pas de créer un épisode', async (template, libelleBloc, lien, chemin) => {
+    const projet = magasin.projets[0]
+    if (!projet) throw new Error('Jeu d’exemple absent.')
+    const precedent = projet.template
+    projet.template = template
+    try {
+      await ouvrir('admin', `/projets/${projet.id}`)
+      const bloc = await screen.findByRole('region', { name: libelleBloc })
+      expect(within(bloc).getByRole('link', { name: lien }).getAttribute('href')).toContain(chemin)
+      expect(screen.queryByRole('region', { name: 'Épisodes du projet' })).toBeNull()
+      expect(screen.queryByRole('link', { name: /Ajouter un épisode/ })).toBeNull()
+    } finally {
+      projet.template = precedent
+    }
+  })
+
   it('un épisode créé depuis la fiche d’un projet lui est rattaché', async () => {
     const projet = magasin.projets[0]
     if (!projet) throw new Error('Jeu d’exemple absent.')
     await ouvrir('admin', `/projets/${projet.id}`)
     const bloc = await screen.findByRole('region', { name: 'Épisodes du projet' })
-    const creer = await within(bloc).findByRole('link', { name: /Créer un épisode dans ce projet/ })
+    const creer = await within(bloc).findByRole('link', { name: /Ajouter un épisode/ })
     expect(creer.getAttribute('href')).toBe(`/episodes/nouveau?projetId=${projet.id}`)
     fireEvent.click(creer)
     await titre('Nouvel épisode')
@@ -148,6 +133,31 @@ describe('projets et épisodes (ECRANS § 3.3, § 3.4)', () => {
         projet.id,
       ),
     )
+  })
+
+  it('la suppression d’un projet avec épisodes est refusée et dit combien', async () => {
+    const projet = magasin.projets[0]
+    if (!projet) throw new Error('Jeu d’exemple absent.')
+    // Le mock applique RG-32 comme le back end réel : un épisode rattaché empêche la suppression.
+    magasin.episodes.push({
+      ...structuredClone(magasin.episodes[0]!),
+      id: '00000000-0000-4000-8000-000000000f99',
+      projetId: projet.id,
+    })
+    const nombre = magasin.episodes.filter((e) => e.projetId === projet.id).length
+
+    await ouvrir('admin', '/projets/liste')
+    // Ouvrir le dialogue de suppression sur la carte du projet, puis confirmer.
+    fireEvent.click(await screen.findByRole('button', { name: 'Supprimer' }))
+    const dialogue = await screen.findByRole('dialog', { name: 'Supprimer ce projet ?' })
+    fireEvent.click(within(dialogue).getByRole('button', { name: 'Supprimer' }))
+
+    const refus = await screen.findByRole('alert', { name: 'Ce projet contient des épisodes' })
+    expect(refus.textContent).toContain('Ce projet contient des épisodes')
+    expect(refus.textContent).toContain(String(nombre))
+    expect(screen.queryByRole('dialog')).toBeNull()
+    const lien = within(refus).getByRole('link', { name: 'Voir les épisodes de ce projet' })
+    expect(lien.getAttribute('href')).toBe(`/episodes?projetId=${projet.id}`)
   })
 })
 
@@ -177,7 +187,7 @@ describe('Livres (ECRANS § 4.3)', () => {
     fireEvent.change(document.getElementById('variantes.0.libelle') as HTMLElement, {
       target: { value: 'Broché' },
     })
-    fireEvent.click(screen.getAllByRole('button', { name: /^Enregistrer/ })[0] as HTMLElement)
+    fireEvent.click(screen.getByRole('button', { name: 'Créer le livre' }))
     await waitFor(() => expect(magasin.livres).toHaveLength(1))
     const livre = magasin.livres[0]
     expect(livre?.reference).toBe('L01')

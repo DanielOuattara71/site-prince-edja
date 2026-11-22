@@ -6,6 +6,8 @@
  * comme squelettes au statut « en préparation », jamais remplis de plausible.
  */
 
+import { img } from '@/lib/images'
+
 export type StatutProjet = 'disponible' | 'en production' | 'en préparation'
 
 export interface Projet {
@@ -23,6 +25,9 @@ export interface Projet {
   categorie: string
   /** Template de la page (docs/PROPOSITION-TEMPLATES-PROJETS.md) : film, programme ou bibliotheque. */
   template: 'film' | 'programme' | 'bibliotheque'
+  /** 1.15.0 § 32.5 : textes du héros, lus sur la fiche projet en mode API. */
+  citation?: string
+  bandeau?: string
   /** Projet sans contenu : les cases vides s'affichent comme telles. */
   aFournir: boolean
   /**
@@ -45,7 +50,7 @@ export const PROJETS: Projet[] = [
     pays: ['Côte d’Ivoire'],
     statut: 'disponible',
     theme: ['Nature', 'Mémoire'],
-    image: `${import.meta.env.BASE_URL}images/xplore/bandeau-foret.jpg`,
+    image: img(`images/xplore/bandeau-foret.jpg`),
     aFournir: false,
     route: '/xplore',
   },
@@ -60,7 +65,7 @@ export const PROJETS: Projet[] = [
     pays: ['Côte d’Ivoire'],
     statut: 'disponible',
     theme: ['Gastronomie', 'Culture'],
-    image: `${import.meta.env.BASE_URL}images/voyage/bandeau-littoral.jpg`,
+    image: img(`images/voyage/bandeau-littoral.jpg`),
     aFournir: false,
     route: '/taste-and-travel',
   },

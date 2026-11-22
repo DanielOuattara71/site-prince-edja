@@ -62,6 +62,13 @@ export interface Univers {
   to: string
 }
 
+export interface ImagePublique {
+  url: string
+  alt: string
+  largeur: number | null
+  hauteur: number | null
+  declinaisons: { largeur: number; url: string }[]
+}
 export interface Episode {
   slug: string
   numero: string
@@ -70,6 +77,10 @@ export interface Episode {
   pitch: string
   image: string
   guide?: string
+  /** Projet propriétaire de l'épisode (contrat 1.6.0 § 23.3) ; null tant que non lié. */
+  projetId?: string | null
+  /** Illustrations complémentaires, ordonnées (contrat 1.6.0 § 23.2). */
+  illustrations?: ImagePublique[]
   tags: Tags
 }
 
@@ -106,6 +117,9 @@ export interface CommerceBijou {
   /** Prix d'avant, quand la pièce est soldée. */
   ancienPrix?: number | null
   prixConfirme: boolean
+  /** UUID des variantes publiées de la pièce (public depuis le contrat 1.10.0), dans l'ordre
+   *  de la fiche. Vide pour les données de départ locales (aucun identifiant API). */
+  varianteIds: string[]
   matieres: string[]
   tailles: string[]
   edition: { numero: number; total: number } | null
@@ -134,6 +148,10 @@ export interface Article {
   date?: string
   /** Temps de lecture en minutes. Absent tant que le corps de l'article n'existe pas. */
   lecture?: number
+  /** URL directe du PDF joint, si l'article en porte un (contrat 1.12.0 § 29.3). */
+  pdf?: string
+  /** Corps riche (Tiptap) tel que renvoyé par l'API publique ; absent en mode démonstration. */
+  corps?: unknown
   tags: Tags
 }
 

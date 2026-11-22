@@ -53,9 +53,12 @@ export const handlersEditorialLot3 = [
     modification: ecritureArchive.modification,
     champTitre: 'titre',
     slugs: true,
+    // 1.15.0 § 32.2 : filtre par projet (les villes/destinations le filtrent via leurs relations).
+    filtrer: (o, p) => !p.get('projetId') || o.projetId === p.get('projetId'),
     traduction: (e) => ({ titre: e['titre'], texte: texteOuNull(e['texte']) }),
     champsInitiaux: (e) => ({
       categorie: String(e['categorie']),
+      projetId: champ<string | null>(e, 'projetId', null),
       fiabilite: champ<Archive['fiabilite']>(e, 'fiabilite', null),
       epoque: champ<string | null>(e, 'epoque', null),
       imageId: champ<string | null>(e, 'imageId', null),

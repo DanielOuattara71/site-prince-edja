@@ -24,6 +24,7 @@ export type EtatEnregistrement = 'enregistre' | 'modifie' | 'en_cours' | 'erreur
 interface ContenuBarre {
   statut: StatutContenu
   publieLe: string | null
+  modifieLe?: string | null | undefined
   champsAFournir: string[]
   createurId?: string | null | undefined
 }
@@ -54,7 +55,7 @@ export function BarreStatut({
   enregistreA = null,
 }: {
   ressource: RessourceContenu
-  /** `null` : contenu pas encore créé (seul « Enregistrer le brouillon » est proposé). */
+  /** `null` : contenu pas encore créé (un seul bouton de création est proposé). */
   contenu: ContenuBarre | null
   enregistrement: EtatEnregistrement
   surEnregistrer: () => void
@@ -89,6 +90,16 @@ export function BarreStatut({
               {t('barre.programmeLe')} {formaterDateHeure(contenu.publieLe)} ({t('barre.fuseau')})
             </span>
           ) : null}
+          {contenu?.modifieLe ? (
+            <span className="text-caption text-ink-700">
+              {t('barre.modifieLe')} {formaterDateHeure(contenu.modifieLe)}
+            </span>
+          ) : null}
+          {contenu?.publieLe && etat !== 'programme' ? (
+            <span className="text-caption text-ink-700">
+              {t('barre.publieLe')} {formaterDateHeure(contenu.publieLe)}
+            </span>
+          ) : null}
           <output
             aria-live="polite"
             className="inline-flex items-center gap-1.5 text-caption text-ink-700"
@@ -115,9 +126,19 @@ export function BarreStatut({
             >
               {actionEnCours === 'enregistrer'
                 ? t('barre.enregistrementEnCours')
-                : contenu
-                  ? t('barre.enregistrer')
-                  : t('barre.enregistrerBrouillon')}
+                : ressource === 'articles'
+                  ? t('barre.enregistrerArticle')
+                  : contenu
+                    ? t('barre.enregistrer')
+                    : ressource === 'projets'
+                      ? t('barre.creerProjet')
+                      : ressource === 'bijoux'
+                        ? t('barre.creerBijou')
+                        : ressource === 'livres'
+                          ? t('barre.creerLivre')
+                          : ressource === 'createurs'
+                            ? t('barre.creerCreateur')
+                            : t('barre.enregistrerBrouillon')}
             </Bouton>
           ) : null}
           {actions.map((action) => (

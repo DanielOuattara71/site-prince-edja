@@ -52,6 +52,9 @@ export const handlersMedias = [
       if (p.get('createur') && media.createurId !== p.get('createur')) return false
       if (p.get('aFournir') === 'true' && media.champsAFournir.length === 0) return false
       if (p.get('nonUtilise') === 'true' && media.usages > 0) return false
+      const emplacement = p.get('emplacement')?.trim().toLowerCase()
+      if (emplacement && !(media.emplacement ?? '').toLowerCase().includes(emplacement))
+        return false
       return true
     })
     const tries = trier(url, filtres, { creeLe: (m) => m.creeLe }, '-creeLe')
@@ -106,6 +109,7 @@ export const handlersMedias = [
       const valeur = formulaire?.get(cle)
       return typeof valeur === 'string' && valeur.trim() ? valeur.trim() : null
     }
+    const emplacement = texte('emplacement')
     const id = crypto.randomUUID()
     const media: Media = {
       id,
@@ -116,6 +120,7 @@ export const handlersMedias = [
       poids: fichier.size,
       credit: texte('credit'),
       decoratif: texte('decoratif') === 'true',
+      emplacement,
       createurId: texte('createurId') ?? ID_CREATEUR_PRINCIPAL,
       usages: 0,
       declinaisons: [],
@@ -135,6 +140,43 @@ export const handlersMedias = [
     magasin.medias.unshift(media)
     journaliser(garde.compte, 'creation', 'medias', media.id, null, media)
     return json(enrichirMedia(media), 201)
+  }),
+
+  // Contrat 1.19.0 § 36 : remplacement du binaire en place, même identifiant.
+  http.post(`${RACINE}/:id/remplacer`, async ({ request, params }) => {
+    const media = trouver(params['id'])
+    if (!media) return introuvable()
+    const garde = autoriser(request, 'modifier', 'medias')
+    if (!garde.ok) return garde.reponse
+    const formulaire = await request.formData().catch(() => null)
+    const brut = formulaire?.get('fichier')
+    const fichier =
+      brut && typeof brut === 'object' && 'arrayBuffer' in brut && 'name' in brut
+        ? (brut as File)
+        : null
+    if (!fichier) {
+      return erreur(422, 'VALIDATION', 'Aucun fichier reçu.', { champ: 'fichier' })
+    }
+    if (!(TYPES_MEDIA_ACCEPTES as readonly string[]).includes(fichier.type)) {
+      return erreur(422, 'FICHIER_REFUSE', 'Ce type de fichier n’est pas accepté.', {
+        champ: 'fichier',
+      })
+    }
+    const limite = fichier.type === 'application/pdf' ? POIDS_MAX_PDF : POIDS_MAX_IMAGE
+    if (fichier.size > limite || fichier.size === 0) {
+      return erreur(422, 'FICHIER_REFUSE', 'Ce fichier est trop lourd.', { champ: 'fichier' })
+    }
+    const perimee = versionPerimee(Number(formulaire?.get('version')), media.version)
+    if (perimee) return perimee
+    const avant = { ...media }
+    Object.assign(media, {
+      url: urlApercu(fichier, media.id),
+      mime: fichier.type,
+      poids: fichier.size,
+      version: media.version + 1,
+    })
+    journaliser(garde.compte, 'modification', 'medias', media.id, avant, media)
+    return json(enrichirMedia(media))
   }),
 
   http.patch(`${RACINE}/:id`, async ({ request, params }) => {

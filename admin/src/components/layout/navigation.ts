@@ -6,6 +6,7 @@ import {
   Inbox,
   LayoutDashboard,
   Newspaper,
+  ScrollText,
   Settings,
   Wrench,
   type LucideIcon,
@@ -41,7 +42,7 @@ export interface EntreeMenu {
   icone: LucideIcon
   bloc: BlocMenu | null
   onglets: Onglet[]
-  /** Faux pour une entrée sans barre d'onglets (Journal, hub Projets, tableau de bord). */
+  /** Faux pour une entrée sans barre d'onglets (Journal, liste des projets, tableau de bord). */
   barreOnglets: boolean
   visibilite?: { ressource: Ressource; action: Action }
 }
@@ -67,11 +68,15 @@ export const MENU: EntreeMenu[] = [
     libelle: t('menu.journal'),
     icone: Newspaper,
     bloc: 'contenus',
-    barreOnglets: false,
-    onglets: [onglet('menu.articles', '/articles', 'articles')],
+    barreOnglets: true,
+    onglets: [
+      onglet('menu.articles', '/articles', 'articles'),
+      onglet('menu.categoriesArticles', '/articles/categories', 'categories', 'modifier'),
+    ],
   },
   {
-    // Hub (ECRANS § 3.1) : pas de barre d'onglets, les listes s'ouvrent depuis les cartes.
+    // Hub (ECRANS § 3.1) : pas de barre d'onglets, les listes s'ouvrent depuis les cartes ;
+    // « Catégories de projets » s'ouvre depuis une puce du bloc « Données partagées ».
     cle: 'projets',
     libelle: t('menu.projets'),
     icone: Clapperboard,
@@ -80,11 +85,26 @@ export const MENU: EntreeMenu[] = [
     visibilite: { ressource: 'projets', action: 'lire' },
     onglets: [
       onglet('menu.projets', '/projets', 'projets'),
-      onglet('menu.episodes', '/episodes', 'episodes'),
+      onglet('menu.categoriesProjets', '/projets/categories', 'categories', 'modifier'),
       onglet('menu.destinations', '/destinations', 'destinations'),
       onglet('menu.guides', '/guides', 'medias'),
       onglet('menu.villes', '/villes', 'villes'),
       onglet('menu.archive', '/archive', 'archive'),
+    ],
+  },
+  {
+    // Rétablis le 16/11/2026, à la demande du client (C2 retirée pour cette famille).
+    // Les écrans éditoriaux du site : univers, jalons, offres et motifs de contact.
+    cle: 'le-site',
+    libelle: t('menu.leSite'),
+    icone: ScrollText,
+    bloc: 'contenus',
+    barreOnglets: true,
+    onglets: [
+      onglet('menu.univers', '/univers', 'univers'),
+      onglet('menu.jalons', '/jalons', 'jalons'),
+      onglet('menu.offres', '/offres', 'offres'),
+      onglet('menu.motifsContact', '/motifs-contact', 'motifs-contact'),
     ],
   },
   {
@@ -96,9 +116,11 @@ export const MENU: EntreeMenu[] = [
     onglets: [
       onglet('menu.bijoux', '/bijoux', 'bijoux'),
       onglet('menu.livres', '/livres', 'livres'),
-      onglet('menu.categories', '/categories', 'categories', 'modifier'),
+      // Seuls les catégories de produits restent de la boutique (lien RG-29).
+      onglet('menu.categoriesProduits', '/categories', 'categories', 'modifier'),
       // `creer` : réservé aux admins ; masqué pour l'éditeur et le vendeur (ECRANS § 4).
       onglet('menu.createurs', '/createurs', 'createurs', 'creer'),
+      onglet('menu.commandes', '/commandes', 'commandes'),
     ],
   },
   {
@@ -146,9 +168,12 @@ export const MENU: EntreeMenu[] = [
     barreOnglets: true,
     visibilite: { ressource: 'parametres', action: 'lire' },
     onglets: [
+      onglet('menu.identite', '/identite', 'parametres'),
       onglet('menu.parametres', '/parametres', 'parametres'),
       onglet('menu.pagesLegales', '/pages-legales', 'pages-legales', 'modifier'),
       onglet('menu.tags', '/tags', 'tags', 'creer'),
+      onglet('menu.navigation', '/navigation', 'parametres'),
+      onglet('menu.textesInterface', '/textes-interface', 'parametres'),
     ],
   },
   {

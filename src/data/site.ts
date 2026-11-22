@@ -1,4 +1,5 @@
 import type { SiteInfo } from '@/types'
+import { img } from '@/lib/images'
 
 /**
  * Routes dont le haut de page est sombre : la barre y passe en texte crème dès
@@ -41,8 +42,8 @@ export const SITE: SiteInfo = {
   // Le hero est fourni à deux largeurs : un téléphone charge 51 Ko, un grand écran
   // 106 Ko. L'export PNG d'origine (1,65 Mo pour la même image) ne sert plus de
   // référence et n'a pas été conservé dans les sources.
-  heroImage: `${import.meta.env.BASE_URL}images/hero/hero-prince-edja-2000.jpg`,
-  heroSrcSet: `${import.meta.env.BASE_URL}images/hero/hero-prince-edja-1200.jpg 1200w, ${import.meta.env.BASE_URL}images/hero/hero-prince-edja-2000.jpg 2000w`,
+  heroImage: img(`images/hero/hero-prince-edja-2000.jpg`),
+  heroSrcSet: `${img(`images/hero/hero-prince-edja-1200.jpg`)} 1200w, ${img(`images/hero/hero-prince-edja-2000.jpg`)} 2000w`,
   heroSizes: '100vw',
   stats: [
     { value: 600, suffix: 'K+', label: 'Communauté' },

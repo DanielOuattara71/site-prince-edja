@@ -69,6 +69,8 @@ export interface ParametresMedias {
   page?: number
   pageSize?: number
   q?: string
+  /** Sous-chaîne insensible à la casse sur l'emplacement (contrat 1.6.0 § 23.1). */
+  emplacement?: string
   mime?: 'image' | 'pdf'
   createur?: string
   aFournir?: boolean
@@ -83,14 +85,25 @@ export const medias = {
     return requete(`/medias/${idSchema.parse(id)}`, { schema: mediaSchema })
   },
   /** Un fichier par requête (§ 11.2) ; l'envoi multiple enchaîne les appels (D-20). */
-  envoyer(fichier: File, champs: EnvoiMedia = {}): Promise<Media> {
+  envoyer(fichier: File, champs: EnvoiMedia): Promise<Media> {
     const valides = envoiMediaSchema.parse(champs)
     const formulaire = new FormData()
     formulaire.append('fichier', fichier)
     for (const [cle, valeur] of Object.entries(valides)) {
-      if (valeur !== undefined) formulaire.append(cle, String(valeur))
+      if (valeur !== undefined && valeur !== null) formulaire.append(cle, String(valeur))
     }
     return requete('/medias', { methode: 'POST', formulaire, schema: mediaSchema })
+  },
+  /** Remplacer le binaire en place (contrat 1.19.0 § 36) : même id, nouvelle version. */
+  remplacer(id: string, fichier: File, version: number): Promise<Media> {
+    const formulaire = new FormData()
+    formulaire.append('fichier', fichier)
+    formulaire.append('version', String(version))
+    return requete(`/medias/${id}/remplacer`, {
+      methode: 'POST',
+      formulaire,
+      schema: mediaSchema,
+    })
   },
   modifier(id: string, modification: ModificationMedia): Promise<Media> {
     return requete(`/medias/${id}`, {
@@ -117,7 +130,14 @@ export const site = {
   publication(id: string): Promise<Publication> {
     return requete(`/site/publications/${id}`, { schema: publicationSchema })
   },
-  publications(parametres: { page?: number; etat?: Publication['etat'] } = {}) {
+  publications(
+    parametres: {
+      page?: number
+      pageSize?: number
+      etat?: Publication['etat']
+      motif?: Publication['motif']
+    } = {},
+  ) {
     return requete('/site/publications', {
       query: { ...parametres },
       schema: pageSchema(publicationSchema),

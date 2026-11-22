@@ -5,7 +5,7 @@ Tu travailles sur **un des trois projets** : back end, admin ou site public. Le 
 ## Ordre de lecture
 1. `DOCUMENTATION-GUIDE-IA-PRINCE-EDJA.md` — vocabulaire, architecture, décisions.
 2. `SCHEMAS-ENTITES-PRINCE-EDJA.md` — forme exacte des données (catégories, produits bijoux et livres, pagination).
-3. `ECRANS-ADMIN-PRINCE-EDJA.md` — écrans de l'admin (le hub Projets suit la photo de référence).
+3. `ECRANS-ADMIN-PRINCE-EDJA.md` — écrans de l'admin (les cartes de création sont en tête de la liste des projets).
 4. `LIAISON-ET-GUIDE-DE-DEPOT-PRINCE-EDJA.md` — comment le site public et l'admin sont reliés.
 5. `prompts/PROMPT-CORRECTION-PRINCE-EDJA.md` — ta mission, étape par étape.
 

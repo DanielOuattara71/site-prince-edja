@@ -92,7 +92,7 @@ Variables : `PUBLIC_API_URL`, `PUBLIC_LANGUES`. Échec d'un appel = **la constru
 | `data/content.ts` — `CATEGORIES_JOURNAL` | `GET /categories?famille=article` | Boutique → Catégories (section Articles) |
 | `data/projets.ts` — projets | `GET /contenus/projets` | Projets → listes de projets |
 | (catégories de projets) | `GET /categories?famille=projet` | Catégories (section Projets) |
-| épisodes | `GET /contenus/episodes` (avec `projetSlug`) | Projets → Épisodes |
+| épisodes | `GET /contenus/episodes` (avec `projetSlug`) | Fiche du projet → « Épisodes du projet » |
 | destinations, guides | `GET /contenus/destinations` | Projets → Destinations / Guides PDF |
 | villes Taste & Travel | `GET /contenus/villes` | Projets → Villes |
 | archive | `GET /contenus/archive` | Projets → Archive |

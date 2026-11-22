@@ -177,6 +177,7 @@ export function mediasInitiaux(): Media[] {
     poids: 240_000,
     credit,
     decoratif: false,
+    emplacement: texteAlt === 'Exemple : paysage décrit pour les lecteurs d’écran' ? 'À propos — bandeau' : null,
     createurId: ID_CREATEUR_PRINCIPAL,
     usages: 0,
     declinaisons: [480, 960, 1600].map((largeur) => ({
@@ -475,7 +476,7 @@ export function projetsInitiaux(): Projet[] {
       template: 'film',
       categorieId: ID_CATEGORIE_FILM,
       annee: null,
-      imageId: null,
+      imageId: ids.mediaComplet,
       cible: null,
       ordre: 0,
       traductions: {
@@ -1126,7 +1127,7 @@ export interface EmplacementEssai {
 }
 
 /**
- * Photos fixes du site (ECRANS § 5.2, liste de départ « à confirmer par le site public », E3).
+ * Photos fixes du site (contrat 1.18.0 §§ 34-35) : les cinq emplacements que le site rend réellement.
  * Aucun format conseillé n'est inventé : il reste à préciser.
  */
 export function emplacementsInitiaux(): EmplacementEssai[] {
@@ -1134,11 +1135,8 @@ export function emplacementsInitiaux(): EmplacementEssai[] {
     ['accueil.heros', 'Accueil — héros'],
     ['accueil.portrait', 'Accueil — portrait'],
     ['apropos.portrait', 'À propos — portrait'],
-    ['apropos.bandeau', 'À propos — bandeau'],
     ['boutique.bandeau', 'Boutique — bandeau'],
-    ['journal.bandeau', 'Journal — bandeau'],
-    ['contact.bandeau', 'Contact — bandeau'],
-    ['partage.og', 'Image de partage (réseaux)'],
+    ['histoires.bandeau', 'Histoires — bandeau'],
   ].map(([cle, libelle]) => ({
     cle: cle ?? '',
     libelle: libelle ?? '',

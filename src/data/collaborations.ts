@@ -8,7 +8,7 @@
  *
  * Le logo se dépose dans `public/images/collab/<slug>.{svg,png,jpg}` et son champ
  * s'écrit avec la base du site, comme tout chemin de `public/` :
- * `${import.meta.env.BASE_URL}images/collab/<slug>.png`.
+ * img(`images/collab/<slug>.png`).
  */
 export interface Partenaire {
   nom: string

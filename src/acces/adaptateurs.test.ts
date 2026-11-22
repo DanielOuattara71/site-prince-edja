@@ -229,6 +229,7 @@ describe('adaptateurs de la vue publique (S2)', () => {
       reference: '01',
       image,
       categorie: { slug: 'b', nom: 'Bijoux & accessoires' },
+      varianteIds: ['v-1', 'v-2'],
       prixAffiche: 25000,
       prixConfirme: true,
       ancienPrix: null,
@@ -237,8 +238,8 @@ describe('adaptateurs de la vue publique (S2)', () => {
       culture: null,
       galerie: [image],
       variantes: [
-        { matiere: 'Laiton', taille: null },
-        { matiere: 'Laiton', taille: 'M' },
+        { id: 'v-1', matiere: 'Laiton', taille: null },
+        { id: 'v-2', matiere: 'Laiton', taille: 'M' },
       ],
       createur: { nom: 'Exemple : atelier', pays: null, ville: null, bio: null },
     }
@@ -247,6 +248,7 @@ describe('adaptateurs de la vue publique (S2)', () => {
       culture: '',
       commerce: {
         prix: 25000,
+        varianteIds: ['v-1', 'v-2'],
         matieres: ['Laiton'],
         tailles: ['M'],
         galerie: [image.url],

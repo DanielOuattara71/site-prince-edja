@@ -57,6 +57,7 @@ export const DICTIONNAIRE = {
     'mascotte.cta': 'Découvrir mon univers',
 
     'preuves.etiquette': 'Chiffres clés',
+    'mentions.etiquette': 'Mentions',
     'preuves.aFournir': 'À fournir',
 
     'alaune.article': 'Dernier article',
@@ -103,14 +104,25 @@ export const DICTIONNAIRE = {
     'b2b.choisirType': 'Choisissez le type de collaboration',
     'histoires.aLaUne': 'Projet à la une',
 
+    'achat.bientot': 'Achat bientôt disponible',
+    'achat.panierBientot': 'Panier bientôt disponible',
+    'achat.indisponible': 'La vente en ligne arrive. En attendant, ajoutez les pièces qui vous intéressent à votre sélection : la maison vous répondra avec les disponibilités et les prix.',
+
     'demande.titre': 'Votre demande',
     'demande.fermer': 'Fermer la demande',
     'demande.vide': 'Aucune pièce sélectionnée pour l’instant.',
     'demande.surDemande': 'Sur demande',
     'demande.retirer': 'Retirer',
     'demande.envoyer': 'Envoyer la demande',
+    'demande.nom': 'Votre nom',
+    'demande.email': 'Votre e-mail',
+    'demande.message': 'Un mot pour la maison (facultatif)',
     'demande.envoyee':
+      'Votre demande est bien envoyée. La maison revient vers vous avec les disponibilités et les délais.',
+    'demande.messagerie':
       'Votre client de messagerie vient de s’ouvrir avec la sélection. La maison répond avec les disponibilités et les délais.',
+    'demande.echec':
+      'L’envoi a échoué. Réessayez dans un instant, ou écrivez directement à la maison.',
     'demande.explication':
       'La collection se vend sur demande : aucun paiement n’a lieu sur ce site. Les prix validés apparaîtront ici le jour où la maison les communiquera.',
     'demande.vider': 'Vider la sélection',
@@ -213,6 +225,7 @@ export const DICTIONNAIRE = {
     'mascotte.cta': 'Discover my universe',
 
     'preuves.etiquette': 'Key figures',
+    'mentions.etiquette': 'Mentions',
     'preuves.aFournir': 'To be provided',
 
     'alaune.article': 'Latest article',
@@ -258,14 +271,25 @@ export const DICTIONNAIRE = {
     'b2b.choisirType': 'Choose the type of partnership',
     'histoires.aLaUne': 'Featured project',
 
+    'achat.bientot': 'Online purchase coming soon',
+    'achat.panierBientot': 'Basket coming soon',
+    'achat.indisponible': 'Online shopping is coming. In the meantime, add the pieces you like to your selection: the house will reply with availability and prices.',
+
     'demande.titre': 'Your request',
     'demande.fermer': 'Close the request',
     'demande.vide': 'No piece selected yet.',
     'demande.surDemande': 'On request',
     'demande.retirer': 'Remove',
     'demande.envoyer': 'Send the request',
+    'demande.nom': 'Your name',
+    'demande.email': 'Your email',
+    'demande.message': 'A note for the house (optional)',
     'demande.envoyee':
+      'Your request went through. The house replies with availability and lead times.',
+    'demande.messagerie':
       'Your email client just opened with the selection. The house replies with availability and lead times.',
+    'demande.echec':
+      'Sending failed. Try again in a moment, or write to the house directly.',
     'demande.explication':
       'The collection is sold on request: no payment happens on this site. Validated prices will appear here once the house provides them.',
     'demande.vider': 'Clear the selection',

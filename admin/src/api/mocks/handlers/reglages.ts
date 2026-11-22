@@ -6,6 +6,7 @@ import { API, erreur, json, lireCorps, paginer, vide } from '@/api/mocks/reponse
 import {
   entreeChiffreSchema,
   entreeMotifSchema,
+  modificationIdentiteSchema,
   modificationChiffreSchema,
   modificationMotifSchema,
   modificationNavigationSchema,
@@ -19,6 +20,22 @@ import {
  * à 13.5) demandent en plus une reconstruction du site (motif `reglage`).
  */
 const ordreSchema = z.strictObject({ ids: z.array(z.uuid()).min(1) })
+
+/** Document d'identité du faux serveur (contrat 1.20.0 § 37.2). */
+const identiteSimulee: Record<string, unknown> = {
+  version: 1,
+  nom: 'Prince Edja',
+  email: 'contact@ohenetour.com',
+  linkedin: null,
+  localisation: null,
+  stats: [],
+  traductions: {
+    fr: {
+      role: '', signature: '', manifeste: '', devise: null, mission: null,
+      tagline: [], bio: [], linkedinLabel: null,
+    },
+  },
+}
 
 /** `422` quand la liste `ids` ne porte pas exactement les éléments d'une collection. */
 function ordreInvalide(ids: string[], existants: Set<string>): boolean {
@@ -199,6 +216,38 @@ export const handlersReglages = [
     for (const motif of magasin.motifsContact) motif.ordre = ids.indexOf(motif.id)
     journaliser(garde.compte, 'ordre', 'motifs-contact', null, null, { ids })
     return json({ ids })
+  }),
+
+  // --- Identité (§ 13.1, 1.20.0) : singleton lu et modifié comme les paramètres ---
+  http.get(`${API}/identite`, ({ request }) => {
+    const garde = autoriser(request, 'lire', 'parametres')
+    if (!garde.ok) return garde.reponse
+    return json(identiteSimulee)
+  }),
+
+  http.patch(`${API}/identite`, async ({ request }) => {
+    const garde = autoriser(request, 'modifier', 'parametres')
+    if (!garde.ok) return garde.reponse
+    const corps = await lireCorps(request, modificationIdentiteSchema)
+    if (!corps.ok) return corps.reponse
+    const perimee = versionPerimee(corps.valeur.version, Number(identiteSimulee.version))
+    if (perimee) return perimee
+    const { version, confirmeModificationHero, ...changements } = corps.valeur
+    void confirmeModificationHero
+    const fr = { ...(identiteSimulee['traductions'] as Record<string, Record<string, unknown>>)['fr'] }
+    for (const cle of [
+      'role', 'signature', 'manifeste', 'devise', 'mission', 'tagline', 'bio', 'linkedinLabel',
+    ]) {
+      if (cle in changements) fr[cle] = (changements as Record<string, unknown>)[cle]
+    }
+    Object.assign(identiteSimulee, changements, {
+      traductions: {
+        ...(identiteSimulee['traductions'] as Record<string, unknown>),
+        fr,
+      },
+      version: Number(version) + 1,
+    })
+    return json(identiteSimulee)
   }),
 
   // --- Paramètres (§ 13.3) : GET + PATCH, chaque champ porte son « qui modifie » ---

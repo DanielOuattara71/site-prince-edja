@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
-import { motion, useReducedMotion, useSpring } from 'motion/react'
+import {motion, useSpring} from 'motion/react'
 import { useHasFinePointer } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/cn'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface MagneticButtonProps {
   children: ReactNode

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import {AnimatePresence, motion} from 'motion/react'
 import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 import type { Bijou } from '@/types'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
@@ -7,6 +7,7 @@ import { usePiegeFocus } from '@/hooks/usePiegeFocus'
 import { DUR, EASE_EXPO } from '@/lib/motion'
 import { formatChapitre } from '@/lib/format'
 import { visuelPiece } from '@/lib/visuels'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface Props {
   pieces: Bijou[]

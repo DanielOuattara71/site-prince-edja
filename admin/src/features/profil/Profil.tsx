@@ -28,7 +28,7 @@ export default function Profil() {
   ]
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-6">
       <TitrePage titre={t('profil.titre')}>{t('profil.titre')}</TitrePage>
 
       <dl className="grid gap-4 sm:grid-cols-2">

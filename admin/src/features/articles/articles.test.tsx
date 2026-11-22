@@ -67,6 +67,15 @@ describe('valeurs du formulaire', () => {
   })
 })
 
+describe('panneau PDF', () => {
+  it('le formulaire de création propose de joindre un PDF à l’article', async () => {
+    await ouvrir('editeur', '/articles/nouveau')
+    await titre('Nouvel article')
+    expect(screen.getByRole('button', { name: 'Déposer un PDF' })).toBeTruthy()
+    expect(screen.getByText('PDF de l’article')).toBeTruthy()
+  }, 40_000)
+})
+
 describe('parcours éditeur', () => {
   it('crée un brouillon, l’adresse suit le titre ; une soumission incomplète liste les manques', async () => {
     await ouvrir('editeur', '/articles/nouveau')
@@ -85,9 +94,7 @@ describe('parcours éditeur', () => {
         (screen.getByRole('combobox', { name: /^Catégorie/ }) as HTMLSelectElement).value,
       ).toBe(idCategorieArticle('Voyage')),
     )
-    fireEvent.click(
-      screen.getAllByRole('button', { name: 'Enregistrer le brouillon' })[0] as HTMLElement,
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer l’article' }))
     await waitFor(() => expect(window.location.pathname).toMatch(/^\/articles\/[0-9a-f-]{36}$/))
     expect(await titre('Exemple : Grand-Bassam l’été')).toBeTruthy()
     expect(magasin.articles[0]?.traductions.fr?.slug).toBe('exemple-grand-bassam-l-ete')
@@ -143,25 +150,40 @@ describe('parcours admin', () => {
 })
 
 describe('liste des articles', () => {
-  it('filtre par statut dans l’adresse ; suppression groupée confirmée (admin)', async () => {
+  it('badges : un PDF joint et des manques s’affichent sur la carte', async () => {
+    const brouillon = magasin.articles.find((a) => a.id === IDS_EXEMPLE.articleBrouillon)
+    if (!brouillon) throw new Error('Fixture du brouillon absente.')
+    brouillon.pdfId = '00000000-0000-4000-8000-00000000000a'
+    await ouvrir('admin', '/articles')
+    await titre('Articles')
+    expect(await screen.findByText('PDF')).toBeTruthy()
+    expect(await screen.findByText('À compléter (3)')).toBeTruthy()
+  }, 40_000)
+
+  it('filtre par statut dans l’adresse ; suppression d’un article depuis la carte (admin)', async () => {
     const { container } = await ouvrir('admin', '/articles')
     await titre('Articles')
-    expect(await screen.findAllByRole('link', { name: /Exemple —/ })).toHaveLength(6)
+    const exemple = magasin.articles
+    expect(exemple.length).toBeGreaterThan(0)
+    const avant = exemple.length
+    const liensAuAvant = await screen.findAllByRole('link', { name: /Exemple —/ })
+    expect(liensAuAvant.length).toBe(avant)
     fireEvent.change(screen.getByLabelText('Statut'), { target: { value: 'brouillon' } })
     await waitFor(() => expect(window.location.search).toContain('statut=brouillon'))
-    await waitFor(() => expect(screen.getAllByRole('link', { name: /Exemple —/ })).toHaveLength(2))
-
-    const tableau = screen.getByRole('table', { name: 'Articles' })
-    fireEvent.click(within(tableau).getByRole('checkbox', { name: 'Sélectionner toute la page' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
-    const dialogue = await screen.findByRole('dialog', {
-      name: 'Supprimer les contenus sélectionnés',
+    await waitFor(() => {
+      expect(screen.getAllByRole('link', { name: /Exemple —/ })).toHaveLength(
+        magasin.articles.filter((a) => a.statut === 'brouillon').length,
+      )
     })
-    expect(dialogue.textContent).toContain('1 élément concerné.')
+
+    // Suppression à la carte : confirmation requise, puis disparition du magasin.
+    const boutonsSupprimer = screen.getAllByRole('button', { name: 'Supprimer' })
+    fireEvent.click(boutonsSupprimer[0] as HTMLElement)
+    const dialogue = await screen.findByRole('dialog', {
+      name: 'Supprimer cet article ?',
+    })
     fireEvent.click(within(dialogue).getByRole('button', { name: 'Supprimer' }))
-    await waitFor(() =>
-      expect(magasin.articles.some((a) => a.id === IDS_EXEMPLE.articleBrouillon)).toBe(false),
-    )
+    await waitFor(() => expect(magasin.articles.length).toBe(avant - 1))
     expect(await violationsGraves(container)).toEqual([])
   })
 

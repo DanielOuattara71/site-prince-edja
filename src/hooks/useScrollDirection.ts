@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useReducedMotion } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 /** Seuil de décollement de la barre, en pixels. */
 const SEUIL = 32

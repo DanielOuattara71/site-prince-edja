@@ -6,7 +6,6 @@ import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
 import { useLangue } from '@/i18n/contexteLangue'
 import { LangueSwitcher } from '@/components/layout/LangueSwitcher'
-import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 export function Footer() {
   const time = useLocalTime()
@@ -38,8 +37,6 @@ export function Footer() {
           </div>
 
           <hr aria-hidden className="mt-14 border-cream-100/25" />
-
-          <BlocNewsletter compact className="pt-10" />
 
           <div className="grid gap-10 pt-12 sm:grid-cols-2 lg:grid-cols-5">
             {FOOTER_NAV.map((bloc) => (
@@ -78,14 +75,14 @@ export function Footer() {
           </div>
 
           <div className="mt-14 flex flex-col justify-between gap-3 border-t border-cream-100/10 pt-6 sm:flex-row">
-            <p className="label-caps text-cream-100/40">{SITE.devise}</p>
+            <p className="label-caps text-cream-100/70">{SITE.devise}</p>
             <a
               href={`mailto:${SITE.email}`}
               className="inline-flex min-h-11 w-fit items-center text-caption text-cream-100/60 underline-offset-4 hover:text-cream-100 hover:underline"
             >
               {SITE.email}
             </a>
-            <p className="label-caps text-cream-100/40">
+            <p className="label-caps text-cream-100/70">
               © {year ?? '\u2014'} {SITE.name} · Version 1.0
             </p>
           </div>

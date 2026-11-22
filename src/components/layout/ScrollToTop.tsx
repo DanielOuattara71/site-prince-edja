@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
-import { useReducedMotion } from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const EXIT_DURATION_MS = 300
 

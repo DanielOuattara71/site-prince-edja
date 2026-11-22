@@ -59,6 +59,17 @@ export function usagesDe(erreur: ErreurApi): Usage[] {
   return lu.success ? lu.data.usages : []
 }
 
+/**
+ * Nombre d'épisodes rattachés à un projet dans un `422 RG-32` (refus de suppression d'un
+ * projet qui garde ses épisodes). `null` si l'erreur n'est pas un RG-32 ou si le serveur
+ * n'a pas envoyé le nombre.
+ */
+export function nombreEpisodesDeProjet(erreur: unknown): number | null {
+  if (!aLeCode(erreur, 'RG-32')) return null
+  const lu = z.object({ nombre: z.number().int().nonnegative() }).safeParse(erreur.details)
+  return lu.success ? lu.data.nombre : null
+}
+
 /** Erreurs de champ d'un `422 VALIDATION`. */
 export function erreursDeChamp(erreur: ErreurApi): { champ: string; message: string }[] {
   const lu = z

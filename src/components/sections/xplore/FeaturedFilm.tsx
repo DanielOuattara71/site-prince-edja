@@ -1,4 +1,4 @@
-import { EPISODES } from '@/acces/projets'
+import { EPISODES_XPLORE } from '@/acces/projets'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
@@ -7,7 +7,7 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 
 export function FeaturedFilm() {
-  const featured = EPISODES[0]
+  const featured = EPISODES_XPLORE[0]
 
   return (
     <Section tone="dark">

@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'motion/react'
+import {motion} from 'motion/react'
 import { SITE } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { introDelay, EASE_EXPO } from '@/lib/motion'
@@ -7,6 +7,7 @@ import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { TextRevealLines } from '@/components/motion/TextRevealLines'
 import { AfricanPattern } from '@/components/motifs/AfricanPattern'
 import { Button } from '@/components/ui/Button'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 export function Hero() {
   const { t } = useLangue()

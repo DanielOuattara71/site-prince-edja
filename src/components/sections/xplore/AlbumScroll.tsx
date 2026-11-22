@@ -1,18 +1,14 @@
 import { useRef, useState } from 'react'
-import {
-  motion,
+import {motion,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
-  useTransform,
-} from 'motion/react'
+  useTransform} from 'motion/react'
 import { MoveRight } from 'lucide-react'
-import { EPISODES } from '@/acces/projets'
+import { EPISODES_XPLORE } from '@/acces/projets'
 import type { Episode } from '@/types'
 import { cn } from '@/lib/cn'
 import { Button } from '@/components/ui/Button'
-
-const COUNT = EPISODES.length
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 function Panel({ episode, index }: { episode: Episode; index: number }) {
   const alignRight = index % 2 === 1
@@ -66,7 +62,13 @@ function Panel({ episode, index }: { episode: Episode; index: number }) {
   )
 }
 
-export function AlbumScroll() {
+/**
+ * Album d'épisodes en panneaux plein écran. X'PLORE passe ses propres épisodes ; une page de
+ * projet passe ceux du projet (contrat 1.15.0 § 32.5). Le composant reste identique des deux
+ * côtés : c'est la même grammaire visuelle, pas une copie.
+ */
+export function AlbumScroll({ episodes = EPISODES_XPLORE }: { episodes?: Episode[] }) {
+  const COUNT = episodes.length
   const sectionRef = useRef<HTMLDivElement>(null)
   const reducedMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({
@@ -81,10 +83,12 @@ export function AlbumScroll() {
     setIndex(Math.min(COUNT - 1, Math.max(0, Math.floor(value * COUNT))))
   })
 
+  if (COUNT === 0) return null
+
   if (reducedMotion) {
     return (
       <section aria-label="Album des épisodes" className="bg-night-900">
-        {EPISODES.map((episode, index) => (
+        {episodes.map((episode, index) => (
           <div key={episode.slug} className="h-svh">
             <Panel episode={episode} index={index} />
           </div>
@@ -103,7 +107,7 @@ export function AlbumScroll() {
     >
       <div className="grain sticky top-0 h-svh overflow-hidden">
         <motion.div style={{ x }} className="flex h-full w-full">
-          {EPISODES.map((episode, index) => (
+          {episodes.map((episode, index) => (
             <Panel key={episode.slug} episode={episode} index={index} />
           ))}
         </motion.div>

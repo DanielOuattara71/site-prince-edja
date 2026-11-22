@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { ARTICLES } from '@/acces/journal'
-import { EPISODES } from '@/acces/projets'
+import { EPISODES_XPLORE } from '@/acces/projets'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'
@@ -19,7 +19,7 @@ export function ALaUne() {
   const { t, l } = useLangue()
 
   const article = ARTICLES.find((entree) => entree.statut === 'publié')
-  const film = EPISODES[0]
+  const film = EPISODES_XPLORE[0]
 
   if (!article && !film) return null
 

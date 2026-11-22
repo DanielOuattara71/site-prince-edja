@@ -1,5 +1,6 @@
-import { motion, useReducedMotion } from 'motion/react'
+import {motion} from 'motion/react'
 import { EASE_EXPO } from '@/lib/motion'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface TextRevealLinesProps {
   lines: string[]

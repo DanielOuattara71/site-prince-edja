@@ -33,6 +33,8 @@ interface Base {
   cle: string
   libelle: string
   aide?: string
+  /** Obligatoire pour enregistrer (le serveur le refuse si le type d'image le supporte). */
+  obligatoire?: boolean
   /** Masqué hors condition ; sa valeur reste dans le formulaire et part au serveur. */
   visibleSi?: ConditionAffichage
 }
@@ -55,7 +57,11 @@ export type ChampDeclaratif =
       /** Alerte quand la valeur change sur un contenu existant (ECRANS § 3.3). */
       alerteChangement?: string
     })
-  | (Base & { type: 'image' })
+  | (Base & {
+      type: 'image'
+      /** Emplacement suggéré par défaut à l'upload (le client peut le modifier). */
+      emplacementDefaut?: string
+    })
   | (Base & { type: 'pdf' })
   | (Base & { type: 'tags'; contexte?: ContexteEtiquettes })
   | (Base & { type: 'url' })
@@ -215,9 +221,9 @@ export interface SpecRessource {
   groupeOrdre?: string
   /** Filtres propres à la liste (§ 9.9 : `emplacement`). */
   filtres?: FiltreListe[]
-  /** Adresse de la liste quand elle diffère de `chemin` (projets : `/projets/liste`, le hub étant à `/projets`). */
+  /** Adresse de la liste quand elle diffère de `chemin` (projets : `/projets/liste`, la liste principale étant à `/projets`). */
   cheminListe?: string
-  /** Écran parent dans le fil d'Ariane (le hub Projets pour ses listes). */
+  /** Écran parent dans le fil d'Ariane (la liste des projets). */
   parent?: { libelle: string; chemin: string }
   /** Colonnes propres, après le titre (format, catégorie, projet…). */
   colonnes?: Colonne<ResumeDeclaratif>[]
@@ -509,6 +515,11 @@ export function schemaFormulaire(spec: SpecRessource) {
         !texte
       ) {
         signaler([champ.cle], `${champ.libelle} : obligatoire.`)
+      }
+      if (champ.type === 'image' && champ.obligatoire) {
+        const image = valeurs[champ.cle]
+        if (typeof image !== 'string' || !image.trim())
+          signaler([champ.cle], `${champ.libelle} : obligatoire.`)
       }
       if (champ.type === 'template' && !texte) signaler([champ.cle], 'Choisissez un template.')
       if (champ.type === 'texte' && champ.max && texte.length > champ.max) {

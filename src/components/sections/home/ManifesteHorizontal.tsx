@@ -1,5 +1,6 @@
 import { useRef } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import {motion, useScroll, useTransform} from 'motion/react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 export function ManifesteHorizontal() {
   const ref = useRef<HTMLElement>(null)

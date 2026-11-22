@@ -7,7 +7,7 @@ import { BarreInferieure } from '@/components/layout/BarreInferieure'
 import { entreesVisibles, MENU } from '@/components/layout/navigation'
 import { connecter, utiliserFauxServeur } from '@/test/faux-serveur'
 
-/** C2 : menu à neuf entrées, onglets, retraits et redirection (PROMPT-CORRECTION § 5). */
+/** Menu à dix entrées (C2, rééquilibrage du 16/11/2026 : « Le site » rétabli) (PROMPT-CORRECTION § 5). */
 
 utiliserFauxServeur()
 afterEach(() => window.history.pushState({}, '', '/'))
@@ -23,11 +23,12 @@ const vue = (c: CompteDroits) =>
   Object.fromEntries(entreesVisibles(c).map((e) => [e.libelle, e.visibles.map((o) => o.libelle)]))
 
 describe('déclaration du menu', () => {
-  it('neuf entrées, une icône chacune', () => {
+  it('dix entrées, une icône chacune', () => {
     expect(MENU.map((e) => e.libelle)).toEqual([
       'Tableau de bord',
       'Journal',
       'Projets',
+      'Le site',
       'Boutique',
       'Médiathèque',
       'Preuves et presse',
@@ -41,12 +42,6 @@ describe('déclaration du menu', () => {
   it('aucune adresse retirée ne figure dans le menu', () => {
     const chemins = MENU.flatMap((e) => e.onglets.map((o) => o.chemin))
     for (const retire of [
-      '/navigation',
-      '/textes-interface',
-      '/motifs-contact',
-      '/univers',
-      '/jalons',
-      '/offres',
       '/etudes-cas',
       '/pages',
       '/demo',
@@ -64,24 +59,37 @@ describe('entrées et onglets visibles par rôle (peut)', () => {
       'Tableau de bord',
       'Journal',
       'Projets',
+      'Le site',
       'Boutique',
       'Médiathèque',
       'Preuves et presse',
     ])
+    // Motifs de contact est réservé aux administrateurs : le lecteur s'arrête aux trois séries éditoriales.
+    expect(v['Le site']).toEqual(['Univers', 'Jalons', 'Offres'])
     expect(v['Boutique']).toEqual(['Bijoux', 'Livres'])
     expect(v['Preuves et presse']).toEqual(['Distinctions', 'Presse', 'Partenaires'])
   })
 
-  it('admin : les neuf entrées ; Technique a ses trois onglets', () => {
+  it('admin : les dix entrées ; Journal et Projets portent leurs catégories ; Technique a ses trois onglets', () => {
     const v = vue(compte('admin'))
-    expect(Object.keys(v)).toHaveLength(9)
-    expect(v['Boutique']).toEqual(['Bijoux', 'Livres', 'Catégories', 'Créateurs'])
+    expect(Object.keys(v)).toHaveLength(10)
+    expect(v['Le site']).toEqual(['Univers', 'Jalons', 'Offres', 'Motifs de contact'])
+    expect(v['Journal']).toEqual(['Articles', 'Catégories d’articles'])
+    expect(v['Projets']).toEqual([
+      'Projets',
+      'Catégories de projets',
+      'Destinations',
+      'Guides PDF',
+      'Villes',
+      'Archive d’Afrique',
+    ])
+    expect(v['Boutique']).toEqual(['Bijoux', 'Livres', 'Catégories de produits', 'Créateurs', 'Commandes'])
     expect(v['Technique']).toEqual(['Publication', 'Activité', 'Comptes'])
-    expect(v['Réglages']).toEqual(['Identité et paramètres', 'Pages légales', 'Étiquettes'])
+    expect(v['Réglages']).toEqual(['Identité', 'Paramètres', 'Pages légales', 'Étiquettes', 'Navigation', 'Textes d’interface'])
   })
 
-  it('super-admin : les neuf entrées', () => {
-    expect(Object.keys(vue(compte('super_admin')))).toHaveLength(9)
+  it('super-admin : les dix entrées', () => {
+    expect(Object.keys(vue(compte('super_admin')))).toHaveLength(10)
   })
 
   it('vendeur : seulement Boutique (sans Créateurs ni Catégories) et Médiathèque (ECRANS § 0.5)', () => {
@@ -119,13 +127,43 @@ describe('routes', () => {
     )
   })
 
-  it('Journal n’a pas de barre d’onglets', async () => {
+  it('Journal porte une barre d’onglets ; l’onglet courant suit la page', async () => {
     await ouvrir('/articles')
-    await screen.findByRole('heading', { level: 1, name: 'Articles' })
-    expect(screen.queryByRole('navigation', { name: /^Onglets/ })).toBeNull()
+    const onglets = await screen.findByRole('navigation', { name: 'Onglets : Journal' })
+    expect(
+      within(onglets).getByRole('link', { name: 'Articles' }).getAttribute('aria-current'),
+    ).toBe('page')
+    expect(
+      within(onglets).getByRole('link', { name: 'Catégories d’articles' }).getAttribute(
+        'aria-current',
+      ),
+    ).toBeNull()
   })
 
-  it.each(['/univers', '/navigation', '/motifs-contact', '/pages', '/composants'])(
+  it('sur /articles/categories, seul l’onglet catégorie reste courant', async () => {
+    await ouvrir('/articles/categories')
+    const onglets = await screen.findByRole('navigation', { name: 'Onglets : Journal' })
+    expect(
+      within(onglets)
+        .getByRole('link', { name: 'Catégories d’articles' })
+        .getAttribute('aria-current'),
+    ).toBe('page')
+    expect(
+      within(onglets).getByRole('link', { name: 'Articles' }).getAttribute('aria-current'),
+    ).toBeNull()
+    const menu = screen.getByRole('navigation', { name: 'Navigation principale' })
+    expect(within(menu).getByRole('link', { name: 'Journal' }).getAttribute('aria-current')).toBe(
+      'page',
+    )
+  })
+
+  it('la liste Projets ouvre la gestion des catégories', async () => {
+    await ouvrir('/projets')
+    expect(await screen.findByRole('link', { name: /Gérer les catégories/ })).toBeTruthy()
+  })
+
+  // Écrans rétablis le 16/11/2026 à la demande du client : '/univers' et '/motifs-contact' sont servis.
+  it.each(['/pages', '/composants', '/projets/hub', '/episodes'])(
     '%s répond « Page introuvable »',
     async (chemin) => {
       await ouvrir(chemin)

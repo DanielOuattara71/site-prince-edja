@@ -1,3 +1,12 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useSession } from '@/auth/contexte-session'
+import { peut } from '@/auth/permissions'
+import { categories } from '@/api/endpoints/boutique'
+import { cles } from '@/api/cles'
+import { useNotifications } from '@/components/retours/contexte-notifications'
+import { useState, type FormEvent } from 'react'
+import { messageErreur } from '@/lib/message-erreur'
+
 import { Plus, Trash2 } from 'lucide-react'
 import type { FamilleCategorie } from '@/api/schemas/boutique'
 import { Bouton } from '@/components/ui/Bouton'
@@ -9,9 +18,15 @@ import { nomCategorie, useCategories } from '@/features/categories/useCategories
 import { varianteVide, type VarianteFormulaire } from '@/features/gabarits/declaratif'
 import { t } from '@/i18n/fr'
 
+type Edition = { type: 'creer' } | { type: 'modifier'; id: string; version: number }
+
 /**
  * Catégorie d'une famille (SCHEMAS § 3, RG-29) : seules les catégories de cette famille sont
  * proposées. Une famille sans catégorie le dit, sans rien inventer.
+ *
+ * À partir du formulaire d'écriture (ex. : projet) : le bouton « Changer la catégorie » (admin,
+ * droit `categories.modifier`) et le choix « Nouvelle catégorie » du select ouvrent une zone
+ * inline d'ajout ou de modification — créer ou renommer la catégorie sans quitter l'écran.
  */
 export function SelecteurCategorie({
   id,
@@ -21,6 +36,7 @@ export function SelecteurCategorie({
   valeur,
   surChange,
   erreur,
+  existant = false,
 }: {
   id: string
   libelle: string
@@ -29,21 +45,121 @@ export function SelecteurCategorie({
   valeur: string
   surChange: (id: string) => void
   erreur?: string | undefined
+  /** Projet existant : la catégorie assignée, une fois choisie, est verrouillée. */
+  existant?: boolean
 }) {
   const liste = useCategories(famille)
   const items = liste.data?.items ?? []
+  const modifiable = peut(useSession()?.moi?.compte, 'modifier', 'categories')
+  const client = useQueryClient()
+  const notifier = useNotifications()
+  const [edition, setEdition] = useState<Edition | null>(null)
+  const [nom, setNom] = useState('')
+
+  const cible = items.find((c) => c.id === valeur)
+  const verrou = Boolean(existant && valeur)
+
+  const creer = useMutation({
+    mutationFn: (entree: { nom: string }) =>
+      categories.creer({ famille, traductions: { fr: { nom: entree.nom } } }),
+    onSuccess: async (cree) => {
+      setEdition(null)
+      setNom('')
+      await client.invalidateQueries({ queryKey: cles.categories() })
+      surChange(cree.id)
+    },
+    onError: (erreurMutation) => notifier.erreur(messageErreur(erreurMutation)),
+  })
+  const renomer = useMutation({
+    mutationFn: ({ idCible, nomCible, version }: { idCible: string; nomCible: string; version: number }) =>
+      categories.modifier(idCible, { traductions: { fr: { nom: nomCible } }, version }),
+    onSuccess: async () => {
+      setEdition(null)
+      notifier.succes(t('formulaire.enregistre'))
+      await client.invalidateQueries({ queryKey: cles.categories() })
+    },
+    onError: (erreurMutation) => notifier.erreur(messageErreur(erreurMutation)),
+  })
+  function change(evenement: React.ChangeEvent<HTMLSelectElement>) {
+    const valeurChoisie = evenement.target.value
+    if (valeurChoisie === '__creer') {
+      setNom('')
+      setEdition({ type: 'creer' })
+      return
+    }
+    setEdition(null)
+    surChange(valeurChoisie)
+  }
+  function fermer() {
+    setEdition(null)
+    setNom('')
+  }
+  function soumettre(evenement: FormEvent) {
+    evenement.preventDefault()
+    if (!nom.trim()) return
+    if (edition?.type === 'creer') creer.mutate({ nom: nom.trim() })
+    else if (edition && cible)
+      renomer.mutate({ idCible: cible.id, nomCible: nom.trim(), version: cible.version })
+  }
+  function passeEdition() {
+    if (!cible) return
+    setNom(cible.traductions.fr?.nom ?? '')
+    setEdition({ type: 'modifier', id: cible.id, version: cible.version })
+  }
+
+  const editee = edition !== null
+
   return (
-    <Select
-      id={id}
-      libelle={libelle}
-      aide={liste.isSuccess && items.length === 0 ? t('categorie.aucuneDansFamille') : aide}
-      invite={t('article.choisirCategorie')}
-      disabled={!liste.isSuccess || items.length === 0}
-      erreur={erreur}
-      value={valeur}
-      onChange={(e) => surChange(e.target.value)}
-      options={items.map((c) => ({ valeur: c.id, libelle: nomCategorie(c) }))}
-    />
+    <div className="space-y-2">
+      <Select
+        id={id}
+        libelle={libelle}
+        aide={liste.isSuccess && items.length === 0 ? t('categorie.aucuneDansFamille') : aide}
+        invite={t('article.choisirCategorie')}
+        disabled={!liste.isSuccess || verrou}
+        erreur={erreur}
+        value={edition === null ? valeur : ''}
+        onChange={change}
+        options={[
+          ...items.map((c) => ({ valeur: c.id, libelle: nomCategorie(c) })),
+          { valeur: '__creer', libelle: t('categorie.nouvelle') },
+        ]}
+      />
+      {verrou ? (
+        <p className="label-caps text-ink-700">{t('categorie.verrou')}</p>
+      ) : null}
+      <div className="flex flex-wrap items-center gap-2">
+        {modifiable && !editee && valeur && !verrou ? (
+          <Bouton variante="secondaire" onClick={passeEdition}>
+            {t('categorie.changer')}
+          </Bouton>
+        ) : null}
+        {editee ? (
+          <div className="w-full rounded-md border border-sand-200 bg-sand-50 p-3 space-y-3">
+            <Champ
+              id={`${id}-nom`}
+              libelle={t('categorie.nom')}
+              required
+              maxLength={80}
+              value={nom}
+              onChange={(evenement) => setNom(evenement.target.value)}
+            />
+            <div className="flex flex-wrap justify-end gap-2">
+              <Bouton variante="secondaire" onClick={fermer}>
+                {t('categorie.fermer')}
+              </Bouton>
+              <Bouton
+                variante="secondaire"
+                disabled={!nom.trim() || creer.isPending || renomer.isPending}
+                onClick={soumettre}
+              >
+                {edition?.type === 'creer' ? t('categorie.creer') : t('categorie.enregistrer')}
+              </Bouton>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </div>
   )
 }
 

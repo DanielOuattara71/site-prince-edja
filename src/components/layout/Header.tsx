@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ShoppingBag } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { ACHAT_ACTIF, usePanier } from '@/lib/panier-contexte'
 import { isDarkTop, SITE, NAV_PRINCIPALE } from '@/acces/site'
 import type { EntreeNav } from '@/acces/site'
 import { replayIntro } from '@/lib/motion'
@@ -17,6 +18,7 @@ import { LangueSwitcher } from '@/components/layout/LangueSwitcher'
 import { CtaTravailler } from '@/components/layout/CtaTravailler'
 
 export function Header() {
+  const { nombre } = usePanier()
   const [menuOpen, setMenuOpen] = useState(false)
   const [groupeOuvert, setGroupeOuvert] = useState<string | null>(null)
   const [focusDansBarre, setFocusDansBarre] = useState(false)
@@ -204,6 +206,41 @@ export function Header() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2 lg:gap-3">
+            {ACHAT_ACTIF ? (
+              <Link
+                to="/commande"
+                aria-label={l({
+                  fr: nombre > 0 ? `Panier, ${nombre} article(s)` : 'Panier',
+                  en: nombre > 0 ? `Basket, ${nombre} item(s)` : 'Basket',
+                })}
+                className={cn(
+                  'relative inline-flex min-h-11 items-center justify-center px-1 transition-colors',
+                  lightText ? 'text-cream-100 hover:text-gold-400' : 'text-ink-900 hover:text-clay-600',
+                )}
+              >
+                <ShoppingBag aria-hidden className="size-5" />
+                {nombre > 0 ? (
+                  <span
+                    aria-hidden
+                    className="absolute -top-0.5 -right-1 inline-flex min-w-4 items-center justify-center rounded-full bg-clay-600 px-1 text-[0.6rem] font-semibold text-cream-100"
+                  >
+                    {nombre}
+                  </span>
+                ) : null}
+              </Link>
+            ) : (
+              <span
+                aria-disabled="true"
+                aria-label={l({ fr: 'Panier bientôt disponible', en: 'Basket coming soon' })}
+                className={cn(
+                  'relative inline-flex min-h-11 cursor-not-allowed items-center justify-center px-1 opacity-40',
+                  lightText ? 'text-cream-100' : 'text-ink-900',
+                )}
+              >
+                <ShoppingBag aria-hidden className="size-5" />
+              </span>
+            )}
+
             {/* Le sélecteur suit la couleur du texte de la barre : crème sur hero
                 sombre, encre sur barre ivoire. Une palette fixe l'aurait rendu
                 invisible sur l'un des deux fonds. */}

@@ -33,9 +33,11 @@ export const handlersSite = [
     if (!garde.ok) return garde.reponse
     const url = new URL(request.url)
     const etat = url.searchParams.get('etat')
+    const motif = url.searchParams.get('motif')
     const liste = magasin.publications
       .map(avancementPublication)
       .filter((publication) => !etat || publication.etat === etat)
+      .filter((publication) => !motif || publication.motif === motif)
     const page = paginer(url, liste)
     return page.ok ? json(page.corps) : page.reponse
   }),

@@ -16,7 +16,6 @@ import {
  */
 
 const texteStatique = z.string().trim().min(1).max(120)
-const texteOuNull = (max: number) => z.string().trim().min(1).max(max).nullable().optional()
 
 /** Libellé à deux langues du document de navigation, obligatoire en français. */
 const libelleNavEcriture = z.strictObject({
@@ -74,6 +73,47 @@ export const parametresSchema = z.object({
   version: versionSchema,
 })
 export type Parametres = z.infer<typeof parametresSchema>
+
+// --- `identite` (§ 13.1, ouverte en 1.20.0) ---
+
+/** Lecture tolérante : le document est un singleton dont la maison remplit les champs à son rythme. */
+export const identiteSchema = z
+  .object({ version: versionSchema, nom: z.string(), email: z.string() })
+  .passthrough()
+export type Identite = z.infer<typeof identiteSchema>
+
+const texteOuNullIdentite = (max: number) => z.string().trim().min(1).max(max).nullable().optional()
+
+export const modificationIdentiteSchema = z.strictObject({
+  nom: z.string().trim().min(1).max(200).optional(),
+  email: z.email().max(200).optional(),
+  linkedin: z.url().nullable().optional(),
+  linkedinLabel: texteOuNullIdentite(200),
+  localisation: texteOuNullIdentite(200),
+  heroImageId: idSchema.nullable().optional(),
+  role: z.string().trim().min(1).max(500).optional(),
+  signature: z.string().trim().min(1).max(200).optional(),
+  manifeste: z.string().trim().min(1).max(500).optional(),
+  devise: texteOuNullIdentite(500),
+  mission: texteOuNullIdentite(1000),
+  tagline: z.array(z.string().trim().min(1).max(100)).max(3).optional(),
+  bio: z.array(z.string().trim().min(1).max(4000)).max(20).optional(),
+  stats: z
+    .array(
+      z.strictObject({
+        cle: z.enum(['communaute', 'pays', 'distinctions', 'experience', 'portee']),
+        valeur: z.number().int().min(0).nullable(),
+        suffixe: z.string().trim().max(20).nullable().optional(),
+        dateValidation: datePartielleSchema.nullable().optional(),
+        source: texteOuNullIdentite(300),
+      }),
+    )
+    .max(10)
+    .optional(),
+  confirmeModificationHero: z.boolean().optional(),
+  version: versionSchema,
+})
+export type ModificationIdentite = z.infer<typeof modificationIdentiteSchema>
 
 /**
  * Champs modifiables (§ 13.3). Chaque champ porte son « qui modifie » ; le faux serveur et le
@@ -217,12 +257,12 @@ export const entreeMotifSchema = z.strictObject({
   traductions: z.strictObject({
     fr: z.strictObject({
       titre: z.string().trim().min(1).max(120),
-      description: texteOuNull(600),
+      description: texteOuNullIdentite(600),
     }),
     en: z
       .strictObject({
         titre: z.string().trim().max(120).optional(),
-        description: texteOuNull(600),
+        description: texteOuNullIdentite(600),
       })
       .optional(),
   }),
@@ -235,13 +275,13 @@ export const modificationMotifSchema = z.strictObject({
       fr: z
         .strictObject({
           titre: z.string().trim().min(1).max(120).optional(),
-          description: texteOuNull(600),
+          description: texteOuNullIdentite(600),
         })
         .optional(),
       en: z
         .strictObject({
           titre: z.string().trim().max(120).optional(),
-          description: texteOuNull(600),
+          description: texteOuNullIdentite(600),
         })
         .nullable()
         .optional(),

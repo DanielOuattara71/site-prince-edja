@@ -16,7 +16,15 @@ const MESSAGES: Record<string, string> = {
   DELAI_DEPASSE: 'Le site n’a pas confirmé sa mise à jour dans les 15 minutes.',
 }
 
-export function SuiviPublication({ publicationId }: { publicationId: string }) {
+export function SuiviPublication({
+  publicationId,
+  surRelance,
+}: {
+  publicationId: string
+  /** Fourni par l'écran « Publication » : le lien devient une action réelle. Sans lui
+   *  (éditeur de contenu), on renvoie vers l'écran de suivi. */
+  surRelance?: () => void
+}) {
   const requete = useQuery({
     queryKey: cles.publication(publicationId),
     queryFn: () => site.publication(publicationId),
@@ -41,9 +49,19 @@ export function SuiviPublication({ publicationId }: { publicationId: string }) {
         {message ? <p>{message}</p> : null}
         <p>
           {t('suivi.contenuGarde')}{' '}
-          <Link to="/publication" className="font-semibold underline underline-offset-4">
-            {t('suivi.relancer')}
-          </Link>
+          {surRelance ? (
+            <button
+              type="button"
+              onClick={surRelance}
+              className="font-semibold underline underline-offset-4"
+            >
+              {t('suivi.relancer')}
+            </button>
+          ) : (
+            <Link to="/publication" className="font-semibold underline underline-offset-4">
+              {t('suivi.relancer')}
+            </Link>
+          )}
         </p>
       </Alerte>
     )

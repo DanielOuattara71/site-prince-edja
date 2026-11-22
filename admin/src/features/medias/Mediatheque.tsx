@@ -3,7 +3,7 @@ import { CircleAlert, FileText, Search, Upload } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { medias, type ParametresMedias } from '@/api/endpoints/contenus'
-import { TYPES_MEDIA_ACCEPTES, type Media } from '@/api/schemas/medias'
+import { TYPES_MEDIA_ACCEPTES, type Media, type EnvoiMedia } from '@/api/schemas/medias'
 import { useSession } from '@/auth/contexte-session'
 import { peut } from '@/auth/permissions'
 import { FiltreCreateur } from '@/components/createurs/SelecteurCreateur'
@@ -16,6 +16,7 @@ import { Champ } from '@/components/ui/Champ'
 import { EtatErreur, EtatVide } from '@/components/ui/Etats'
 import { IndicateurAFournir } from '@/components/ui/IndicateurAFournir'
 import { Select } from '@/components/ui/Select'
+import { BoiteDialogue } from '@/components/ui/BoiteDialogue'
 import { Squelette } from '@/components/ui/Squelette'
 import { t } from '@/i18n/fr'
 import { cn } from '@/lib/cn'
@@ -41,6 +42,9 @@ export default function Mediatheque() {
   const client = useQueryClient()
   const [adresse, setAdresse] = useSearchParams()
   const [recherche, setRecherche] = useState(adresse.get('q') ?? '')
+  const [emplacement, setEmplacement] = useState(adresse.get('emplacement') ?? '')
+  const [fichiersEnAttente, setFichiersEnAttente] = useState<File[] | null>(null)
+  const [emplacementEnvoi, setEmplacementEnvoi] = useState('')
   const [envois, setEnvois] = useState<Envoi[]>([])
 
   const page = Number(adresse.get('page') ?? '1') || 1
@@ -49,6 +53,7 @@ export default function Mediatheque() {
     page,
     pageSize: PAGE,
     ...(adresse.get('q') ? { q: adresse.get('q') ?? '' } : {}),
+    ...(adresse.get('emplacement') ? { emplacement: adresse.get('emplacement') ?? '' } : {}),
     ...(type === 'image' || type === 'pdf' ? { mime: type } : {}),
     ...(adresse.get('aFournir') === 'true' ? { aFournir: true } : {}),
     ...(adresse.get('nonUtilise') === 'true' ? { nonUtilise: true } : {}),
@@ -73,13 +78,18 @@ export default function Mediatheque() {
     regler('q', recherche.trim() || null)
   }
 
+  const chercherEmplacement = (evenement: FormEvent) => {
+    evenement.preventDefault()
+    regler('emplacement', emplacement.trim() || null)
+  }
+
   /** Envoi multiple : un appel par fichier, dans l'ordre, chacun avec son résultat. */
-  const envoyer = async (fichiers: File[]) => {
+  const envoyer = async (fichiers: File[], champs: EnvoiMedia) => {
     setEnvois(fichiers.map((fichier) => ({ nom: fichier.name, etat: 'en_cours' })))
     for (const [index, fichier] of fichiers.entries()) {
       let resultat: Envoi
       try {
-        await medias.envoyer(fichier)
+        await medias.envoyer(fichier, champs)
         resultat = { nom: fichier.name, etat: 'reussi' }
       } catch (erreur) {
         resultat = { nom: fichier.name, etat: 'refuse', message: messageErreur(erreur) }
@@ -89,10 +99,17 @@ export default function Mediatheque() {
     await client.invalidateQueries({ queryKey: ['medias'] })
   }
 
+  /** L'emplacement est facultatif (contrat 1.21.0 § 38) : absent = « non précisé ». */
+  const validerEnvoi = async () => {
+    const fichiers = fichiersEnAttente ?? []
+    setFichiersEnAttente(null)
+    await envoyer(fichiers, { emplacement: emplacementEnvoi.trim() || null })
+  }
+
   const total = liste.data?.total ?? 0
   const pages = Math.max(1, Math.ceil(total / PAGE))
-  const filtresActifs = ['q', 'mime', 'aFournir', 'nonUtilise', 'createur'].some((cle) =>
-    adresse.has(cle),
+  const filtresActifs = ['q', 'emplacement', 'mime', 'aFournir', 'nonUtilise', 'createur'].some(
+    (cle) => adresse.has(cle),
   )
 
   return (
@@ -114,7 +131,10 @@ export default function Mediatheque() {
               onChange={(evenement) => {
                 const fichiers = [...(evenement.target.files ?? [])]
                 evenement.target.value = ''
-                if (fichiers.length > 0) void envoyer(fichiers)
+                if (fichiers.length > 0) {
+                  setEmplacementEnvoi('')
+                  setFichiersEnAttente(fichiers)
+                }
               }}
             />
           </label>
@@ -144,6 +164,57 @@ export default function Mediatheque() {
         </section>
       ) : null}
 
+      {fichiersEnAttente ? (
+        <BoiteDialogue
+          ouverte
+          surFermeture={() => setFichiersEnAttente(null)}
+          titre={`${t('mediatheque.envoyer')} (${fichiersEnAttente.length})`}
+          actions={
+            <>
+              <Bouton variante="secondaire" onClick={() => setFichiersEnAttente(null)}>
+                {t('confirmation.annuler')}
+              </Bouton>
+              <Bouton type="submit" form="formulaire-envoi">
+                {t('mediatheque.envoyer')}
+              </Bouton>
+            </>
+          }
+        >
+          <form
+            id="formulaire-envoi"
+            noValidate
+            className="space-y-4"
+            onSubmit={(evenement) => {
+              evenement.preventDefault()
+              void validerEnvoi()
+            }}
+          >
+            <p className="text-body text-ink-700">
+              <span className="font-semibold text-ink-900">
+                {fichiersEnAttente.map((f) => f.name).join(', ')}
+              </span>
+            </p>
+            <Champ
+              libelle={`${t('media.emplacement')} (${t('media.emplacementFacultatif')})`}
+              aide={t('mediatheque.emplacementAide')}
+              value={emplacementEnvoi}
+              maxLength={120}
+              list="emplacements-suggerees"
+              onChange={(evenement) => setEmplacementEnvoi(evenement.target.value)}
+            />
+            <datalist id="emplacements-suggerees">
+              {t('mediatheque.suggestionsEmplacement')
+                .split(', ')
+                .map((suggestion) => (
+                  <option key={suggestion} value={suggestion}>
+                    {suggestion}
+                  </option>
+                ))}
+            </datalist>
+          </form>
+        </BoiteDialogue>
+      ) : null}
+
       <div className="flex flex-wrap items-end gap-3 rounded-md border border-sand-200 bg-sand-100 p-4">
         <search className="flex min-w-64 flex-1 items-end gap-2">
           <form onSubmit={chercher} className="flex flex-1 items-end gap-2">
@@ -160,6 +231,19 @@ export default function Mediatheque() {
             </Bouton>
           </form>
         </search>
+        <form onSubmit={chercherEmplacement} className="flex min-w-48 items-end gap-2">
+          <Champ
+            type="search"
+            libelle={t('mediatheque.filtrerEmplacement')}
+            placeholder={t('mediatheque.filtrerEmplacement')}
+            value={emplacement}
+            onChange={(evenement) => setEmplacement(evenement.target.value)}
+            className="flex-1"
+          />
+          <Bouton type="submit" variante="secondaire" aria-label={t('liste.chercher')}>
+            <Search aria-hidden className="size-4" />
+          </Bouton>
+        </form>
         <Select
           libelle={t('mediatheque.type')}
           value={type ?? ''}
@@ -225,12 +309,12 @@ export default function Mediatheque() {
                     <span
                       className={cn(
                         'line-clamp-2 text-caption group-hover:underline',
-                        alt ? 'text-ink-900' : 'font-semibold text-clay-700',
+                        alt ? 'text-ink-900' : 'text-clay-700',
                       )}
                     >
                       {alt || (
                         <span className="inline-flex items-center gap-1">
-                          <CircleAlert aria-hidden className="size-3.5" />
+                          <CircleAlert aria-hidden className="size-4" />
                           {t('media.sansAlt')}
                         </span>
                       )}
@@ -239,12 +323,22 @@ export default function Mediatheque() {
                   {image && !alt && !media.decoratif && peut(moi?.compte, 'modifier', 'medias') ? (
                     <AltEnLigne media={media} />
                   ) : null}
-                  <div className="flex flex-wrap items-center gap-1 text-caption text-ink-700">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption leading-5 text-ink-700">
                     <IndicateurAFournir champs={media.champsAFournir} />
-                    <span>
+                    <span className="tnum">
                       {media.usages > 0
                         ? `${t('mediatheque.utiliseA')} ${media.usages} ${t('mediatheque.usages')}`
                         : t('mediatheque.nonUtilise')}
+                    </span>
+                    <span className="min-w-0 truncate">
+                      {media.emplacement ? (
+                        <>
+                          <span className="font-semibold text-ink-900">{`${t('media.emplacement')} : `}</span>
+                          {media.emplacement}
+                        </>
+                      ) : (
+                        <span className="italic">{t('mediatheque.nonPrecise')}</span>
+                      )}
                     </span>
                   </div>
                 </li>

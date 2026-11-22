@@ -124,7 +124,7 @@ describe('règles simulées', () => {
     expect(doublon?.code).toBe('RG-04')
   })
 
-  it('un projet en préparation se publie sans image ; une cible non publiée bloque', async () => {
+  it('un projet en préparation se publie avec son affiche ; une cible non publiée bloque', async () => {
     await connecter('admin')
     const p = await projets.lire(IDS_EXEMPLE.projet)
     const avecTexte = await projets.modifier(p.id, {
@@ -144,7 +144,7 @@ describe('règles simulées', () => {
       vers: 'en_relecture',
       version: sansCible.version,
     })
-    expect(soumis.contenu).toMatchObject({ statut: 'en_relecture', imageId: null })
+    expect(soumis.contenu).toMatchObject({ statut: 'en_relecture', imageId: IDS_EXEMPLE.mediaComplet })
   })
 })
 
@@ -159,7 +159,7 @@ describe('écrans', () => {
     expect((document.getElementById('traductions.fr.slug') as HTMLInputElement).value).toBe(
       'exemple-la-lagune',
     )
-    fireEvent.click(screen.getAllByRole('button', { name: 'Enregistrer' })[0] as HTMLElement)
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le brouillon' }))
     expect(await titre('07 — Exemple : la lagune')).toBeTruthy()
     expect(magasin.episodes.some((e) => e.numero === '07')).toBe(true)
     expect(await violationsGraves(container)).toEqual([])
@@ -177,7 +177,7 @@ describe('écrans', () => {
     fireEvent.change(document.getElementById('longitude') as HTMLElement, {
       target: { value: '3.3' },
     })
-    fireEvent.click(screen.getAllByRole('button', { name: 'Enregistrer' })[0] as HTMLElement)
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
     expect(await screen.findAllByText(/hors de la Côte d’Ivoire/)).not.toHaveLength(0)
     expect(destination.longitude).toBeNull()
   })

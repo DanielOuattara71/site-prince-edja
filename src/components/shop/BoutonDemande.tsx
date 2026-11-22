@@ -9,14 +9,16 @@ import { PanneauDemande } from './PanneauDemande'
  * Déclencheur de la demande, toujours atteignable.
  *
  * Il porte le nombre de pièces sélectionnées et disparaît quand la sélection est vide :
- * un panier à zéro objet serait une invitation à cliquer dans le vide.
+ * un panier à zéro objet serait une invitation à cliquer dans le vide. Exception : un
+ * panneau ouvert — après un envoi réussi, la sélection se vide sous lui, et le démonter
+ * là coupait la confirmation (elle s'est affichée puis disparue sans être lue).
  */
 export function BoutonDemande() {
   const { nombre } = useDemande()
   const { t } = useLangue()
   const [ouvert, setOuvert] = useState(false)
 
-  if (nombre === 0) return null
+  if (nombre === 0 && !ouvert) return null
 
   return (
     <>
@@ -37,7 +39,7 @@ export function BoutonDemande() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: DUR.fast, ease: EASE_EXPO }}
           aria-hidden
-          className="flex size-6 items-center justify-center rounded-full bg-clay-500 text-cream-100"
+          className="flex size-6 items-center justify-center rounded-full bg-clay-700 text-cream-100"
         >
           {nombre}
         </motion.span>

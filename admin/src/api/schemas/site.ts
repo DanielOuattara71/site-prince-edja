@@ -81,6 +81,14 @@ export const tableauDeBordSchema = z.object({
       statut: statutContenuSchema.nullable(),
     }),
   ),
+  /** Compteur de visites maison (contrat 1.11.0 § 28.3) ; absent = site sans mesure (migrations
+   *  non appliquées ou ancien front). */
+  visitesTotales: z.number().int().min(0).optional(),
+  visitesAujourdhui: z.number().int().min(0).optional(),
+  visitesCeMois: z.number().int().min(0).optional(),
+  topVues: z
+    .array(z.object({ chemin: z.string(), total: z.number().int().min(0) }))
+    .optional(),
   /** Les 5 prochains contenus programmés (ECRANS § 1, contrat 1.5.0 proposé) ; absent = aucun. */
   programmes: z
     .array(

@@ -18,6 +18,8 @@ interface ProduitSimule {
   reference: string
   image: null
   categorie: null
+  /** Contrat 1.10.0 § 27.1 : toujours exposé sur la liste. */
+  varianteIds: string[]
   prixAffiche: number | null
   prixConfirme: boolean
   ancienPrix: number | null
@@ -31,6 +33,7 @@ const produitBijou: ProduitSimule = {
   reference: 'REF-A',
   image: null,
   categorie: null,
+  varianteIds: ['variante-a1'],
   prixAffiche: null,
   prixConfirme: false,
   ancienPrix: null,
@@ -48,9 +51,23 @@ const ficheDe = (p: ProduitSimule) => ({
   histoire: null,
   culture: null,
   galerie: [],
-  variantes: [],
+  // La fiche du contrat n'expose pas `varianteIds` (§ 27.2 : `variantes[].id` seulement).
+  variantes: p.varianteIds.map((id) => ({
+    id,
+    libelle: null,
+    matiere: null,
+    taille: null,
+    prix: null,
+    ancienPrix: null,
+    disponible: true,
+  })),
   createur: null,
 })
+// La fiche réelle n'a pas `varianteIds` ; celle-ci l'embarque pour simplifier le double appel.
+const ficheSansIds = (p: ProduitSimule) => {
+  const { varianteIds: _ignores, ...fiche } = ficheDe(p)
+  return fiche
+}
 
 const reponseJson = (payload: unknown, status = 200) =>
   ({
@@ -87,15 +104,26 @@ function fetchSimule(appels: string[]) {
     }
     if (chemin.startsWith('/public/api/v1/categories')) return reponseJson([])
     if (chemin.startsWith('/public/api/v1/boutique/produits/pendentif-a')) {
-      return reponseJson(ficheDe(produitBijou))
+      return reponseJson(ficheSansIds(produitBijou))
     }
     if (chemin.startsWith('/public/api/v1/boutique/produits/livre-b')) {
-      return reponseJson(ficheDe(produitLivre))
+      return reponseJson(ficheSansIds(produitLivre))
     }
     if (chemin === '/public/api/v1/photos-fixes') return reponseJson({ items: [] })
+    if (chemin.startsWith('/public/api/v1/galeries')) {
+      return reponseJson({ items: [], page: 1, pageSize: 100, total: 0 })
+    }
     if (chemin === '/public/api/v1/reglages') {
       return reponseJson({ boutiqueEnLigne: false, multiVendeurs: false, languesActives: ['fr'] })
     }
+    if (chemin === '/public/api/v1/site') {
+      return reponseJson({
+        nom: 'Prince Edja', email: 'contact@exemple.test', linkedin: null, linkedinLabel: null,
+        localisation: null, role: '', signature: '', manifeste: '', devise: null, mission: null,
+        tagline: [], bio: [], stats: [], heroImage: null,
+      })
+    }
+    if (chemin === '/public/api/v1/etiquettes') return reponseJson({ items: [], total: 0 })
     if (chemin === '/public/api/v1/boutique/produits') {
       // Page 2 répète le bijou de la page 1 (cas B-66 avant UNION) : le chargeur dédouble.
       const items = page === 1 ? [produitBijou, produitLivre] : [produitBijou]
@@ -122,7 +150,8 @@ describe('chargeur de données (F1)', () => {
       'article-1',
       'article-2',
     ])
-    expect(appels.filter((u) => u.includes('contenus/articles'))).toHaveLength(2)
+    // Deux appels de liste + une fiche par article (§ 18.1 : le corps n'est que dans la fiche).
+    expect(appels.filter((u) => u.includes('contenus/articles'))).toHaveLength(4)
     expect(lireGenerated<{ chargeLe: string }>('manifeste').chargeLe).toBeTruthy()
   })
 
@@ -134,7 +163,10 @@ describe('chargeur de données (F1)', () => {
       fetchImpl: fetchSimule(appels) as unknown as typeof fetch,
     })
     expect(rapport.comptes['produits']).toBe(2)
-    expect(lireGenerated<unknown[]>('produits')).toHaveLength(2)
+    const produits = lireGenerated<{ slug: string; varianteIds?: string[] }[]>('produits')
+    expect(produits).toHaveLength(2)
+    // L'entrée de liste apporte `varianteIds` ; la fiche l'habille (fusion liste+fiche).
+    expect(produits.find((p) => p.slug === 'pendentif-a')?.varianteIds).toEqual(['variante-a1'])
     const appelsFiche = appels.filter((u) => u.includes('boutique/produits/pendentif-a?'))
     expect(appelsFiche).toHaveLength(1)
   })

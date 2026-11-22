@@ -41,8 +41,18 @@ export function creerRessource<Lecture, Resume, Entree, Modification>(
       signal?: AbortSignal,
       filtres: Record<string, string | undefined> = {},
     ): Promise<Page<Resume>> {
+      // Les filtres de liste sont transmis tels quels à l'API (le serveur valide tout) : ne pas
+      // les faire passer par le schéma strict des paramètres communs, sinon `z.strictObject`
+      // lève une erreur côté client avant l'envoi. Les clés communes passent par le schéma.
+      const CLES_COMMUNES = new Set(Object.keys(parametresListeSchema.shape))
+      const communs = Object.fromEntries(
+        Object.entries(parametres).filter(([cle]) => CLES_COMMUNES.has(cle)),
+      ) as ParametresListe
+      const libres = Object.fromEntries(
+        Object.entries(parametres).filter(([cle]) => !CLES_COMMUNES.has(cle)),
+      ) as Record<string, string | undefined>
       return requete(base, {
-        query: { ...parametresListeSchema.parse(parametres), ...filtres },
+        query: { ...parametresListeSchema.parse(communs), ...libres, ...filtres },
         schema: pageSchema(schemas.resume),
         ...(signal ? { signal } : {}),
       })

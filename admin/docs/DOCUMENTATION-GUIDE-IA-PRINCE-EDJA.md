@@ -144,7 +144,7 @@ sequenceDiagram
 | Journal | Articles | `/articles` | `articles` | `articles` |
 | Projets | **Hub** (pas d'onglets, voir ECRANS §3.1) | `/projets` (racine) | `projets` | `editorial` |
 | | Liste des projets (par format) | `/projets/liste` | `projets` | `editorial` |
-| | Épisodes | `/episodes` | `episodes` | `editorial` |
+| | Épisodes (création/édition seulement, depuis une fiche projet) | `/episodes/nouveau`, `/episodes/:id` | `episodes` | `editorial` |
 | | Destinations | `/destinations` | `destinations` | `editorial` |
 | | Guides PDF | `/guides` | `medias` | `medias` |
 | | Villes (si validé) | `/villes` | `villes` | `editorial` |

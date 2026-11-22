@@ -5,6 +5,7 @@ import { useSeo } from '@/hooks/useSeo'
 import { descriptionObjet } from '@/lib/descriptions'
 import { LIVRES, PIECES } from '@/acces/boutique'
 import { useDemande } from '@/lib/demande'
+import { ACHAT_ACTIF, achetable, usePanier } from '@/lib/panier-contexte'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
@@ -37,8 +38,10 @@ export default function ObjetPage() {
   const objet = collection.find((item) => item.slug === slug)
   const { t, l } = useLangue()
   const { present, basculer } = useDemande()
+  const { ajouter } = usePanier()
   const choisi = objet ? present(objet.slug) : false
 
+  const [ajoute, setAjoute] = useState(false)
   const [quantite, setQuantite] = useState(1)
   const diminuer = () => setQuantite((actuelle) => Math.max(1, actuelle - 1))
   const augmenter = () => setQuantite((actuelle) => Math.min(9, actuelle + 1))
@@ -218,6 +221,41 @@ export default function ObjetPage() {
                     <p className="pointer-events-none text-4xl font-light text-promo-500 line-through decoration-2">
                       {l({ fr: 'Rupture de stock', en: 'Sold out' })}
                     </p>
+                  </div>
+                ) : achetable(objet) ? (
+                  <div className="space-y-3 md:mt-8">
+                    <Button
+                      variant="primary"
+                      magnetic={false}
+                      className="w-full"
+                      disabled={!ACHAT_ACTIF}
+                      onClick={() => {
+                        ajouter(objet, quantite)
+                        setAjoute(true)
+                      }}
+                    >
+                      {!ACHAT_ACTIF
+                        ? t('achat.bientot')
+                        : ajoute
+                          ? l({ fr: 'Ajouté au panier', en: 'Added to basket' })
+                          : l({ fr: 'Ajouter au panier', en: 'Add to basket' })}
+                    </Button>
+                    {ACHAT_ACTIF ? (
+                      <Button to="/commande" variant="dark" magnetic={false} className="w-full">
+                        {l({ fr: 'Voir le panier', en: 'View basket' })}
+                      </Button>
+                    ) : (
+                      <Button variant="dark" magnetic={false} className="w-full" disabled>
+                        {t('achat.panierBientot')}
+                      </Button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => basculer(objet)}
+                      className="inline-flex min-h-11 items-center text-caption font-semibold text-clay-600 underline-offset-4 hover:underline"
+                    >
+                      {choisi ? t('demande.retirer') : t('carte.ajouter')}
+                    </button>
                   </div>
                 ) : (
                   <Button

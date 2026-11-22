@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { useReducedMotion } from 'motion/react'
+
 import { cn } from '@/lib/cn'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface MarqueeProps {
   children: ReactNode

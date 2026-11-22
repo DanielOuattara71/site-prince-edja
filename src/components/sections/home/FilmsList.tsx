@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { EPISODES } from '@/acces/projets'
+import { EPISODES_XPLORE } from '@/acces/projets'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Stagger } from '@/components/motion/Stagger'
@@ -34,7 +34,7 @@ export function FilmsList() {
 
         <div onMouseLeave={() => setActiveImage(null)} className="border-b border-cream-100/25">
           <Stagger>
-            {EPISODES.map((episode) => (
+            {EPISODES_XPLORE.map((episode) => (
               <FilmRow
                 key={episode.slug}
                 numero={episode.numero}

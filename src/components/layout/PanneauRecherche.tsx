@@ -2,7 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import {AnimatePresence, motion} from 'motion/react'
 import { Search, X } from 'lucide-react'
 import { useLangue } from '@/i18n/contexteLangue'
 import { avecPluriel } from '@/i18n/dictionnaire'
@@ -13,6 +13,7 @@ import { DUR, EASE_EXPO } from '@/lib/motion'
 import { cn } from '@/lib/cn'
 import { aplati, rechercher } from '@/lib/recherche'
 import type { Resultat, TypeResultat } from '@/lib/recherche'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface Props {
   ouvert: boolean

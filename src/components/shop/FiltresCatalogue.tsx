@@ -4,11 +4,9 @@ import { useSearchParams } from 'react-router'
 import { useDemande } from '@/lib/demande'
 import { useLangue } from '@/i18n/contexteLangue'
 import type { CleTraduction } from '@/i18n/dictionnaire'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Pagination } from '@/components/ui/Pagination'
 import { BijouCard } from '@/components/cards/BijouCard'
 import { CarteLivre } from '@/components/shop/SectionLivres'
-import { ALT_TEST_CARTE, VISUEL_TEST_CARTE } from '@/lib/visuels'
 import { useCorrigerPage, useEcranLarge, usePagination } from '@/hooks/usePagination'
 import {
   obtenirProduits,
@@ -59,7 +57,7 @@ function SelectPilule({
         id={id}
         value={value}
         onChange={(evenement) => onChange(evenement.target.value)}
-        className="min-h-11 w-full cursor-pointer appearance-none rounded-full border border-sand-300 bg-transparent pl-5 pr-11 text-caption text-ink-900 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
+        className="min-h-11 w-full cursor-pointer appearance-none rounded-full border border-ink-500 bg-transparent pl-5 pr-11 text-caption text-ink-900 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
       >
         {children}
       </select>
@@ -72,7 +70,7 @@ function SelectPilule({
 }
 
 export function FiltresCatalogue() {
-  const { t, l } = useLangue()
+  const { t } = useLangue()
   const { present } = useDemande()
   const [params, setParams] = useSearchParams()
   const { page, recherchePage } = usePagination()
@@ -150,15 +148,23 @@ export function FiltresCatalogue() {
   const compteur = `${resultat.total} ${resultat.total > 1 ? t('catalogue.produits') : t('catalogue.produit')}`
 
   return (
-    <section id="catalogue" aria-label={t('catalogue.titre')} className="scroll-mt-24 space-y-10">
-      <div className="space-y-6">
-        <Eyebrow>{l({ fr: 'Le catalogue', en: 'The catalogue' })}</Eyebrow>
-        <h2 className="font-display uppercase text-display-lg">
-          L'univers de la mode et de la culture à votre porte
-          <span aria-hidden className="text-clay-500">
-            .
-          </span>
-        </h2>
+    <section
+      id="catalogue"
+      aria-label={t('catalogue.titre')}
+      className="scroll-mt-24 space-y-10 border-t border-ink-900/10 pt-16 lg:pt-20"
+    >
+      <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+        <div className="lg:col-span-12">
+          <p className="label-caps text-clay-700">La collection</p>
+          <h2 className="mt-4 font-display uppercase text-display-lg text-ink-900">
+            Le
+            <br />
+            catalogue
+            <span aria-hidden className="text-clay-600">
+              .
+            </span>
+          </h2>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -171,7 +177,7 @@ export function FiltresCatalogue() {
           value={q}
           onChange={(evenement) => regler('q', evenement.target.value || null, true)}
           placeholder={t('catalogue.recherche')}
-          className="min-h-11 w-full max-w-xs rounded-full border border-sand-300 bg-transparent px-5 text-caption text-ink-900 placeholder:text-ink-500"
+          className="min-h-11 w-full max-w-xs rounded-full border border-ink-500 bg-transparent px-5 text-caption text-ink-900 placeholder:text-ink-500"
         />
 
         <SelectPilule
@@ -228,21 +234,11 @@ export function FiltresCatalogue() {
           ))}
         </SelectPilule>
 
-        <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-sand-300 px-4 text-caption text-ink-900 hover:bg-sand-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-clay-600">
-          <input
-            type="checkbox"
-            checked={disponible}
-            onChange={(evenement) => regler('disponible', evenement.target.checked ? '1' : null)}
-            className="size-4 accent-clay-600"
-          />
-          {t('catalogue.disponibles')}
-        </label>
-
         {filtreActif && (
           <button
             type="button"
             onClick={effacer}
-            className="inline-flex min-h-11 items-center rounded-full border border-sand-300 px-4 text-caption font-semibold text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200"
+            className="inline-flex min-h-11 items-center rounded-full border border-ink-500 px-4 text-caption font-semibold text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200"
           >
             {t('catalogue.effacer')}
           </button>
@@ -275,14 +271,14 @@ export function FiltresCatalogue() {
               <button
                 type="button"
                 onClick={effacer}
-                className="inline-flex min-h-11 items-center rounded-full border border-sand-300 px-4 text-caption font-semibold text-ink-900 hover:bg-sand-200"
+                className="inline-flex min-h-11 items-center rounded-full border border-ink-500 px-4 text-caption font-semibold text-ink-900 hover:bg-sand-200"
               >
                 {t('catalogue.effacer')}
               </button>
             ) : null}
           </div>
         ) : (
-          <ul className="grid grid-cols-2 gap-1 sm:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-[3px] sm:grid-cols-3">
             {resultat.items.map((p) => (
               <li key={p.id}>
                 {p.type === 'livre' ? (
@@ -290,8 +286,7 @@ export function FiltresCatalogue() {
                 ) : (
                   <BijouCard
                     bijou={p.produit}
-                    image={VISUEL_TEST_CARTE}
-                    imageAlt={ALT_TEST_CARTE}
+                    image={p.produit.image}
                   />
                 )}
               </li>

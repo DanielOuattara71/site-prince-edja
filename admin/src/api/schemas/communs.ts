@@ -82,6 +82,10 @@ export const resumeContenuSchema = z.object({
   champsAFournir: z.array(z.string()),
   languesPresentes: z.array(langueSchema),
   imageId: idSchema.nullable(),
+  /** Contrat 1.12.0 § 29.3 : identifiant du PDF joint, s'il y en a un. */
+  pdfId: idSchema.nullable().optional(),
+  /** Extrait FR/EN (la liste de l'admin le porte, public depuis 1.5.0). */
+  extrait: z.string().nullable().optional(),
   createurId: idSchema.optional(),
   /** Nom de la catégorie d'un article (colonne et filtre de la liste, ECRANS § 2.1). */
   categorie: z.string().nullable().optional(),
@@ -113,6 +117,8 @@ export const parametresListeSchema = z.strictObject({
   langue: langueSchema.optional(),
   sansLangue: langueSchema.optional(),
   tag: z.array(idSchema).optional(),
+  /** 1.15.0 § 32.2 : filtre des familles rattachées à un projet. */
+  projetId: idSchema.optional(),
   aFournir: z.boolean().optional(),
 })
 export type ParametresListe = z.infer<typeof parametresListeSchema>
@@ -176,6 +182,7 @@ export const CLES_PAGE_LEGALE = [
   'confidentialite',
   'cookies',
   'cgv',
+  'cgu',
   'retours',
 ] as const
 export const RESSOURCES_LIABLES = [

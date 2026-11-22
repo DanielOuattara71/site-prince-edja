@@ -1,6 +1,7 @@
 import { useRef } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import {motion, useScroll, useTransform} from 'motion/react'
 import { cn } from '@/lib/cn'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface ParallaxImageProps {
   src: string

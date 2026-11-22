@@ -59,6 +59,7 @@ export type Ressource =
   | 'categories'
   | 'messages'
   | 'demandes'
+  | 'commandes'
   | 'abonnes'
   | 'identite'
   | 'audience'
@@ -112,6 +113,7 @@ const RESSOURCES_ADMIN: readonly Ressource[] = [
   'categories',
   'messages',
   'demandes',
+  'commandes',
   'abonnes',
   'identite',
   'audience',

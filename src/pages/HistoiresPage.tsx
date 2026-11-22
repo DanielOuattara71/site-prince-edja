@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
+import { ArrowRight } from 'lucide-react'
 import { PROJETS, type Projet } from '@/acces/projets'
 import { categoriesAffichees } from '@/lib/categories'
 import { useSeo } from '@/hooks/useSeo'
@@ -11,14 +12,17 @@ import { Stagger } from '@/components/motion/Stagger'
 import { LazyImage } from '@/components/media/LazyImage'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { cn } from '@/lib/cn'
+import { img } from '@/lib/images'
+import { photoOuRepli } from '@/acces/photos'
 
 /**
- * Photo du hero : le panorama « Contemplation sur la vallée dorée », servi à deux
- * largeurs (téléphone 1200, grand écran 1920). Visuel de cette page seule — le hero
- * d'accueil garde son portrait, et rien dans `SITE` ne bouge.
+ * Photo du hero : l'emplacement « Histoires — bandeau », assigné dans Médiathèque › Sur le site.
+ * Repli sur le panorama historique tant que la maison n'a pas choisi d'autre visuel.
  */
-const HERO_HISTOIRES = `${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree.jpg`
-const HERO_HISTOIRES_SRCSET = `${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree-1200.jpg 1200w, ${import.meta.env.BASE_URL}images/hero/contemplation-sur-la-vallee-doree.jpg 1920w`
+const HERO_HISTOIRES = photoOuRepli(
+  'histoires.bandeau',
+  img(`images/hero/contemplation-sur-la-vallee-doree.jpg`),
+)
 
 /**
  * Filtres : les catégories de projets créées dans l'admin, visibles et non vides (règle du
@@ -39,15 +43,21 @@ function CarteProjet({ projet }: { projet: Projet }) {
 
   const corps = (
     <>
-      <div className="relative aspect-4/5 overflow-hidden rounded-md bg-sand-200">
+      <div className="relative overflow-hidden rounded-md bg-sand-100">
         {projet.image ? (
           <LazyImage
             src={projet.image}
             alt={projet.titre}
-            ratio="4/5"
-            className="h-full w-full object-cover transition-transform duration-[700ms] ease-expo group-hover:scale-[1.03]"
+            ratio="16/10"
+            imgClassName="transition-transform duration-(--d-reveal) ease-expo group-hover:scale-[1.03]"
           />
-        ) : null}
+        ) : (
+          <div className="flex aspect-16/10 items-center justify-center rounded-md border border-dashed border-sand-300 bg-sand-100 px-4 text-center">
+            <p className="label-caps text-ink-500">
+              {l({ fr: 'Affiche à venir', en: 'Cover coming soon' })}
+            </p>
+          </div>
+        )}
         {/* Projet annoncé, sans fiche encore : mention sobre « À venir » (décision § 8.5) ;
             « À fournir » et « Visuel à fournir » étaient des textes d'atelier. */}
         {projet.aFournir && (
@@ -57,7 +67,7 @@ function CarteProjet({ projet }: { projet: Projet }) {
         )}
       </div>
 
-      <div className="mt-3 flex flex-1 flex-col px-3 pb-2">
+      <div className="mt-4 flex flex-1 flex-col px-2 pb-2">
         <h3 className="font-display uppercase text-heading-sm text-ink-900 transition-colors duration-(--d-base) group-hover:text-clay-600">
           {projet.titre}
         </h3>
@@ -70,7 +80,12 @@ function CarteProjet({ projet }: { projet: Projet }) {
   )
 
   return (
-    <article className={cn('flex h-full flex-col', interactif && 'group')}>
+    <article
+      className={cn(
+        'flex h-full flex-col rounded-xl border border-sand-200 bg-sand-50 p-2',
+        interactif && 'group',
+      )}
+    >
       {interactif ? (
         <Link
           to={projet.route ?? `/xplore/${projet.slug}`}
@@ -117,8 +132,8 @@ export default function HistoiresPage() {
             entre la nuit du titre et le lever de soleil. */}
         <div aria-hidden className="absolute inset-y-0 right-0 w-full lg:w-[58%]">
           <ParallaxImage
-            src={HERO_HISTOIRES}
-            srcSet={HERO_HISTOIRES_SRCSET}
+            src={HERO_HISTOIRES.src}
+            srcSet={HERO_HISTOIRES.srcSet}
             sizes="(min-width: 1024px) 58vw, 100vw"
             alt=""
             priority
@@ -149,31 +164,54 @@ export default function HistoiresPage() {
 
       {aLaUne && (
         <Section tone="light" className="bg-sand-150">
-          <Container>
+          <Container className="space-y-8">
             <Reveal>
-              <p className="label-caps mb-6 text-clay-600">{t('histoires.aLaUne')}</p>
+              <p className="label-caps flex items-center gap-3 text-clay-600">
+                <span aria-hidden className="h-px w-8 bg-clay-600" />
+                {t('histoires.aLaUne')}
+              </p>
+            </Reveal>
+            <Reveal delay={0.08}>
               <Link
                 to={aLaUne.route ?? `/xplore/${aLaUne.slug}`}
-                className="group grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-16 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600"
+                className="group grid gap-6 rounded-xl border border-sand-200 bg-sand-50 p-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay-600 lg:grid-cols-12 lg:items-center lg:gap-12 lg:p-4"
               >
                 <div className="lg:col-span-7">
-                  <LazyImage
-                    src={aLaUne.image}
-                    alt={aLaUne.titre}
-                    ratio="16/10"
-                    className="overflow-hidden rounded-md bg-sand-200"
-                  />
+                  {aLaUne.image ? (
+                    <LazyImage
+                      src={aLaUne.image}
+                      alt={aLaUne.titre}
+                      ratio="16/10"
+                      className="overflow-hidden rounded-lg bg-sand-100"
+                      imgClassName="transition-transform duration-(--d-reveal) ease-expo group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <div className="flex aspect-16/10 items-center justify-center rounded-lg border border-dashed border-sand-300 bg-sand-100">
+                      <p className="label-caps text-ink-500">
+                        {l({ fr: 'Affiche à venir', en: 'Cover coming soon' })}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <div className="space-y-5 lg:col-span-5">
+                <div className="space-y-5 px-2 pb-3 lg:col-span-5 lg:px-4 lg:py-6">
                   <h2 className="font-display uppercase text-display-lg leading-[0.95]">
                     {aLaUne.titre}
+                    <span aria-hidden className="text-clay-500">
+                      .
+                    </span>
                   </h2>
                   <p className="max-w-xl text-body-lg text-ink-700">{aLaUne.accroche}</p>
                   <p className="label-caps text-ink-500">
-                    {[aLaUne.format, aLaUne.annee, aLaUne.pays[0]].filter(Boolean).join(' · ')}
+                    {[aLaUne.categorie, aLaUne.format, aLaUne.annee]
+                      .filter(Boolean)
+                      .join(' · ')}
                   </p>
-                  <span className="group inline-flex items-center gap-2 text-button font-semibold text-clay-600">
+                  <span className="inline-flex min-h-11 items-center gap-2 text-button font-semibold text-clay-600">
                     {l({ fr: 'Voir le projet', en: 'View project' })}
+                    <ArrowRight
+                      aria-hidden
+                      className="size-4 transition-transform duration-(--d-fast) group-hover:translate-x-1"
+                    />
                   </span>
                 </div>
               </Link>
@@ -222,7 +260,7 @@ export default function HistoiresPage() {
               (opacity: 0) et restent à jamais invisibles. */}
           <Stagger
             key={filtre ?? 'tous-les-projets'}
-            className="grid grid-cols-2 gap-1 sm:grid-cols-3"
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
           >
             {visibles.map((projet) => (
               <CarteProjet key={projet.slug} projet={projet} />

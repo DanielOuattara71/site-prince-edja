@@ -1,14 +1,12 @@
 import { useEffect } from 'react'
-import {
-  AnimatePresence,
+import {AnimatePresence,
   motion,
-  useReducedMotion,
   useSpring,
   useTransform,
-  useVelocity,
-} from 'motion/react'
+  useVelocity} from 'motion/react'
 import { useHasFinePointer, useIsDesktop } from '@/hooks/useMediaQuery'
 import { DUR, EASE_EXPO } from '@/lib/motion'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const PREVIEW_WIDTH = 240
 const PREVIEW_HEIGHT = 300

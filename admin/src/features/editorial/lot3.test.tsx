@@ -58,6 +58,27 @@ describe('conversions', () => {
 })
 
 describe('règles simulées', () => {
+  it('une entrée d’archive est rattachée à un projet et se filtre (1.15.0 § 32.2)', async () => {
+    await connecter('editeur')
+    const projet = magasin.projets[0]
+    if (!projet) throw new Error('Jeu d’exemple absent.')
+    const cree = await archive.creer({
+      categorie: 'Exemple',
+      projetId: projet.id,
+      fiabilite: 'documentee',
+      sources: [{ libelle: 'Exemple : source', url: null, type: 'ecrite' }],
+      traductions: { fr: { titre: 'Exemple — rattachée', texte: 'Exemple : texte.' } },
+    })
+    expect(cree.projetId).toBe(projet.id)
+    const liste = await archive.lister({ projetId: projet.id })
+    expect(liste.items.some((e) => e.id === cree.id)).toBe(true)
+    const autre = magasin.projets[1]
+    if (autre) {
+      const vide = await archive.lister({ projetId: autre.id })
+      expect(vide.items.some((e) => e.id === cree.id)).toBe(false)
+    }
+  })
+
   it('une entrée d’archive sans source n’est pas publiable (règle du CDC)', async () => {
     await connecter('editeur')
     const a = await archive.lire(IDS_LOT3.archive)
@@ -167,8 +188,8 @@ describe('écrans', () => {
     }
   })
 
-  // Écrans retirés du menu et des routes (C2) : test conservé, décision en C9.
-  it.skip('univers, jalons, offres : listes et ordre d’affichage', async () => {
+  // Écrans rétablis le 16/11/2026, à la demande du client (décision C2 levée pour cette famille).
+  it('univers, jalons, offres : listes et ordre d’affichage', async () => {
     for (const [chemin, nom] of [
       ['/univers', 'Univers'],
       ['/jalons', 'Jalons'],

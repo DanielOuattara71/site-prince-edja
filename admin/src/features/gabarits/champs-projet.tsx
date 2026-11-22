@@ -3,7 +3,6 @@ import { Check } from 'lucide-react'
 import { useState } from 'react'
 import { useWatch, type Control } from 'react-hook-form'
 import { partenaires, villes } from '@/api/endpoints/editorial'
-import { Alerte } from '@/components/ui/Alerte'
 import { Bouton } from '@/components/ui/Bouton'
 import { Case } from '@/components/ui/Case'
 import { MessageErreurChamp } from '@/components/ui/EnveloppeChamp'
@@ -23,8 +22,8 @@ import {
 /**
  * Choix du template d'un projet (PROPOSITION-TEMPLATES-PROJETS § 5) : une carte par template,
  * avec son usage, son projet de référence et ce que la page montre. Le format **propose** un
- * template (« Utiliser ») sans l'imposer. Sur un projet existant, changer de template dit ce qui
- * apparaîtra et ce qui ne s'affichera plus : aucune donnée n'est effacée.
+ * template (« Utiliser ») sans l'imposer. Sur un projet existant, le template assigné est
+ * **verrouillé** : plus de modification.
  */
 export function ChoixTemplate({
   id,
@@ -48,15 +47,12 @@ export function ChoixTemplate({
   erreur?: string | undefined
 }) {
   const format = useWatch({ control, name: champFormat }) as string | undefined
-  // Le template enregistré, gardé au montage : base de la comparaison avant changement.
+  // Le template enregistré, gardé au montage : avec lui vient le verrouillage.
   const [initial] = useState(valeur)
   const propose = format ? TEMPLATE_DU_FORMAT[format as FormatProjet] : undefined
-  const change = existant && initial && valeur && valeur !== initial
-
-  const ids = (tpl: string) =>
-    new Set(TEMPLATES[tpl as TemplateProjet]?.blocs.map((b) => b.libelle) ?? [])
-  const avant = change ? ids(initial) : new Set<string>()
-  const apres = change ? ids(valeur) : new Set<string>()
+  // Une fois assigné à un projet existant, le template est bloqué : son verrou de retour
+  // dès la première édition du projet.
+  const bloque = Boolean(existant && initial)
 
   return (
     <fieldset
@@ -70,12 +66,17 @@ export function ChoixTemplate({
       {propose && propose !== valeur ? (
         <p className="flex flex-wrap items-center gap-2 text-caption text-ink-700">
           {t('template.propose')} : <strong>{TEMPLATES[propose].titre}</strong>
-          <Bouton variante="secondaire" onClick={() => surChange(propose)}>
+          <Bouton
+            variante="secondaire"
+            disabled={bloque}
+            onClick={() => surChange(propose)}
+          >
             {t('template.utiliserPropose')}
           </Bouton>
         </p>
       ) : null}
-      <div className="grid gap-3">
+      {bloque ? <p className="label-caps text-ink-700">{t('template.verrou')}</p> : null}
+      <div className={cn('grid gap-3', bloque ? 'opacity-75' : undefined)}>
         {TEMPLATES_PROJET.map((tpl) => {
           const description = TEMPLATES[tpl]
           const choisi = valeur === tpl
@@ -88,6 +89,7 @@ export function ChoixTemplate({
                   ? 'border-ink-900 bg-sand-100'
                   : 'border-sand-200 bg-sand-50 hover:bg-sand-100',
               )}
+              aria-disabled={bloque ? true : undefined}
             >
               <span className="flex items-start gap-3">
                 <input
@@ -95,6 +97,7 @@ export function ChoixTemplate({
                   name={id}
                   value={tpl}
                   checked={choisi}
+                  disabled={bloque}
                   onChange={() => surChange(tpl)}
                   className="mt-1 size-5 accent-clay-600"
                 />
@@ -129,19 +132,6 @@ export function ChoixTemplate({
           )
         })}
       </div>
-      {change ? (
-        <Alerte ton="info">
-          <p>{t('template.changement')}</p>
-          <p className="mt-2">
-            <strong>{t('template.apparaitront')} :</strong>{' '}
-            {[...apres].filter((b) => !avant.has(b)).join(', ') || '—'}
-          </p>
-          <p>
-            <strong>{t('template.disparaitront')} :</strong>{' '}
-            {[...avant].filter((b) => !apres.has(b)).join(', ') || '—'}
-          </p>
-        </Alerte>
-      ) : null}
       {erreur ? <MessageErreurChamp id={`${id}-erreur`}>{erreur}</MessageErreurChamp> : null}
     </fieldset>
   )

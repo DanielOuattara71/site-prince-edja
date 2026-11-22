@@ -12,7 +12,10 @@ import { connecter, utiliserFauxServeur, type RoleEssai } from '@/test/faux-serv
 /** Étape 5 : médiathèque (section 9) — envoi, description, usages, suppression refusée. */
 
 utiliserFauxServeur()
-afterEach(() => window.history.pushState({}, '', '/'))
+afterEach(() => {
+  window.history.pushState({}, '', '/')
+  vi.restoreAllMocks()
+})
 
 async function ouvrir(role: RoleEssai, chemin: string) {
   await connecter(role)
@@ -59,9 +62,15 @@ describe('grille', () => {
         ],
       },
     })
+    // Contrat 1.21.0 § 38 : l'envoi n'exige plus d'emplacement — absent = « non précisé ».
+    const dialogue = await screen.findByRole('dialog', { name: /Envoyer des fichiers/ })
+    fireEvent.click(
+      within(dialogue).getByRole('button', { name: 'Envoyer des fichiers' }),
+    )
     expect(await screen.findByText(/envoyé ; à décrire/)).toBeTruthy()
     expect(await screen.findByText(/refusé : Ce type de fichier n’est pas accepté/)).toBeTruthy()
     expect(envoyer.mock.calls.map(([fichier]) => fichier.name)).toEqual(['a.png', 'b.txt'])
+    expect(envoyer.mock.calls[0]?.[1]).toEqual({ emplacement: null })
   })
 })
 
@@ -83,6 +92,29 @@ describe('fiche', () => {
       traductions: { fr: { texteAlt: 'Exemple : vue sur la lagune' } },
     })
     expect(await violationsGraves(container)).toEqual([])
+  })
+
+  it('remplace le fichier avec la version lue : même identifiant', async () => {
+    // jsdom ne transmet pas de `FormData` au `fetch` de Node : le remplacement réel est vérifié
+    // en navigateur contre l'API. Ici, on vérifie l'appel de l'écran.
+    const avant = magasin.medias.find((m) => m.id === IDS_EXEMPLE.mediaComplet)
+    if (!avant) throw new Error('Média d’exemple absent.')
+    const remplacer = vi
+      .spyOn(medias, 'remplacer')
+      .mockResolvedValue({ ...avant, version: avant.version + 1 })
+    await ouvrir('editeur', `/medias/${IDS_EXEMPLE.mediaComplet}`)
+    await screen.findByRole('button', { name: 'Remplacer le fichier' })
+    const champ = document.querySelector(
+      'input[type="file"][aria-label="Remplacer le fichier"]',
+    ) as HTMLInputElement
+    fireEvent.change(champ, {
+      target: {
+        files: [new File([new Uint8Array([1, 2, 3])], 'remplace.png', { type: 'image/png' })],
+      },
+    })
+    await waitFor(() => expect(remplacer).toHaveBeenCalledTimes(1))
+    expect(remplacer.mock.calls[0]?.[0]).toBe(avant.id)
+    expect(remplacer.mock.calls[0]?.[2]).toBe(avant.version)
   })
 
   it('l’éditeur ne supprime pas ; l’admin voit le refus d’un média utilisé (RG-08)', async () => {

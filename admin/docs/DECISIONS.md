@@ -939,3 +939,204 @@ Constat (A5 du PROMPT-SUITE) : `*:Zone.Identifier` (métadonnées Windows de zon
 - Pièges levés en vérifiant pour de vrai : `MemoryRouter` sans base (tout mismatch), `window` à l'import de Leaflet (chargement différé dans l'effet), `window` à l'import de `Breadcrumb` (repli SSR), horloge/année/langue/media-queries au rendu (état initial serveur identique au client, ajusté en effet). Lint final : les 5 avertissements historiques tolérés, pas un de plus.
 - Vérifié le 11/11/2026 (build de production, `scripts/servir-dist.mjs` qui reproduit GitHub Pages ; `vite preview` sert la coquille partout, faux pour la recette) : **48/48 routes hydratées sans #418/#422/#423/#425**, navigation client SPA fluide (retour arrière inclus), `curl` de pages : titre/description/og:*/contenu présents. LoaderIntro toujours affiché à l'hydratation puis retiré en effet ; horloge du pied de page affichée à la première frame.
 - Reste connu : en mode API, la page `/newsletter/confirmation?jeton=…` n'est pas prérendue (volontairement) ; OSRM (tracé du parcours) peut être injoignable — chaque segment retombe en ligne droite (`src/lib/routage.ts`) et la carte reste dessinée au cadrage pays.
+
+### D-88 · Rôles : un seul usage — la maison `super_admin`, le mainteneur `admin`, aucun compte Éditeur — Arrêtée
+
+- Arrêtée par le client le 11/11/2026, après revue du découpage « deux administrations » :
+  il n'y a qu'**une** surface d'administration (`admin/`) — pas deux entités séparées — et la
+  répartition se fait par **rôles (contrat § 5)**, une application, comptes distincts.
+- **Maison (Prince Edja) = `super_admin`** : accès complet, y compris la gestion des comptes
+  administrateurs (RG-16), les interrupteurs globaux (`basculer_interrupteur`) et l'export du journal.
+- **Mainteneur = `admin`** : tout l'opérationnel dont le site a besoin (publier, médiathèque, boîte de
+  réception — Messages/Demandes/Abonnés, Paramètres, Pages légales, Publication du site, comptes
+  éditeur), sans pouvoir toucher aux comptes `admin`/`super_admin` de la maison ni aux interrupteurs.
+- **Aucun compte Éditeur** n'est créé ni utilisé (ni en production, ni en recette client). Le rôle
+  `Éditeur` reste dans le moteur (matrice du contrat § 5, RG-02/RG-07, chaîne soumission → relecture →
+  publication) : dormant, pas supprimé. Réévaluable seulement au prochain cadrage de contrat, avec la
+  question 21 ; le supprimer casserait la suite qui protège la chaîne de publication.
+- Les fixtures de la base de **dev** (`fondatrice@` / `redactrice@` / `relectrice@exemple.test`, domaines
+  `.test`) restent pour la suite E2E (`g2-article.spec.ts` requiert l'éditeur et l'admin) ; ils ne sont
+  et ne seront jamais en production (`semer` ne crée qu'un compte système inactif).
+- Pas de changement de contrat : aucune ligne de `droits/peut.ts` ni de sa copie admin n'est modifiée.
+- Si un rédacteur rejoint la maison un jour : recréer un compte Éditeur (rôle intact), sinon revisiter
+  au contrat suivant.
+
+### D-89 · Catégories : gestion dans chaque module, onglet Boutique allégé — Arrêtée
+
+- Refonte **sans API ni schéma** : `categories` inchangé, changement porté par
+  l'admin (`PageCategories`), `navigation.ts` et `routeur.tsx`. RG-09/RG-29 et la protection
+  « catégorie encore utilisée » (CATEGORIE_UTILISEE, 409) restent le filet côté serveur ; le
+  projet (RG-29, famille `projet`, `configurations.ts`) et l'article (`articles/service.ts`)
+  valident déjà la famille à l'écriture.
+- **Boutique** `/categories` : uniquement les catégories de produits ; seuls Bijoux, Livres,
+  Catégories de produits et Créateurs y restent (`menu.categoriesProduits`).
+- **Projets** : page `/projets/categories` (`menu.categoriesProjets`, section « Catégories de
+  projets » — Film, Tourisme, Patrimoine de départ). La barre d'onglets des Projets reste absente
+  (hub) ; la page s'ouvre depuis une puce du hub (admins seulement). Le champ « Catégorie du
+  projet » du formulaire projet lit déjà `categories?famille=projet` (ListeOrdonnable dynamique,
+  RG-29) ; aucune donnée ni association n'est modifiée.
+- **Journal** : barre d'onglets « Articles | Catégories d'articles » (`barreOnglets: true`),
+  page `/articles/categories` (`menu.categoriesArticles`). Le lien « Gérer les catégories » du
+  formulaire article pointe vers `/articles/categories`.
+- `GroupeEcrans` : un onglet dont un similaire du même groupe est ouvert porte `end` (fin du
+  double « actif » — `Articles` et `Catégories d'articles` ne sont plus marqués courants ensemble).
+- Vérifié le 11/11/2026 : typecheck, oxlint (deny-warnings), suite admin 280/280 (dont tests
+  boutique.test/navigation.test et 3 nouveaux), aucune ligne de données modifiée, aucune entrée
+  de menu déplacée pour les éditeurs ni pour le vendeur.
+
+### D-90 · Médiathèque — « Emplacement sur le site » et photos fixes branchées (contrat 1.6.0) — Arrêtée
+
+- Contrat **1.6.0 arrêté le 11/11/2026** (voir `docs/CONTRAT-API.md` § 23) : `Media.emplacement`
+  côté admin uniquement (nom de l'endroit, texte libre), `Emplacement=null` pour le stock existant.
+  Une seule version fait office pour l'emplacement média et les illustrations d'épisodes.
+- **Envoi** : obligatoire à l'envoi (schéma API + formulaire avec `datalist` de suggestions :
+  Galerie — hommes, Galerie — boutique, Projets, À propos — bandeau, À propos — portrait,
+  Boutique — bandeau, Journal, Bibliographie + saisie libre). Le bouton d'envoi du formulaire
+  d'envoi multiple est inerte sans emplacement (message en français).
+- **Filtre** : champ « Emplacement » dans `/medias` (paramètre `?emplacement=`, sous-chaîne
+  insensible à la casse). Les deux formulaires d'entrée dans les médias (upload direct, picker
+  `SelecteurMedia`) exigent le champ ; la fiche média l'édite en facultatif (effaçable → `null`).
+- **Photos fixes d'entrer un premier plier site** : `/a-propos` n'ouvre plus son portrait qu'après
+  lecture de `photos-fixes` (fallback actif du dépôt) ; bandeau À propos apparu s'il est assigné
+  (sinon la page est inchangée) ; hero Edja Shop idem via « Boutique — bandeau » ; accueil idem
+  via « Accueil — héros ». Les slots `journal.bandeau`, `contact.bandeau`, `partage.og`,
+  `accueil.portrait` et `apropos.bandeau` restent sans consommateur — exposés par le CMS, à
+  brancher seulement si le client le demande (sinon rien à inventer).
+- Vérifié le 11/11/2026 : typecheck, lint (deny-warnings), suite admin 280/280, build `dist/`
+  SSR avec `PUBLIC_DATA_SOURCE=api` et `npm run charger`, ordre des curriculums inchangé, aucune
+  donnée migrée.
+
+### D-91 · Épisodes — illustrations et rattachement par projet (contrat 1.6.0) — Arrêtée
+
+- **Un épisode appartient à zéro ou un projet** ; à partir du contrat 1.6.0, la transition vers la
+  relecture exige `projetId` (RG-03 : `422` avec `details.manquants` : `{ champ: 'projet' }`). Les
+  brouillons sans projet restent éditables ; la publication est fermée sans projet — aucun
+  backfill inventé sur l'existant.
+- **Illustrations** : jusqu'à 12 images complémentaires par épisode (`PanneauGalerie` existant —
+  aucune duplication du picker) classées dans l'ordre saisi ; l'affiche reste `imageId` ;
+  retrait = relation supprimée, le média reste en médiathèque. Ordre des boutons/clavier via
+  `ListeOrdonnable`.
+- L'API publique (`GET /contenus/episodes`, `/contenus/episodes/{slug}`) expose `illustrations:
+  ImagePublique[]` (vide par défaut, 1.6.0 § 23.3).
+- Le site respecte les projets (1.6.0 § 23.3) : `EPISODES_XPLORE` ne sert que les épisodes du
+  projet `xplore-cote-divoire` (FilmsList, ALaUne, AlbumScroll, FeaturedFilm, GuidesGrid,
+  BlocsEditoriaux) ; la page épisode affiche les illustrations si présentes, dans l'ordre ; les
+  brouillons ne sont pas servis publiquement.
+- Le code de déploiement de la maison **n'a pas** été touché (pas encore déployé) ; la recette de
+  production suivra la procédure documents/PUBLICATION.md.
+- Vérifié le 11/11/2026 : typecheck, lint, suite admin 280/280 ; back end 222/222 ; contrat 1.6.0
+  identique octet pour octet dans les deux dépôts ; empreinte SHA-256 mise à jour dans
+  `tests/unitaires/contrat.test.ts`.
+
+### D-92 · Boîte de réception — fiche message modale ; pages légales — séparateur et CGU (contrat 1.7.0) — Arrêtée
+
+- Arrêtée par le client le 11/11/2026. Contrat **1.7.0** dans les deux dépôts : un nœud
+  `horizontalRule` (`<hr>`), principe "aucune attribut/aucun contenu" ; sixième page légale
+  **`cgu`** (Conditions générales d'utilisation). Tout le reste est inchangé (aucun champ
+  supprimé, aucun renommage).
+- **Boîte de réception** : clic sur la cellule « message » ouvre un panneau modal
+  (`BoiteDialogue taille="large"`) affichant nom, e-mail, objet (motif pour contact, entreprise/
+  pays/type pour collaboration), date de réception, statut, langue, contenu intégral (défilement
+  vertical), note interne quand elle existe. Actions : Marquer comme (non) lu, Supprimer avec
+  confirmation, Fermer. Après action, la liste est invalidée (react-query) ; les transitions de
+  statut sont les mêmes que la liste groupée existante (PATCH messages). Pas de redirection, pas
+  de reconstruction de `ListePage`.
+- **Pages légales** : l'éditeur Tiptap propose désormais un **séparateur** (toolbar + nœud
+  `horizontalRule` blanc-listed des deux côtés). La liste des pages passe de cinq à six avec
+  l'ajout de `cgu` (entrées MSW + contrat + contrat). L'agent Affiche déjà : statut, date de
+  publication, "publie segment" (BarreStatut + PastilleStatut), titre + champ structuré records
+  helper "Modifiée le … Publié le …" — ajouté au gabarit générique (tous formulaires hérités).
+- **Aperçu du formulaire** : le rendu des principaux champs `corps` utilise `RenduCorps`
+  (liste blanche identique à celle de l'éditeur et du site) — les pages légales affichent le corps
+  riche dans la preview, XSS neutralisé par épuration des nœuds (valeur HTML brute jamais
+  interpolée).
+- `public/sitemap.xml` actualisé : ajout de `/cgu` (équité des cinq autres ; priorité 0.3).
+- Vérifié le 11/11/2026 : typecheck, oxlint (deny-warnings), suite admin 284/284, suite back end
+  223/223, build `dist/` (48 pages, SSR prérendu), hydratation OK, footer rendu avec « CGU »,
+  `/cgu` sert la page générique `LegalPage` (titre « Conditions générales d'utilisation · Prince
+  Edja », `noindex, follow` tant que la page n'est pas publiée depuis l'admin).
+
+### D-93 · Journal — liste d'articles en grille de cartes, 8/12/16/24 par page — Arrêtée
+
+- Arrêtée par le client le 11/11/2026. La liste des articles du Journal (`/articles`) passe d'un
+  tableau générique `ListePage` à une **grille de cartes** suivant le patron de la médiathèque :
+  image de couverture (aspect constant), titre (clamp 2 lignes), résumé (`line-clamp-2`),
+  catégorie dynamique (articles), statut (pastille) + date (`publie` si publiée), actions
+  « Ouvrir », « Publier/Dépublier » (statuts modifiables selon le rôle), « Supprimer »
+  (confirmation requise).
+- **Recherche instantanée** (saisie debounced 300 ms, aucun bouton « Chercher ») — pas de
+  comportement modal âgée du backend.
+- Filtres : recherche par titre/slug, **catégorie dynamique** (catégories de la section
+  « Catégories d'articles » de Journal), statut (4 valeurs de l'API), tri (« plus récents » =
+  `modifieLe` descendant par défaut ; `publieLe`+/- ; `titre`).
+- Pagination **serveur** (`pageSize=8/12/16/24`), total et intervalle affichés
+  (« 1–12 sur N articles »), prev/next + fenêtre de numéros, page courante liée à l'URL
+  (`?page=&taille=&q=&statut=&categorie=&tri=`); tout changement de filtre ramène à la page 1.
+  Taille d'affichage mémorisée dans l'adresse (8, 12, 16, 24 — par défaut 12).
+- Le payload admin `article resume` expose désormais **`categorie` (nom) et `extrait`** — deux
+  champs attendus depuis longtemps côté contrat (§ 22.2 « Résumé de liste : categorie (nom) »),
+  omis par le back end ; corrigé côté serveur (pas de nouvelle version de contrat,
+  `docs/CONTRAT-API.md` inchangé).
+- La matrice `PanneauGalerie` est utilisée inchangée pour le formulaire article (image via
+  médiathèque, déjà en place) ; aucune duplication de la médiathèque.
+- Tableau de bord et liste d'articles dans Journal restent sous la barre d'onglets Journal
+  `Articles | Catégories d'articles` (chantier catégories, D-89).
+- Vérifié le 11/11/2026 : typecheck, oxlint (deny-warnings), suite admin 284/284, back end
+  223/223, build dist SSR, hydratation prod/aprecedente OK, capture 18 articles publiés rendus
+  en grille (images, extrait, catégorie, actions fonctionnelles).
+
+### D-94 · boutique : normalisation typographique — Arrêtée
+
+- Arrêtée par le client le 13/11/2026. La charte typographique du site public (8 tokens
+  `Anton` / `Manrope` / `Fraunces`) est la **seule** source d'échelle acceptée dans la
+  boutique. Les 4 `style={{ fontSize: … }}` inline et les 3 `leading-[…]` arbitraires
+  ont été remplacés par `text-display-xl` (hero), `text-display-lg` (Livres,
+  catalogue) et `text-heading-md` (Sélection), de même que le pré-rendu en `text-body-lg`
+  pour les textes de corps courants.
+- Plus aucun `clamp()` inline dans la boutique ni aucune taille Anton hors système. Les
+  tokens qui s'appliquent déjà portent leur lineheight (`--text-display-*--line-height`),
+  donc `leading-[…]` explicite n'est plus nécessaire sur la boutique.
+- Vérifié le 13/11/2026 : typecheck, lint oxlint (warnings préexistants uniquement),
+  suite site 81/81, build `dist/` (45 pages pré-rendues), captures desktop/tablette/mobile
+  rendues.
+
+### D-95 · Templates de projet — l'unité de contenu suit le template — Arrêtée
+
+- Arrêtée par le client le 20/11/2026. Le formulaire de projet est générique, mais **le bloc
+  complémentaire doit suivre le template choisi** : il ne s'agit pas d'une règle de forme, mais
+  d'éviter de proposer une action dont le résultat serait invisible sur le site public.
+- **Film / Documentaire / Série** → bloc « Épisodes du projet » avec « Ajouter un épisode ».
+  C'est le seul template qui rend des épisodes (carte des étapes, album, épisode à la une, guides).
+- **Programme** (Taste & Travel) → pas d'épisodes : l'unité est l'escale / la ville ; le bloc
+  renvoie vers les villes.
+- **Bibliothèque** (Archive d'Afrique) → **aucun épisode** : l'unité est l'entrée d'archive
+  documentée (catégorie, fiabilité, époque, sources). Le bloc renvoie vers la famille `archive`.
+- Le template est verrouillé dès la première affectation ; le bloc affiché doit donc être cohérent
+  avec ce que la page publique rend réellement, et non avec le seul `format` du projet.
+- Motif : le champ `projetId` d'un épisode est une relation libre — sans cette règle, on pouvait
+  rattacher un épisode vidéo à Archive d'Afrique, où il n'était affiché nulle part, tout en
+  bloquant à tort la suppression du projet (RG-32). Côté contrat, la publication d'un épisode
+  exige déjà un `projetId` (1.6.0 § 23.3) ; aucun changement de contrat n'est nécessaire.
+
+### D-96 · retrait de la liste autonome des épisodes — Arrêtée
+
+- Arrêtée par le client le 20/11/2026 : l'onglet « Épisodes » et la liste `/episodes` disparaissent
+  du menu Projets. Un épisode s'ouvre et se crée depuis la fiche de son projet (bloc « Épisodes du
+  projet », `/episodes/nouveau?projetId=…`), cohéremment avec le contrat 1.15.0 où l'épisode
+  appartient à un projet.
+- Les adresses `/episodes/nouveau` et `/episodes/:id` restent servies : elles sont les cibles des
+  boutons « Créer un épisode » et des cartes d'épisodes. Seule l'adresse `/episodes` répond désormais
+  « Page introuvable ».
+- Aucun changement d'API ni de contrat. Les libellés de projets (D-95) et la carte de création de
+  `/projets` gardent leur cible.
+
+### D-97 · Emplacement facultatif à l’envoi (contrat 1.21.0) — Arrêtée
+
+- Arrêtée par le client le 22/11/2026 : l’écran Médiathèque n’exige plus l’emplacement pour
+  envoyer des fichiers — le champ « Emplacement sur le site » de la boîte d’envoi est devenu
+  facultatif (absent = « emplacement non précisé », envoyé comme `null`).
+- Côté admin : schéma `envoiMedia` (`emplacement` nullable / optionnel), handler MSW et endpoint
+  acceptent l’absence ; l’écran n’affiche plus l’erreur d’emplacement obligatoire et le bouton
+  d’envoi est actif sans saisie. La fiche média garde l’emplacement **facultatif** et modifiable.
+- Côté back end : zod `champsEnvoi` accepte l’absence ; service persiste `null`.
+- Aucun changement côté site public : l’emplacement n’est jamais exposé dans l’API publique.

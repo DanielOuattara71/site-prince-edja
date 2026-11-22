@@ -194,7 +194,8 @@ function EditeurCreateur({ contenu: initial, surCree }: ProprietesEditeur<Create
             />
           ) : null}
         </fieldset>
-        <ActionsLaterales editeur={editeur} libelles={LIBELLES_CREATEUR} />
+        {/* Un seul enregistrement : la barre de statut collante en haut le porte déjà. */}
+        <ActionsLaterales editeur={editeur} libelles={LIBELLES_CREATEUR} sansEnregistrement />
         {createur && !principal ? <ZoneSuppression createur={createur} /> : null}
       </aside>
     </form>

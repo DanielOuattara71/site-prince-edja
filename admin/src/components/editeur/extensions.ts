@@ -49,7 +49,8 @@ export const EXTENSIONS: Extensions = [
     codeBlock: false,
     strike: false,
     underline: false,
-    horizontalRule: false,
+    // Visible dans la barre : « Séparateur » (contrat 1.7.0 § 24.1).
+    horizontalRule: {},
     link: {
       openOnClick: false,
       autolink: true,

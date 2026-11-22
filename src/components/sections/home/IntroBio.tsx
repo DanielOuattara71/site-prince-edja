@@ -1,9 +1,11 @@
 import { SITE } from '@/acces/site'
+import { photoOuRepli } from '@/acces/photos'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'
 import { Reveal } from '@/components/motion/Reveal'
 import { LazyImage } from '@/components/media/LazyImage'
 import { Eyebrow } from '@/components/ui/Eyebrow'
+import { img } from '@/lib/images'
 
 /**
  * Manifeste de la page d'accueil.
@@ -11,15 +13,23 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
  * Le CDC demande trois choses et rien de plus : un texte court sur la mission, un
  * portrait éditorial et une citation. Les chiffres ne vivent plus ici, ils ont leur
  * propre bande (« Preuves ») : les répéter sur le même écran les rendait invisibles.
+ *
+ * Le portrait vient de l'emplacement `accueil.portrait` (contrat § 34.1) : la maison le
+ * remplit depuis l'admin sans redéployer de fichier, et retombe sur le portrait du dépôt
+ * tant que rien n'a été assigné (aucune image inventée).
  */
 export function IntroBio() {
+  const portrait = photoOuRepli('accueil.portrait', img(`images/a-propos/portrait-edja.jpg`))
+
   return (
     <Section tone="light">
       <Container>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <Reveal className="lg:col-span-5">
             <LazyImage
-              src={`${import.meta.env.BASE_URL}images/a-propos/portrait-edja.jpg`}
+              src={portrait.src}
+              srcSet={portrait.srcSet}
+              sizes="(max-width: 1024px) 100vw, 40vw"
               alt="Prince Edja, portrait éditorial"
               ratio="4/5"
               className="overflow-hidden rounded-md bg-sand-200"

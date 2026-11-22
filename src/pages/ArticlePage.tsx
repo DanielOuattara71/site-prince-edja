@@ -10,7 +10,7 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { useJsonLd } from '@/hooks/useSeo'
 import { ArticleCard } from '@/components/cards/ArticleCard'
 import { formatDate } from '@/lib/format'
-import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
+import { CorpsRiche } from '@/lib/corpsRiche'
 
 export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>()
@@ -87,13 +87,30 @@ export default function ArticlePage() {
             )}
           </div>
 
-          <div className="space-y-2 rounded-xl border border-sand-200 bg-sand-100 p-6">
-            <p className="label-caps text-ink-500">Rédaction en cours</p>
-            <p className="text-body text-ink-700">
-              Cet article n'est pas encore publié. Il rejoindra le journal dès que sa rédaction est
-              terminée.
-            </p>
-          </div>
+          {article.corps ? <CorpsRiche corps={article.corps} /> : null}
+
+          {article.pdf ? (
+            <div className="flex flex-wrap items-center justify-between gap-6 rounded-xl border border-sand-200 bg-sand-100 p-6">
+              <div className="max-w-md space-y-2">
+                <p className="label-caps text-clay-600">Version PDF</p>
+                <p className="text-body text-ink-700">
+                  La maison tient cet article en version imprimable, pour lecteuses et lecteurs
+                  hors ligne.
+                </p>
+              </div>
+              <Button href={article.pdf} external variant="primary">
+                Télécharger le PDF
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-2 rounded-xl border border-sand-200 bg-sand-100 p-6">
+              <p className="label-caps text-ink-500">Rédaction en cours</p>
+              <p className="text-body text-ink-700">
+                Cet article n'est pas encore publié. Il rejoindra le journal dès que sa rédaction est
+                terminée.
+              </p>
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-4">
             <Button to="/journal" variant="dark">
@@ -128,7 +145,6 @@ export default function ArticlePage() {
         </Section>
       )}
 
-      <BlocNewsletter />
     </>
   )
 }

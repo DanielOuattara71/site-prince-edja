@@ -68,8 +68,8 @@ describe('valeurs du formulaire de bijou', () => {
 describe('bijoux', () => {
   it('liste : prix « sur demande », pas de filtre créateur hors multi-vendeurs ; axe', async () => {
     const { container } = await ouvrir('editeur', '/bijoux')
-    const tableau = await screen.findByRole('table', { name: 'Bijoux' })
-    expect(within(tableau).getAllByText('Sur demande').length).toBeGreaterThan(0)
+    const grille = await screen.findByRole('list', { name: 'Bijoux' })
+    expect(within(grille).getAllByText('Sur demande').length).toBeGreaterThan(0)
     expect(screen.queryByLabelText('Créateur', { selector: 'select' })).toBeNull()
     expect(await violationsGraves(container)).toEqual([])
   })
@@ -133,22 +133,27 @@ describe('créateurs', () => {
 })
 
 describe('catégories', () => {
-  it('trois sections ; huit catégories de produits avec leur nombre d’éléments ; axe', async () => {
+  it('la Boutique n’affiche que les catégories de produits ; axe', async () => {
     const { container } = await ouvrir('admin', '/categories')
-    await titre('Catégories')
-    for (const section of ['Articles', 'Projets', 'Produits (bijoux et livres)'])
-      expect(screen.getByRole('heading', { level: 2, name: section })).toBeTruthy()
+    await titre('Catégories de produits')
+    expect(screen.queryByRole('heading', { level: 2, name: 'Articles' })).toBeNull()
+    expect(screen.queryByRole('heading', { level: 2, name: 'Projets' })).toBeNull()
     const liste = await screen.findByRole('list', {
       name: 'Ordre des catégories — Produits (bijoux et livres)',
     })
     expect(within(liste).getAllByRole('listitem')).toHaveLength(8)
     expect(within(liste).getByText(/^2 élément\(s\)/)).toBeTruthy()
-    const articles = await screen.findByRole('list', { name: 'Ordre des catégories — Articles' })
-    expect(within(articles).getAllByRole('listitem')).toHaveLength(8)
-    // Catégories de projets de départ (décision du client) : Film, Tourisme, Patrimoine.
-    const projets = await screen.findByRole('list', { name: 'Ordre des catégories — Projets' })
+    expect(within(liste).getByRole('button', { name: 'Modifier « Mode »' })).toBeTruthy()
+    expect(await violationsGraves(container)).toEqual([])
+  })
+
+  it('Projets : « Catégories de projets » (Film, Tourisme, Patrimoine)', async () => {
+    await ouvrir('admin', '/projets/categories')
+    await titre('Catégories de projets')
+    expect(screen.queryByRole('heading', { level: 2, name: /Produits|Articles/ })).toBeNull()
+    const liste = await screen.findByRole('list', { name: 'Ordre des catégories — Projets' })
     expect(
-      within(projets)
+      within(liste)
         .getAllByRole('listitem')
         .map((li) => li.textContent),
     ).toEqual([
@@ -156,8 +161,14 @@ describe('catégories', () => {
       expect.stringContaining('Tourisme'),
       expect.stringContaining('Patrimoine'),
     ])
-    expect(within(liste).getByRole('button', { name: 'Modifier « Mode »' })).toBeTruthy()
-    expect(await violationsGraves(container)).toEqual([])
+  })
+
+  it('Journal : « Catégories d’articles » propres au module', async () => {
+    await ouvrir('admin', '/articles/categories')
+    await titre('Catégories d’articles')
+    expect(screen.queryByRole('heading', { level: 2, name: /Produits|Projets/ })).toBeNull()
+    const liste = await screen.findByRole('list', { name: 'Ordre des catégories — Articles' })
+    expect(within(liste).getAllByRole('listitem').length).toBeGreaterThan(0)
   })
 
   it('l’admin crée une catégorie ; l’adresse suit le nom', async () => {

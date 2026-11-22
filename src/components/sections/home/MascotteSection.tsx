@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import {motion} from 'motion/react'
 import { useLangue } from '@/i18n/contexteLangue'
 import { DUR, EASE_EXPO, STAGGER_STEP } from '@/lib/motion'
 import { cn } from '@/lib/cn'
@@ -8,6 +8,8 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { Reveal } from '@/components/motion/Reveal'
 import { AfricanPattern } from '@/components/motifs/AfricanPattern'
+import { img } from '@/lib/images'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 /**
  * Mascotte exploratrice en paille — le petit guide qui incarne l’univers du voyage.
@@ -18,7 +20,7 @@ import { AfricanPattern } from '@/components/motifs/AfricanPattern'
  * tête, de bras, ni le flottement de l’écharpe n’étant simulés — un asset animé serait
  * nécessaire pour animer le personnage lui-même).
  */
-const MASCOTTE_SRC = `${import.meta.env.BASE_URL}images/mascotte/mascotte-exploratrice-en-paille.png`
+const MASCOTTE_SRC = img(`images/mascotte/mascotte-exploratrice-en-paille.png`)
 
 /**
  * « Voulez-vous découvrir et voyager avec moi dans mon univers ? »

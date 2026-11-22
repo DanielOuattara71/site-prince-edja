@@ -1,4 +1,4 @@
-import { LANGUES } from '@/acces/site'
+import { LANGUES_ACTIVES } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { cn } from '@/lib/cn'
 
@@ -27,7 +27,7 @@ export function LangueSwitcher({ tone = 'sombre', className }: Props) {
       aria-label={t('langue.etiquette')}
       className={cn('inline-flex items-center gap-1', className)}
     >
-      {LANGUES.map((entree) => {
+      {LANGUES_ACTIVES.map((entree) => {
         const actif = entree.code === langue
         // Or sur fond clair : 1.9:1, interdit. Là-bas l'actif passe en terracotta,
         // l'inactif en ink-500, le pas le plus clair qui tienne sur tous les sables.

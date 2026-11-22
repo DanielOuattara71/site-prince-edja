@@ -15,8 +15,18 @@ const GENERES: Record<string, unknown> = SOURCE_API
   ? import.meta.glob('../data/generated/*.json', { eager: true, import: 'default' })
   : {}
 
+/**
+ * Données injectées au moment de l'exécution par le serveur à la demande (contrat 1.13.0 § 30).
+ * Elles ont la même forme que les JSON du chargeur et sont validées par lui avant injection.
+ * Le tableau global est volontairement non typé ici : seul le serveur l'écrit, une fois par
+ * rafraîchissement, avant de (ré)importer le paquet SSR.
+ */
+const RUNTIME = globalThis as unknown as { __PRINCE_DONNEES__?: Record<string, unknown> }
+
 /** Contenu d'un fichier chargé (`articles`, `categories-produit`…), déjà validé par le chargeur. */
 export function lireGenere<T>(nom: string): T {
+  const injection = RUNTIME.__PRINCE_DONNEES__?.[nom]
+  if (injection !== undefined) return injection as T
   const valeur = GENERES[`../data/generated/${nom}.json`]
   if (valeur === undefined) {
     throw new Error(

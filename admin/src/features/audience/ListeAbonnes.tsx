@@ -50,8 +50,6 @@ export default function ListeAbonnes() {
 
   const exporter = async (parametres: ParametresListe): Promise<string> => {
     const reponse = await abonnes.exporterAbonnes({
-      page: parametres.page,
-      pageSize: parametres.pageSize,
       q: parametres.q,
       statut: parametres.statut as StatutAbonne | undefined,
     })

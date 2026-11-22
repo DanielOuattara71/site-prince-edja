@@ -121,6 +121,12 @@ export const SPEC_EPISODES: SpecRessource = {
     // Un épisode appartient à zéro ou un projet ; l'ordre suit le numéro (RG-32).
     { type: 'relation', cle: 'projetId', libelle: t('episode.projet'), ressource: 'projets' },
     { type: 'image', cle: 'imageId', libelle: t('episode.image') },
+    {
+      type: 'galerie',
+      cle: 'illustrationIds',
+      libelle: t('episode.illustrations'),
+      aide: t('episode.illustrationsAide'),
+    },
     { type: 'url', cle: 'trailerUrl', libelle: t('episode.trailer') },
     {
       type: 'nombre',
@@ -221,6 +227,26 @@ export const SPEC_PROJETS: SpecRessource = {
       champFormat: 'format',
     },
     {
+      type: 'choix',
+      cle: 'format',
+      libelle: t('projet.format'),
+      aide: t('projet.formatAide'),
+      obligatoire: true,
+      options: FORMATS_PROJET.map((f) => ({ valeur: f, libelle: f })),
+    },
+    {
+      type: 'choix',
+      cle: 'avancement',
+      libelle: t('projet.avancement'),
+      aide: t('projet.avancementAide'),
+      obligatoire: true,
+      options: AVANCEMENTS_PROJET.map((a) => ({
+        valeur: a,
+        libelle: t(`projet.${a}` as CleTraduction),
+      })),
+    },
+    { type: 'datePartielle', cle: 'annee', libelle: t('projet.annee') },
+    {
       type: 'corps',
       cle: 'contenu',
       libelle: t('projet.presentation'),
@@ -289,26 +315,6 @@ export const SPEC_PROJETS: SpecRessource = {
   ],
   lateral: [
     {
-      type: 'choix',
-      cle: 'format',
-      libelle: t('projet.format'),
-      aide: t('projet.formatAide'),
-      obligatoire: true,
-      options: FORMATS_PROJET.map((f) => ({ valeur: f, libelle: f })),
-    },
-    {
-      type: 'choix',
-      cle: 'avancement',
-      libelle: t('projet.avancement'),
-      aide: t('projet.avancementAide'),
-      obligatoire: true,
-      options: AVANCEMENTS_PROJET.map((a) => ({
-        valeur: a,
-        libelle: t(`projet.${a}` as CleTraduction),
-      })),
-    },
-    { type: 'datePartielle', cle: 'annee', libelle: t('projet.annee') },
-    {
       type: 'texte',
       cle: 'saison',
       libelle: t('projet.saison'),
@@ -323,7 +329,7 @@ export const SPEC_PROJETS: SpecRessource = {
       aide: t('projet.categorieAide'),
       famille: 'projet',
     },
-    { type: 'image', cle: 'imageId', libelle: t('projet.image') },
+    { type: 'image', cle: 'imageId', libelle: t('projet.photoAffiche'), aide: t('projet.photoAfficheAide'), obligatoire: true, emplacementDefaut: 'Projets — photo d’affiche' },
     {
       type: 'image',
       cle: 'bandeauId',
@@ -345,6 +351,8 @@ export const SPEC_VILLES: SpecRessource = {
   nouveau: t('ville.nouvelle'),
   champTitre: 'nom',
   slug: false,
+  // 1.15.0 § 32.2 : les villes sont rattachées via `escaleIds` sur la fiche projet.
+  filtresRelation: [{ cle: 'projetId', libelle: t('episode.projet'), ressource: 'projets' }],
   ordonnable: true,
   principal: [],
   traduits: [
@@ -374,6 +382,8 @@ export const SPEC_DESTINATIONS: SpecRessource = {
   nouveau: t('destination.nouvelle'),
   champTitre: 'nom',
   slug: true,
+  // 1.15.0 § 32.2 : une destination appartient au projet de son épisode.
+  filtresRelation: [{ cle: 'projetId', libelle: t('episode.projet'), ressource: 'projets' }],
   principal: [
     {
       type: 'nombre',
@@ -421,7 +431,10 @@ export const SPEC_ARCHIVE: SpecRessource = {
   nouveau: t('archive.nouvelle'),
   champTitre: 'titre',
   slug: true,
+  // 1.15.0 § 32.2 : une entrée appartient à zéro ou un projet.
+  filtresRelation: [{ cle: 'projetId', libelle: t('episode.projet'), ressource: 'projets' }],
   principal: [
+    { type: 'relation', cle: 'projetId', libelle: t('episode.projet'), ressource: 'projets' },
     {
       type: 'sources',
       cle: 'sources',

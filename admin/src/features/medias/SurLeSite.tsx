@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ImageOff, Plus } from 'lucide-react'
+import { ImageOff } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { galerie } from '@/api/endpoints/editorial'
@@ -31,7 +31,7 @@ export default function SurLeSite() {
   const { moi } = useSession()
   const lirePhotos = peut(moi?.compte, 'lire', 'emplacements-photos')
   return (
-    <section className="space-y-10">
+    <section className="space-y-6">
       <div>
         <FilAriane
           elements={[
@@ -143,7 +143,6 @@ function BlocGalerie({ emplacement }: { emplacement: (typeof EMPLACEMENTS_GALERI
   const client = useQueryClient()
   const notifier = useNotifications()
   const ordonnable = peut(moi?.compte, 'ordonner', 'galerie')
-  const creer = peut(moi?.compte, 'creer', 'galerie')
   const cle = ['galerie', 'liste', 'sur-le-site', emplacement]
   const liste = useQuery({
     queryKey: cle,
@@ -160,23 +159,13 @@ function BlocGalerie({ emplacement }: { emplacement: (typeof EMPLACEMENTS_GALERI
 
   return (
     <section aria-labelledby={id} className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div>
         <div>
           <h2 id={id} className="font-display text-heading-sm uppercase text-ink-900">
             {titre}
           </h2>
           <p className="text-body text-ink-700">{t('surLeSite.galerieAide')}</p>
         </div>
-        {creer ? (
-          <Link
-            to={`/galerie/nouveau?emplacement=${emplacement}`}
-            aria-label={`${t('surLeSite.ajouterPhoto')} — ${titre}`}
-            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-sand-300 px-4 text-button font-semibold text-ink-900 hover:bg-sand-100"
-          >
-            <Plus aria-hidden className="size-4" />
-            {t('surLeSite.ajouterPhoto')}
-          </Link>
-        ) : null}
       </div>
       {liste.isPending ? (
         <Squelette lignes={3} />

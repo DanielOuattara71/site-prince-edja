@@ -79,7 +79,7 @@ export function BijouCard({ bijou, image, imageAlt }: BijouCardProps) {
           'mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border px-4 text-caption font-semibold transition-colors duration-(--d-fast)',
           choisi
             ? 'border-night-900 bg-night-900 text-cream-100'
-            : 'border-sand-300 text-ink-700 hover:bg-sand-200',
+            : 'border-ink-500 text-ink-700 hover:bg-sand-200',
         )}
       >
         {/* La coche dit l'état d'un coup d'œil. Le seul changement de libellé

@@ -6,13 +6,14 @@ import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { Stagger } from '@/components/motion/Stagger'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
+import { photoOuRepli } from '@/acces/photos'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { Audience } from '@/components/sections/about/Audience'
 import { Offres } from '@/components/sections/about/Offres'
 import { FormulaireB2B } from '@/components/about/FormulaireB2B'
-import { AfricanPatternRibbon } from '@/components/motifs/AfricanPatternRibbon'
 import { AfricanPattern } from '@/components/motifs/AfricanPattern'
+import { img } from '@/lib/images'
 
 /*
  * Étapes que le CDC attend dans la timeline et que les données ne portent pas encore :
@@ -48,6 +49,10 @@ export default function AboutPage() {
     description:
       'Parcours, mission, audience, offres et collaborations de Prince Edja : briser les clichés, préserver la mémoire et faire du tourisme un pont entre les peuples.',
   })
+  const portrait = photoOuRepli(
+    'apropos.portrait',
+    img(`images/a-propos/portrait-edja.jpg`),
+  )
 
   return (
     <>
@@ -90,7 +95,9 @@ export default function AboutPage() {
 
             <Reveal delay={0.15} className="lg:col-span-5">
               <ParallaxImage
-                src={`${import.meta.env.BASE_URL}images/a-propos/portrait-edja.jpg`}
+                src={portrait.src}
+                srcSet={portrait.srcSet}
+                sizes="(max-width: 1024px) 100vw, 40vw"
                 alt="Prince Edja, storyteller et producteur audiovisuel"
                 ratio="4/5"
                 range={4}
@@ -151,10 +158,6 @@ export default function AboutPage() {
           }}
         />
       </Section>
-
-      {/* Une couture entre le portrait et le parcours : le ruban reste la signature
-          de la page, le cauri viendra sceller les engagements plus bas. */}
-      <AfricanPatternRibbon />
 
       <Section tone="light" className="scroll-mt-32" id="parcours">
         <Container>

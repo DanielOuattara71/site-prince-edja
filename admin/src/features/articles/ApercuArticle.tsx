@@ -5,6 +5,7 @@ import type { Langue } from '@/api/schemas/communs'
 import { ApercuSite, EnteteArticle } from '@/components/apercu/ApercuSite'
 import { RenduCorps } from '@/components/apercu/RenduCorps'
 import { Onglets } from '@/components/ui/Onglets'
+import { FileText } from 'lucide-react'
 import { t } from '@/i18n/fr'
 import type { ValeursArticle } from './valeurs'
 
@@ -57,6 +58,12 @@ export function ApercuArticle({ valeurs, id }: { valeurs: ValeursArticle; id: st
             alt={image.data.decoratif ? '' : (image.data.traductions[langue]?.texteAlt ?? '')}
             className="aspect-[3/2] w-full rounded-xl bg-sand-200 object-cover"
           />
+        ) : null}
+        {valeurs.pdfId ? (
+          <div className="flex items-center gap-3 rounded-md border border-sand-200 bg-sand-100 p-3">
+            <FileText aria-hidden className="size-5 text-clay-600" />
+            <span className="text-caption text-ink-700">PDF de l’article — le site public offrira un téléchargement.</span>
+          </div>
         ) : null}
         <RenduCorps corps={traduction.corps} langue={langue} />
         <aside className="space-y-2 border-t border-sand-200 pt-6">

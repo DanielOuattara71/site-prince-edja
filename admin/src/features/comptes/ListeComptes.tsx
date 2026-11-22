@@ -173,7 +173,7 @@ export default function ListeComptes() {
   }
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-6">
       <div className="space-y-2">
         <TitrePage titre={t('menu.comptes')}>{t('menu.comptes')}</TitrePage>
         {etat === 'chargement' ? <Squelette lignes={5} /> : null}

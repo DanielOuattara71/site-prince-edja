@@ -88,10 +88,13 @@ export function ActionsLaterales<C extends ContenuEditable, V extends FieldValue
   editeur,
   libelles,
   lectureSeule = t('contenu.lectureSeule'),
+  sansEnregistrement = false,
 }: {
   editeur: Editeur<C, V>
   libelles: Record<string, string>
   lectureSeule?: string
+  /** Exclusive à Article : le bouton sticky du haut porte l’unique enregistrement. */
+  sansEnregistrement?: boolean
 }) {
   const { contenu, admin, modifiable, enregistrant } = editeur
   return (
@@ -114,9 +117,11 @@ export function ActionsLaterales<C extends ContenuEditable, V extends FieldValue
         />
       ) : null}
       {modifiable ? (
-        <Bouton type="submit" variante="secondaire" disabled={enregistrant} className="w-full">
-          {enregistrant ? t('barre.enregistrementEnCours') : t('barre.enregistrer')}
-        </Bouton>
+        sansEnregistrement ? null : (
+          <Bouton type="submit" variante="secondaire" disabled={enregistrant} className="w-full">
+            {enregistrant ? t('barre.enregistrementEnCours') : t('barre.enregistrer')}
+          </Bouton>
+        )
       ) : (
         <Alerte>{lectureSeule}</Alerte>
       )}
@@ -158,7 +163,7 @@ export function GabaritFormulaire<C extends ContenuEditable, V extends FieldValu
   /** Bloc affiché entre la barre de statut et les onglets. */
   avant?: ReactNode
   libelleOnglets?: string
-  /** Écran parent dans le fil d'Ariane (le hub Projets). */
+  /** Écran parent dans le fil d'Ariane (la liste des projets). */
   parent?: { libelle: string; chemin: string }
 }) {
   const { contenu, cycle, formulaire: form } = editeur

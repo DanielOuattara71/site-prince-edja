@@ -27,6 +27,7 @@ import { t } from '@/i18n/fr'
 import { slugifier } from '@/lib/slug'
 import { ApercuArticle } from './ApercuArticle'
 import { PanneauImage } from './PanneauImage'
+import { PanneauPdf } from './PanneauPdf'
 import {
   CHAMPS_ARTICLE,
   LIBELLES_ARTICLE,
@@ -103,7 +104,7 @@ function EditeurArticle({ contenu: initial, surCree }: ProprietesEditeur<Article
     <form
       noValidate
       onSubmit={(evenement) => void editeur.soumettre(evenement)}
-      className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
+      className="grid gap-8 lg:grid-cols-[minmax(0,56rem)_22rem] lg:gap-10"
     >
       <fieldset disabled={!modifiable} className="min-w-0 space-y-6">
         <legend className="sr-only">{t('article.contenu')}</legend>
@@ -188,86 +189,125 @@ function EditeurArticle({ contenu: initial, surCree }: ProprietesEditeur<Article
             surChange={ecrire('seoDescription')}
           />
         </SectionAvancee>
+
+        {/* Visuel : l'image principale de la carte et le PDF de l'article. */}
+        <section aria-labelledby="Reglages-visuel" className="rounded-xl border border-sand-200 bg-sand-50 p-4">
+          <h2 id="Reglages-visuel" className="label-caps text-ink-700">
+            {t('reglages.visuel')}
+          </h2>
+          <div className="mt-3 space-y-4">
+            <Controller
+              control={control}
+              name="imageId"
+              render={({ field, fieldState }) => (
+                <PanneauImage
+                  valeur={field.value}
+                  surChange={field.onChange}
+                  erreur={fieldState.error?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="pdfId"
+              render={({ field, fieldState }) => (
+                <PanneauPdf
+                  valeur={field.value}
+                  surChange={field.onChange}
+                  erreur={fieldState.error?.message}
+                />
+              )}
+            />
+          </div>
+        </section>
+
+        {/* Mise en avant : l'interrupteur à la une. */}
+        <section aria-labelledby="Reglages-avant" className="rounded-xl border border-sand-200 bg-sand-50 p-4">
+          <h2 id="Reglages-avant" className="label-caps text-ink-700">
+            {t('reglages.avant')}
+          </h2>
+          <div className="mt-3">
+            <Controller
+              control={control}
+              name="aLaUne"
+              render={({ field }) => (
+                <Interrupteur
+                  libelle={t('article.aLaUne')}
+                  aide={t('article.aLaUneAide')}
+                  actif={field.value}
+                  surChange={field.onChange}
+                  desactive={!modifiable}
+                />
+              )}
+            />
+          </div>
+        </section>
       </fieldset>
 
-      <aside className="space-y-6">
-        <fieldset disabled={!modifiable} className="space-y-6">
+      <aside className="space-y-4">
+        <fieldset disabled={!modifiable} className="space-y-4">
           <legend className="sr-only">{t('article.reglages')}</legend>
-          <div className="space-y-1">
-            <Select
-              id="categorie"
-              libelle={t('article.categorie')}
-              required
-              invite={t('article.choisirCategorie')}
-              disabled={!categoriesArticle.isSuccess}
-              options={(categoriesArticle.data?.items ?? []).map((c) => ({
-                valeur: c.id,
-                libelle: nomCategorie(c),
-              }))}
-              erreur={formState.errors.categorie?.message}
-              value={valeurs.categorieId}
-              onChange={(evenement) => {
-                const choisie = categoriesArticle.data?.items.find(
-                  (c) => c.id === evenement.target.value,
-                )
-                setValue('categorieId', choisie?.id ?? '', { shouldDirty: true })
-                setValue('categorie', choisie ? nomCategorie(choisie) : '', {
-                  shouldDirty: true,
-                  shouldValidate: tentative > 0,
-                })
-              }}
-            />
-            {peutGererCategories ? (
-              <Link
-                to="/categories#categories-article"
-                className="inline-flex min-h-11 items-center text-caption font-semibold text-clay-700 underline underline-offset-4"
-              >
-                {t('categorie.gerer')}
-              </Link>
-            ) : null}
-          </div>
-          <Controller
-            control={control}
-            name="imageId"
-            render={({ field, fieldState }) => (
-              <PanneauImage
-                valeur={field.value}
-                surChange={field.onChange}
-                erreur={fieldState.error?.message}
+
+          {/* Classement : la catégorie et les étiquettes, deux outils de tri complémentaires. */}
+          <section aria-labelledby="Reglages-classement" className="rounded-xl border border-sand-200 bg-sand-50 p-4">
+            <h2 id="Reglages-classement" className="label-caps text-ink-700">
+              {t('reglages.classement')}
+            </h2>
+            <div className="mt-3 space-y-3">
+              <div className="space-y-1">
+                <Select
+                  id="categorie"
+                  libelle={t('article.categorie')}
+                  required
+                  invite={t('article.choisirCategorie')}
+                  disabled={!categoriesArticle.isSuccess}
+                  options={(categoriesArticle.data?.items ?? []).map((c) => ({
+                    valeur: c.id,
+                    libelle: nomCategorie(c),
+                  }))}
+                  erreur={formState.errors.categorie?.message}
+                  value={valeurs.categorieId}
+                  onChange={(evenement) => {
+                    const choisie = categoriesArticle.data?.items.find(
+                      (c) => c.id === evenement.target.value,
+                    )
+                    setValue('categorieId', choisie?.id ?? '', { shouldDirty: true })
+                    setValue('categorie', choisie ? nomCategorie(choisie) : '', {
+                      shouldDirty: true,
+                      shouldValidate: tentative > 0,
+                    })
+                  }}
+                />
+                {peutGererCategories ? (
+                  <Link
+                    to="/articles/categories"
+                    className="inline-flex min-h-11 items-center text-caption font-semibold text-clay-700 underline underline-offset-4"
+                  >
+                    {t('categorie.gerer')}
+                  </Link>
+                ) : null}
+              </div>
+              <Controller
+                control={control}
+                name="tagIds"
+                render={({ field }) => (
+                  <SelecteurTags
+                    contexte="article"
+                    valeur={field.value}
+                    surChange={field.onChange}
+                    exigerFormat
+                    afficherErreur={tentative > 0}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            control={control}
-            name="tagIds"
-            render={({ field }) => (
-              <SelecteurTags
-                contexte="article"
-                valeur={field.value}
-                surChange={field.onChange}
-                exigerFormat
-                afficherErreur={tentative > 0}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="aLaUne"
-            render={({ field }) => (
-              <Interrupteur
-                libelle={t('article.aLaUne')}
-                aide={t('article.aLaUneAide')}
-                actif={field.value}
-                surChange={field.onChange}
-                desactive={!modifiable}
-              />
-            )}
-          />
+            </div>
+          </section>
         </fieldset>
         <ActionsLaterales
           editeur={editeur}
           libelles={LIBELLES_ARTICLE}
           lectureSeule={t('article.lectureSeule')}
+          sansEnregistrement
         />
       </aside>
     </form>

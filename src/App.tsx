@@ -1,3 +1,4 @@
+import { useCompteurVue } from '@/hooks/useCompteurVue'
 import { Suspense, lazy } from 'react'
 import {
   BrowserRouter,
@@ -8,7 +9,7 @@ import {
   useLocation,
   Outlet,
 } from 'react-router'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import {AnimatePresence, motion} from 'motion/react'
 import { DUR, EASE_EXPO, EASE_QUART } from '@/lib/motion'
 import HomePage from '@/pages/HomePage'
 import { Header } from '@/components/layout/Header'
@@ -20,7 +21,9 @@ import { FenetreNewsletter } from '@/components/newsletter/FenetreNewsletter'
 import { PAGES_LEGALES } from '@/acces/site'
 import { useLangue } from '@/i18n/contexteLangue'
 import { FournisseurDemande } from '@/lib/demande'
+import { FournisseurPanier } from '@/lib/panier'
 import { BoutonDemande } from '@/components/shop/BoutonDemande'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
 const HistoiresPage = lazy(() => import('@/pages/HistoiresPage'))
@@ -38,10 +41,14 @@ const ShopPage = lazy(() => import('@/pages/ShopPage'))
 const JournalPage = lazy(() => import('@/pages/JournalPage'))
 const PressPage = lazy(() => import('@/pages/PressPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+const CommandePage = lazy(() => import('@/pages/CommandePage'))
+const SuiviCommandePage = lazy(() => import('@/pages/SuiviCommandePage'))
+const ProjetPage = lazy(() => import('@/pages/ProjetPage'))
 
 function AnimatedOutlet() {
   const location = useLocation()
   const reducedMotion = useReducedMotion()
+  useCompteurVue()
 
   return (
     <AnimatePresence mode="wait">
@@ -77,13 +84,14 @@ function SiteLayout() {
   const { t } = useLangue()
 
   return (
-    <>
-      <a
-        href="#contenu"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[80] focus:rounded-full focus:bg-clay-500 focus:px-5 focus:py-3 focus:text-caption focus:font-semibold focus:text-cream-100"
-      >
-        {t('a11y.allerContenu')}
-      </a>
+    <FournisseurPanier>
+      <>
+        <a
+          href="#contenu"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[80] focus:rounded-full focus:bg-clay-500 focus:px-5 focus:py-3 focus:text-caption focus:font-semibold focus:text-cream-100"
+        >
+          {t('a11y.allerContenu')}
+        </a>
 
       <ScrollToTop />
 
@@ -107,8 +115,9 @@ function SiteLayout() {
 
       {/* Fenêtre d'inscription à la lettre du Griot : déclenchée une fois (~20 s
           sur les pages de contenu), fermable, jamais avec une autre fenêtre. */}
-      <FenetreNewsletter />
-    </>
+        <FenetreNewsletter />
+      </>
+    </FournisseurPanier>
   )
 }
 
@@ -132,9 +141,16 @@ function ArbreRoutes() {
 
         <Route path="/taste-and-travel" element={<TasteTravelPage />} />
 
+        {/* Une page publique par projet (contrat 1.15.0 § 32.5), rendue selon son template. */}
+        <Route path="/projets/:slug" element={<ProjetPage />} />
+
         <Route path="/boutique" element={<ShopPage />} />
 
         <Route path="/boutique/:objet" element={<ObjetPage />} />
+
+        <Route path="/commande" element={<CommandePage />} />
+
+        <Route path="/commande/:numero" element={<SuiviCommandePage />} />
 
         <Route path="/journal" element={<JournalPage />} />
 

@@ -28,10 +28,10 @@ export function PanneauGalerie({
   surChange: (ids: string[]) => void
   desactive: boolean
   /** Une famille réutilisatrice change l'appel lexicographique (études de cas, § 9.13). */
-  libelle?: string
-  aide?: string
+  libelle?: string | undefined
+  aide?: string | undefined
   /** Identifiant du bouton « ajouter » visible dans le résumé d'erreurs (D-44). */
-  id?: string
+  id?: string | undefined
 }) {
   const [ouvert, setOuvert] = useState(false)
   const lus = useQueries({

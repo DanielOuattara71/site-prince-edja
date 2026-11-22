@@ -16,6 +16,7 @@ export const TYPES_NOEUD = [
   'blockquote',
   'hardBreak',
   'image',
+  'horizontalRule',
 ] as const
 export type TypeNoeud = (typeof TYPES_NOEUD)[number]
 
@@ -63,6 +64,11 @@ export const noeudRicheSchema: z.ZodType<NoeudRiche> = z.lazy(() =>
         if (noeud.content) erreur('Un nœud texte ne contient pas de nœuds.')
       } else if (noeud.text !== undefined || noeud.marks !== undefined) {
         erreur(`Le nœud « ${noeud.type} » ne porte ni texte ni marque.`)
+      }
+      // Un nœud atome d'affichage ne porte ni attributs ni contenu (contrat § 24.1).
+      if (noeud.type === 'horizontalRule') {
+        if (noeud.content) erreur('Séparateur : aucun contenu.')
+        if (noeud.attrs) erreur('Séparateur : aucun attribut.')
       }
 
       const attrs = noeud.attrs

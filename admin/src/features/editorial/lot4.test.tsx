@@ -56,7 +56,7 @@ describe('lot 4 — écrans éditoriaux', () => {
   it('pages légales : ensemble fermé, création refusée, fiche consultable', async () => {
     const { container } = await ouvrir('admin', '/pages-legales')
     const tableau = await screen.findByRole('table', { name: 'Pages légales' })
-    expect(within(tableau).getAllByRole('row').length).toBe(6) // entête + cinq pages
+    expect(within(tableau).getAllByRole('row').length).toBe(7) // entête + six pages
     expect(screen.queryByRole('link', { name: /^Nouv/ })).toBeNull()
     fireEvent.click(within(tableau).getByRole('link', { name: /Exemple — mentions/ }))
     await titre('Exemple — mentions legales')

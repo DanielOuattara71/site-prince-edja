@@ -1,6 +1,7 @@
 import { ARTICLES } from '@/acces/journal'
 import { BIJOUX } from '@/acces/boutique'
 import { EPISODES, TRAVEL_CITIES } from '@/acces/projets'
+import { libelleTag } from '@/acces/tags'
 import type { FormatContenu } from '@/types'
 
 /**
@@ -36,16 +37,16 @@ export interface GroupeResultats {
 const TERMES_EPISODE = (ep: (typeof EPISODES)[number]) => [
   ep.titre,
   ep.lieu,
-  ...(ep.tags.ville ?? []),
-  ...(ep.tags.pays ?? []),
-  ...(ep.tags.theme ?? []),
+  ...(ep.tags.ville ?? []).flatMap((code) => [code, libelleTag(code)]),
+  ...(ep.tags.pays ?? []).flatMap((code) => [code, libelleTag(code)]),
+  ...(ep.tags.theme ?? []).flatMap((code) => [code, libelleTag(code)]),
   'xplore',
   'film',
 ]
 
 const TERMES_VILLE = (v: (typeof TRAVEL_CITIES)[number]) => [
   v.nom,
-  ...(v.tags.pays ?? []),
+  ...(v.tags.pays ?? []).flatMap((code) => [code, libelleTag(code)]),
   'taste & travel',
   'voyage',
   'destination',

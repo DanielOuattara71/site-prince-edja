@@ -1,42 +1,41 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { BIJOUX, GALERIE_SHOP } from '@/acces/boutique'
+import { PIECES, GALERIE_SHOP } from '@/acces/boutique'
 import { useSeo } from '@/hooks/useSeo'
 import { usePagination } from '@/hooks/usePagination'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { BijouCard } from '@/components/cards/BijouCard'
 import { ColonneMots } from '@/components/shop/ColonneMots'
 import { GalerieLightbox } from '@/components/shop/GalerieLightbox'
-import { CitationEncadree } from '@/components/shop/BlocsEditoriaux'
 import { LookbookPleinEcran } from '@/components/shop/LookbookPleinEcran'
 import {
   visuelCouverture,
   visuelCouvertureSrcSet,
   visuelCouvertureSizes,
-  VISUEL_TEST_CARTE,
-  ALT_TEST_CARTE,
 } from '@/lib/visuels'
 import { FiltresCatalogue } from '@/components/shop/FiltresCatalogue'
 import { SectionLivres } from '@/components/shop/SectionLivres'
-import { AfricanPatternRibbon } from '@/components/motifs/AfricanPatternRibbon'
 
 /**
  * Photographie de couverture, en fond de hero.
- *
- * Elle n'est rendue qu'au chargement effectif : un fichier manquant laisse un hero
- * typographique plutôt qu'un cadre vide. Les voiles ne sont posés qu'avec elle, sinon
- * on assombrissait un fond déjà nuit.
  */
 function HeroCouverture() {
   const [presente, setPresente] = useState(false)
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  // Si l'image est déjà en cache au moment de l'hydration (SSR pré-rendu), onLoad
+  // ne tirera jamais : on vérifie `complete` au montage.
+  useEffect(() => {
+    if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) setPresente(true)
+  }, [])
 
   return (
     <>
       <img
+        ref={imgRef}
         src={visuelCouverture}
         srcSet={visuelCouvertureSrcSet}
         sizes={visuelCouvertureSizes}
@@ -60,17 +59,25 @@ function HeroCouverture() {
 /**
  * Page Edja Shop.
  *
- * L'ordre suit un raisonnement de vente éditoriale : d'abord ce que la collection
- * **est** (hero, colonne de mots), ensuite ce qu'il faut **voir** (une sélection de
- * pièces), puis **le regard** (galerie indépendante), et enfin ce que la pièce
- * **devient** (le porté). On ne met pas la collection entière en avant : dès qu'on
- * montre dix pièces en grand, plus rien ne l'est.
+ * Composition inspirée d'Outfit et Slight Twist : hero photographique, signature Anton
+ * sur sand, grille 4 colonnes accueillant les cartes 4:5 comme une planche de catalogue,
+ * mosaïque lookbook sans cadre. Collections numérotées, échelle tactile par
+ * culture d'origine, sans tabs.
  */
 export default function ShopPage() {
   const [galerieIndex, setGalerieIndex] = useState<number | null>(null)
   const rail = useRef<HTMLDivElement>(null)
+  const defiler = (sens: 1 | -1) => {
+    const piste = rail.current
+    if (!piste) return
+    const premiere = piste.firstElementChild
+    // 35 % : deux cartes presque entières visibles + une entamée (typographie légère).
+    const largeur = premiere
+      ? premiere.getBoundingClientRect().width
+      : piste.clientWidth * 0.35
+    piste.scrollBy({ left: sens * largeur, behavior: 'smooth' })
+  }
 
-  // Chaque page du catalogue a son adresse, son titre et son canonical (SCHEMAS § 12.2).
   const { t } = useLangue()
   const { page } = usePagination()
   useSeo({
@@ -80,28 +87,19 @@ export default function ShopPage() {
     requete: page > 1 ? `?page=${page}` : '',
   })
 
-  const defiler = (sens: 1 | -1) => {
-    const piste = rail.current
-    if (!piste) return
-    const premiere = piste.firstElementChild
-    const largeur = premiere ? premiere.getBoundingClientRect().width + 3 : piste.clientWidth * 0.75
-    piste.scrollBy({ left: sens * largeur, behavior: 'smooth' })
-  }
+  // Sélection mise en avant — les 4 premières pièces, étiquetées « Tribal ».
+  const selection = PIECES.slice(0, 4)
 
   return (
     <>
-      {/*
-        Hero photographique : la photo occupe tout l'écran, le titre est posé par-
-        dessus. C'est le ressort magazine. Les voiles sont ce qui rend le texte crème
-        lisible sur une image dont on ne maîtrise pas la densité.
-      */}
+      {/* Hero : Anton signature, fond forêt, ruban tissu sous la ligne de flottaison. */}
       <Section tone="dark" padded={false} className="relative overflow-hidden bg-forest-950">
         <HeroCouverture />
 
-        <Container className="relative z-10 flex min-h-[78svh] flex-col justify-end pb-20 pt-32 lg:min-h-[86svh] lg:pb-28">
+        <Container className="relative z-10 flex min-h-[70svh] flex-col justify-end pb-16 pt-32 lg:min-h-[78svh] lg:pb-20">
           <div className="space-y-6">
-            <Eyebrow tone="dark">Chaque bijou est une histoire</Eyebrow>
-            <h1 className="font-display uppercase text-display-xl leading-[0.92] text-cream-100">
+            <p className="label-caps text-cream-100/70">Collection TRIBE — édition limitée</p>
+            <h1 className="font-display uppercase text-display-xl text-cream-100">
               Chaque bijou
               <br />
               est une histoire
@@ -111,38 +109,58 @@ export default function ShopPage() {
             </h1>
             <Reveal delay={0.15}>
               <p className="max-w-xl text-body-lg text-cream-100/75">
-                Un passeport culturel façonné à la main par des artisans ivoiriens. Bronze, laiton
-                et argent deviennent un langage contemporain inspiré des héritages d'Afrique de
-                l'Ouest.
+                Bronze, laiton, argent. Des objets rituels portés à la main — chacun raconte
+                une culture d'Afrique de l'Ouest.
               </p>
             </Reveal>
           </div>
         </Container>
       </Section>
 
-      {/* Le ruban prend la couleur de la forêt : il relie la photo du hero au
-          chapitre des mots sans créer une nouvelle rupture de fond. */}
-      <div className="bg-forest-950">
-        <AfricanPatternRibbon tone="dark" />
-      </div>
+      {/* Signature « LA COLLECTION » : Anton géant dans la famille de la boutique. */}
+      <section className="border-b border-ink-900/10 bg-sand-50 px-4 py-16 lg:px-6 lg:py-20">
+        <div className="mx-auto max-w-7xl">
+          <div>
+            <h2 className="mt-4 font-display uppercase text-display-xl text-ink-900">
+              LA
+              <br />
+              COLLECTION
+              <br />
+              TRIBE
+              <span aria-hidden className="text-clay-600">
+                .
+              </span>
+            </h2>
+          </div>
+        </div>
+      </section>
 
-      <ColonneMots />
-
-      <Section
-        tone="light"
-        padded={false}
-        container={false}
-        className="mt-[3px] border-t border-ink-900/10 bg-sand-150 pt-[52px]"
+      {/* Sélection : rail horizontal (scroll-snap) des 4 premières pièces — cartes
+          larges, prix confirmés, flèches ; Outfit style éditorial. */}
+      <section
+        aria-labelledby="boutique-selection"
+        className="border-b border-ink-900/10 bg-sand-150 pt-10 pb-16"
       >
-        <Container className="max-w-none px-0 sm:px-0 lg:px-0 xl:px-0">
-          <div className="flex flex-wrap items-center justify-between gap-6 px-4 pb-[22px] sm:px-6">
-            <h2 className="label-caps text-ink-500">Sélection</h2>
+        <div className="w-full">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4 px-4 sm:px-6 lg:px-10">
+            <div>
+              <p className="label-caps text-clay-700">Notre sélection</p>
+              <h2
+                id="boutique-selection"
+                className="mt-2 font-display uppercase text-heading-md text-ink-900"
+              >
+                Sélection<span aria-hidden className="text-clay-600">.</span>
+              </h2>
+              <p className="mt-2 max-w-sm text-body text-ink-700">
+                Les pièces que nous aimons porter en ce moment — bronze, laiton et argent.
+              </p>
+            </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => defiler(-1)}
                 aria-label="Faire défiler vers la gauche"
-                className="flex size-11 items-center justify-center rounded-full border border-sand-300 text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
+                className="flex size-11 items-center justify-center rounded-full border border-ink-500 text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
               >
                 <ArrowLeft className="size-4" />
               </button>
@@ -150,65 +168,52 @@ export default function ShopPage() {
                 type="button"
                 onClick={() => defiler(1)}
                 aria-label="Faire défiler vers la droite"
-                className="flex size-11 items-center justify-center rounded-full border border-sand-300 text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
+                className="flex size-11 items-center justify-center rounded-full border border-ink-500 text-ink-700 transition-colors duration-(--d-fast) hover:bg-sand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clay-600"
               >
                 <ArrowRight className="size-4" />
               </button>
             </div>
           </div>
-
           <div
             ref={rail}
-            className="flex scroll-pl-4 snap-x snap-mandatory gap-[3px] overflow-x-auto px-4 pb-[52px] [scrollbar-width:none] sm:scroll-pl-6 sm:px-6 [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-[3px] overflow-x-auto scroll-pl-4 px-4 [scrollbar-width:none] pb-1 sm:scroll-pl-6 sm:px-6 sm:pb-2 [&::-webkit-scrollbar]:hidden"
+            aria-label="Sélection de pièces Edja Shop"
           >
-            {BIJOUX.map((bijou, index) => (
-              <Reveal
-                key={bijou.slug}
-                delay={Math.min(index, 4) * 0.06}
-                className="w-[calc(50vw-1px)] shrink-0 snap-start sm:w-[calc(25vw-1px)]"
-              >
-                <BijouCard bijou={bijou} image={VISUEL_TEST_CARTE} imageAlt={ALT_TEST_CARTE} />
+            {selection.map((bijou) => (
+              <Reveal key={bijou.slug} className="w-[calc(50vw-1px)] shrink-0 snap-start md:w-[30vw] xl:w-[calc(25vw-2px)]">
+                <BijouCard bijou={bijou} />
               </Reveal>
             ))}
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
 
-      {/* `container={false}` est indispensable : par défaut `Section` enveloppe TOUT son
-          contenu dans un `Container` (`max-w-7xl`), ce qui recadrerait le lookbook
-          malgré la sortie manuelle. Ici on gère le cadrage nous-mêmes. */}
+      <ColonneMots />
+
+      {/* Le catalogue : heading Anton + grille 4 colonnes paginée. */}
       <Section tone="light" className="bg-sand-100" padded={false} container={false}>
-        <Container className="px-4 pt-[52px] pb-16 sm:px-6">
+        <Container className="px-4 pt-16 pb-16 sm:px-6">
           <FiltresCatalogue />
         </Container>
       </Section>
 
-      {/* La galerie est indépendante des fiches : elle ne rejoue pas les visuels
-          des pièces. Son titre, son cadrage et ses légendes vivent dans
-          `LookbookPleinEcran` ; la page ne fait que lui passer `GALERIE_SHOP`. */}
-      <Section tone="light" className="bg-sand-100" padded={false} container={false}>
-        {/* Hors du Container : il est en `max-w-7xl` + `lg:px-16 xl:px-20`, donc un
-            enfant ne peut jamais être bord à bord. Le lookbook doit sortir du
-            conteneur, pas tenter de le compenser à la marge. */}
-        <div id="galerie" className="scroll-mt-24">
-          <LookbookPleinEcran images={GALERIE_SHOP} onOuvrir={setGalerieIndex} />
-        </div>
-      </Section>
+      {/* Mosaïque lookbook : plein écran sans cadre, à la façon Slight Twist.
+          Contract 1.16.0 : aucune photo validée dans l'admin = aucun lookbook affiché. */}
+      {GALERIE_SHOP.length > 0 ? (
+        <Section tone="light" className="bg-sand-100" padded={false} container={false}>
+          <div id="galerie" className="scroll-mt-24">
+            <LookbookPleinEcran images={GALERIE_SHOP} onOuvrir={setGalerieIndex} />
+          </div>
+        </Section>
+      ) : null}
 
-      {/* La maquette « Livres » occupe la place laissée par la section « porté »
-          (Ce que la pièce devient sur vous) : mot géant clay, filet, rangée
-          d'en-tête, quatre couvertures bord à bord et pastille « Tout voir »
-          flottante. Données fictives suffixées, dans `livres.ts`. */}
       <SectionLivres />
 
-      <CitationEncadree />
-
-      {/* La citation est le dernier bloc : sans cet intervalle ivoire, le divider
-          arrondi du footer sombre disparaîtrait dedans. La marge reste propre à
-          la boutique, pas au footer global. */}
       <div aria-hidden className="h-20 bg-sand-50 sm:h-24" />
 
-      <GalerieLightbox images={GALERIE_SHOP} index={galerieIndex} onChangeIndex={setGalerieIndex} />
+      {GALERIE_SHOP.length > 0 ? (
+        <GalerieLightbox images={GALERIE_SHOP} index={galerieIndex} onChangeIndex={setGalerieIndex} />
+      ) : null}
     </>
   )
 }

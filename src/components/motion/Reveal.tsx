@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import {motion} from 'motion/react'
 import { DUR, EASE_EXPO } from '@/lib/motion'
 import { cn } from '@/lib/cn'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface RevealProps {
   children: ReactNode

@@ -24,6 +24,7 @@ export interface ValeursArticle {
   categorie: string
   categorieId: string
   imageId: string | null
+  pdfId: string | null
   tagIds: string[]
   aLaUne: boolean
   traductions: Record<Langue, TraductionFormulaire>
@@ -43,6 +44,7 @@ export function valeursVides(): ValeursArticle {
     categorie: '',
     categorieId: '',
     imageId: null,
+    pdfId: null,
     tagIds: [],
     aLaUne: false,
     traductions: { fr: traductionVide(), en: traductionVide() },
@@ -66,6 +68,7 @@ export function valeursDepuisArticle(article: Article): ValeursArticle {
     categorie: article.categorie,
     categorieId: article.categorieId ?? '',
     imageId: article.imageId,
+    pdfId: article.pdfId ?? null,
     tagIds: article.tagIds,
     aLaUne: article.aLaUne,
     traductions: { fr: traduction('fr'), en: traduction('en') },
@@ -91,6 +94,7 @@ export const schemaFormulaireArticle = z
     categorie: z.string().min(1, 'Choisissez une catégorie.'),
     categorieId: z.string(),
     imageId: z.uuid().nullable(),
+    pdfId: z.uuid().nullable(),
     tagIds: z.array(z.uuid()),
     aLaUne: z.boolean(),
     traductions: z.object({ fr: traductionSchema, en: traductionSchema }),
@@ -149,6 +153,7 @@ export function versEntree(valeurs: ValeursArticle): EntreeArticle {
     categorie: valeurs.categorie,
     ...(valeurs.categorieId ? { categorieId: valeurs.categorieId } : {}),
     imageId: valeurs.imageId,
+    pdfId: valeurs.pdfId,
     tagIds: valeurs.tagIds,
     aLaUne: valeurs.aLaUne,
     traductions: traductionsEcrites(valeurs, []),
@@ -160,6 +165,7 @@ export function versModification(valeurs: ValeursArticle, article: Article): Mod
     categorie: valeurs.categorie,
     ...(valeurs.categorieId ? { categorieId: valeurs.categorieId } : {}),
     imageId: valeurs.imageId,
+    pdfId: valeurs.pdfId,
     tagIds: valeurs.tagIds,
     aLaUne: valeurs.aLaUne,
     traductions: traductionsEcrites(valeurs, article.languesPresentes),
@@ -171,6 +177,7 @@ export function versModification(valeurs: ValeursArticle, article: Article): Mod
 export const CHAMPS_ARTICLE: readonly string[] = [
   'categorie',
   'imageId',
+  'pdfId',
   'tagIds',
   'aLaUne',
   ...LANGUES.flatMap((l) =>
@@ -186,6 +193,7 @@ export const LIBELLES_ARTICLE: Record<string, string> = {
   extrait: 'Résumé',
   corps: 'Corps',
   imageId: 'Image principale',
+  pdfId: 'PDF de l’article',
   tagIds: 'Tag de format',
   categorie: 'Catégorie',
 }

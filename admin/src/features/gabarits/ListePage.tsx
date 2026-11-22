@@ -90,7 +90,7 @@ export function ListePage<T extends { id: string; version?: number; titre?: stri
   exporter?: (parametres: ParametresListe) => Promise<string>
   /** Tri par défaut d'une liste sans tri choisi (`-creeLe`, par exemple). */
   triParDefaut?: string
-  /** Écrans parents dans le fil d'Ariane (le hub Projets pour ses listes). */
+  /** Écrans parents dans le fil d'Ariane (la liste des projets pour ses listes). */
   filAriane?: ElementFilAriane[]
 }) {
   const { moi } = useSession()

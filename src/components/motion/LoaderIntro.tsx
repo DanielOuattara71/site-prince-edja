@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import {
   EASE_EXPO,
   EASE_QUART,
@@ -9,6 +9,7 @@ import {
 } from '@/lib/motion'
 import { SITE } from '@/acces/site'
 import { MaskEmblem } from '@/components/motion/MaskEmblem'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 // Contenu visible à ~2,5 s (décision du client, 07/11/2026 ; audit AUD-020 : ~3,4 s avant).
 // Trois mots × 400 ms, le nom 550 ms, sortie 0,5 s. `introDelay` (lib/motion) suit ce total.

@@ -1,4 +1,5 @@
 import type { Distinction } from '@/types'
+import { img } from '@/lib/images'
 
 export const DISTINCTIONS: Distinction[] = [
   {
@@ -8,7 +9,7 @@ export const DISTINCTIONS: Distinction[] = [
     delivreePar: 'AIP',
     description:
       'Distinction nationale pour la qualité du récit digital et l’impact du contenu web professionnel.',
-    image: `${import.meta.env.BASE_URL}images/placeholder-carre.svg`,
+    image: img(`images/placeholder-carre.svg`),
     url: 'https://www.fratmat.info/article/2635778/culture/tourisme-et-des-loisirs-aboudia-et-franck-prince-edja-designes-ambassadeurs',
   },
   {
@@ -18,7 +19,7 @@ export const DISTINCTIONS: Distinction[] = [
     delivreePar: 'Ministère du Tourisme',
     description:
       'Nomination officielle au cercle des Ambassadeurs, stratégie Sublime Côte d’Ivoire.',
-    image: `${import.meta.env.BASE_URL}images/placeholder-foret.svg`,
+    image: img(`images/placeholder-foret.svg`),
     url: 'https://tourisme.gouv.ci/accueil/actualites/aboudia-et-prince-edja-rejoignent-le-cercle-prestigieux-des-ambassadeurs-du-tourisme-et-des-loisirs-de-cote-divoire/228',
   },
   {
@@ -28,7 +29,7 @@ export const DISTINCTIONS: Distinction[] = [
     delivreePar: 'République de Côte d’Ivoire',
     description:
       'Élevé au rang de Chevalier de l’Ordre du Mérite du Tourisme pour le service rendu à la nation.',
-    image: `${import.meta.env.BASE_URL}images/placeholder-fleuve.svg`,
+    image: img(`images/placeholder-fleuve.svg`),
   },
   {
     id: 'masa-2026',
@@ -37,6 +38,6 @@ export const DISTINCTIONS: Distinction[] = [
     delivreePar: 'MASA',
     description:
       'Ambassadeur du Marché des Arts du Spectacle Africain, parrain de la nouvelle génération.',
-    image: `${import.meta.env.BASE_URL}images/placeholder-paysage.svg`,
+    image: img(`images/placeholder-paysage.svg`),
   },
 ]

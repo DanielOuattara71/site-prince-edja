@@ -10,11 +10,24 @@
 import { BIJOUX as BIJOUX_DEPART } from '@/data/content'
 import { LIVRES_MOCK } from '@/data/livres'
 import { PIECES as PIECES_DEPART } from '@/data/shop'
-import type { Bijou } from '@/types'
-import { versProduit, type ProduitPublic } from './adaptateurs'
+import type { Bijou, GalerieImage } from '@/types'
+import { versGalerieBoutique, versProduit, type GaleriePublique, type ProduitPublic } from './adaptateurs'
 import { lireGenere, SOURCE_API } from './source'
 
-export { FILTRES_SHOP, GALERIE_SHOP } from '@/data/shop'
+export { FILTRES_SHOP } from '@/data/shop'
+
+/**
+ * Lookbook d'Edja Shop (contrat 1.16.0 § 33) : lu depuis `GET /galeries?emplacement=boutique`.
+ * En mode démonstration (données de départ), il reste vide — le contrat interdit d'inventer
+ * des contenus publiés ; les visuels de départ sont remplacés par ceux de l'admin.
+ */
+export const GALERIE_SHOP: GalerieImage[] = SOURCE_API
+  ? (
+      (
+        lireGenere<Record<string, { items: GaleriePublique[] }>>('galeries')['boutique']?.items ?? []
+      ).map(versGalerieBoutique)
+    )
+  : []
 
 const PRODUITS = SOURCE_API ? lireGenere<ProduitPublic[]>('produits') : []
 const BIJOUX_API = PRODUITS.filter((p) => p.type === 'bijou').map(versProduit)

@@ -35,11 +35,14 @@ export function SelecteurMedia({
   surFermeture,
   surChoix,
   titre = t('media.choisir'),
+  emplacementParDefaut,
 }: {
   ouverte: boolean
   surFermeture: () => void
   surChoix: (media: Media) => void
   titre?: string
+  /** Emplacement suggéré avant l'upload : sans le remplir, l'upload doit quand même pouvoir aller. */
+  emplacementParDefaut?: string | undefined
 }) {
   const { moi } = useSession()
   const actives: Langue[] = moi?.reglages.languesActives ?? ['fr']
@@ -50,13 +53,15 @@ export function SelecteurMedia({
   const [alts, setAlts] = useState<Partial<Record<Langue, string>>>({})
   const [decoratif, setDecoratif] = useState(false)
   const [credit, setCredit] = useState('')
+  const [emplacementEnvoi, setEmplacementEnvoi] = useState(emplacementParDefaut ?? '')
   const [ouverteVue, setOuverteVue] = useState(ouverte)
-  // Chaque ouverture repart d'un choix vide (ajustement pendant le rendu, sans effet).
+  // Chaque ouverture repart de l'emplacement par défaut (ajustement pendant le rendu, sans effet).
   if (ouverteVue !== ouverte) {
     setOuverteVue(ouverte)
     if (ouverte) {
       setRecherche('')
       setSelection(null)
+      setEmplacementEnvoi(emplacementParDefaut ?? '')
     }
   }
 
@@ -80,7 +85,7 @@ export function SelecteurMedia({
   }
 
   const envoi = useMutation({
-    mutationFn: (fichier: File) => medias.envoyer(fichier),
+    mutationFn: (fichier: File) => medias.envoyer(fichier, { emplacement: emplacementEnvoi.trim() || null }),
     onSuccess: (media) => {
       void client.invalidateQueries({ queryKey: ['medias'] })
       selectionner(media)
@@ -164,6 +169,30 @@ export function SelecteurMedia({
           onChange={(evenement) => setRecherche(evenement.target.value)}
           className="min-w-60 flex-1"
         />
+        {!emplacementParDefaut ? (
+          <>
+            <Champ
+              libelle={t('media.emplacement')}
+              aide={t('mediatheque.emplacementAide')}
+              list="emplacements-suggerees-selecteur"
+              maxLength={120}
+              value={emplacementEnvoi}
+              onChange={(evenement) => {
+                setEmplacementEnvoi(evenement.target.value)
+              }}
+              className="min-w-48"
+            />
+            <datalist id="emplacements-suggerees-selecteur">
+              {t('mediatheque.suggestionsEmplacement')
+                .split(', ')
+                .map((suggestion) => (
+                  <option key={suggestion} value={suggestion}>
+                    {suggestion}
+                  </option>
+                ))}
+            </datalist>
+          </>
+        ) : null}
         <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border border-ink-500 bg-sand-50 px-4 text-button font-semibold text-ink-900 hover:bg-sand-100 has-focus-visible:outline-2 has-focus-visible:outline-offset-3 has-focus-visible:outline-clay-600">
           <Upload aria-hidden className="size-4" />
           {envoi.isPending ? t('media.envoiEnCours') : t('media.envoyer')}

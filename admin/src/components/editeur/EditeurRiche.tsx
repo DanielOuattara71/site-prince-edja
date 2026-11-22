@@ -10,6 +10,7 @@ import {
   Link2,
   List,
   ListOrdered,
+  Minus,
   Quote,
   Redo2,
   Undo2,
@@ -245,6 +246,9 @@ function BarreOutils({
         surClic={() => chaine().toggleBlockquote().run()}
       >
         <Quote />
+      </Outil>
+      <Outil libelle={t('editeur.separateur')} surClic={() => chaine().setHorizontalRule().run()}>
+        <Minus />
       </Outil>
       <Separateur />
       <Outil libelle={t('editeur.lien')} actif={etat.lien} surClic={surLien}>

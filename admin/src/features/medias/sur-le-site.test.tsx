@@ -20,12 +20,29 @@ const echec = (promesse: Promise<unknown>) =>
   )
 
 describe('photos fixes : règles et droits', () => {
-  it('huit emplacements de départ ; aucun format conseillé inventé', async () => {
+  it('cinq emplacements de départ ; aucun format conseillé inventé', async () => {
     await connecter('editeur')
     const { items } = await emplacementsPhotos.lister()
-    expect(items.map((e) => e.cle)).toContain('accueil.heros')
-    expect(items).toHaveLength(8)
+    expect(items.map((e) => e.cle)).toEqual([
+      'accueil.heros',
+      'accueil.portrait',
+      'apropos.portrait',
+      'boutique.bandeau',
+      'histoires.bandeau',
+    ])
     expect(items.every((e) => e.formatConseille === null && e.mediaId === null)).toBe(true)
+  })
+
+  it('les clés retirées en 1.17.0 et renommée en 1.18.0 ne sont plus proposées', async () => {
+    await connecter('editeur')
+    const { items } = await emplacementsPhotos.lister()
+    for (const cle of ['apropos.bandeau', 'contact.bandeau', 'partage.og', 'journal.bandeau']) {
+      expect(items.map((e) => e.cle)).not.toContain(cle)
+      expect(
+        (await echec(emplacementsPhotos.changer(cle, '00000000-0000-4000-8000-000000000000')))
+          ?.status,
+      ).toBe(404)
+    }
   })
 
   it('l’éditeur lit mais ne change pas une photo fixe (E4) ; l’admin la change', async () => {
@@ -62,7 +79,7 @@ describe('médiathèque (U9)', () => {
     window.history.pushState({}, '', '/medias')
     render(<App />)
     const grille = await screen.findByRole('list', { name: 'Médiathèque' })
-    const champ = within(grille).getAllByLabelText('Texte alternatif (FR)')[0] as HTMLInputElement
+    const champ = within(grille).getAllByLabelText('Texte alternatif')[0] as HTMLInputElement
     const carte = champ.closest('li') as HTMLElement
     fireEvent.change(champ, { target: { value: 'Exemple : pirogue au port' } })
     fireEvent.click(within(carte).getByRole('button', { name: 'Enregistrer' }))

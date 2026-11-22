@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import {motion} from 'motion/react'
 import type { Distinction } from '@/types'
 import { DISTINCTIONS as SEED } from '@/acces/preuves'
 import { DUR, EASE_EXPO } from '@/lib/motion'
@@ -10,6 +10,7 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Reveal } from '@/components/motion/Reveal'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { usePiegeFocus } from '@/hooks/usePiegeFocus'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 function isPlaceholder(src: string): boolean {
   return src.includes('placeholder')

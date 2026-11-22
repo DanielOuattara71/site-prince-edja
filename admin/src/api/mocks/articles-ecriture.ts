@@ -114,7 +114,10 @@ export function resumeArticle(article: Article): ResumeContenu {
     champsAFournir: enrichi.champsAFournir,
     languesPresentes: enrichi.languesPresentes,
     imageId: article.imageId,
+    /** Contrat 1.12.0 § 29.3 : l'admin liste les articles qui portent un PDF. */
+    pdfId: article.pdfId ?? null,
     categorie: article.categorie,
+    extrait: (traduction?.extrait ?? '').trim() || null,
   }
 }
 

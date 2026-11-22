@@ -1,5 +1,5 @@
 import { GALLERY_QUOTE } from '@/acces/preuves'
-import { EPISODES } from '@/acces/projets'
+import { EPISODES_XPLORE } from '@/acces/projets'
 import { Container } from '@/components/layout/Container'
 import { Section } from '@/components/layout/Section'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
 import { LazyImage } from '@/components/media/LazyImage'
 import { AfricanPattern } from '@/components/motifs/AfricanPattern'
+import { img } from '@/lib/images'
 
 /**
  * Citation encadrée, avec visuel carré.
@@ -57,7 +58,7 @@ export function CitationEncadree() {
               garde sa taille et sa forme, pour que la mise en page ne saute pas. */}
           <div className="overflow-hidden rounded-xl bg-sand-200">
             <LazyImage
-              src={`${import.meta.env.BASE_URL}images/a-propos/portrait-edja.jpg`}
+              src={img(`images/a-propos/portrait-edja.jpg`)}
               alt="Prince Edja, lunettes et bijoux or"
               ratio="1/1"
             />
@@ -80,7 +81,7 @@ export function BandeParallaxe() {
   return (
     <div className="relative h-[26svh] overflow-hidden">
       <ParallaxImage
-        src={`${import.meta.env.BASE_URL}images/a-propos/portrait-edja.jpg`}
+        src={img(`images/a-propos/portrait-edja.jpg`)}
         alt=""
         priority={false}
         range={6}
@@ -103,7 +104,7 @@ export function BandeParallaxe() {
  * vert de marque reste au hero et aux surfaces forest, la photo ici parle seule.
  */
 export function BlocSuivant() {
-  const premier = EPISODES[0]
+  const premier = EPISODES_XPLORE[0]
 
   return (
     <section className="relative overflow-hidden bg-night-900 text-cream-100">

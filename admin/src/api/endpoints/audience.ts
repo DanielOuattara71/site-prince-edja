@@ -67,8 +67,9 @@ export const abonnes = {
   supprimer(id: string) {
     return requete(`/abonnes/${id}`, { methode: 'DELETE' })
   },
-  /** Export CSV (§ 12.3), journalisé côté serveur. Mêmes filtres que la liste. */
-  exporterAbonnes(parametres: ParametresAbonnes): Promise<string> {
+  /** Export CSV (§ 12.3), journalisé côté serveur. L'API n'accepte que `q` et `statut`
+   *  (schéma strict) : la pagination de la liste ne doit pas être transmise ici. */
+  exporterAbonnes(parametres: Pick<ParametresAbonnes, 'q' | 'statut'>): Promise<string> {
     return requeteTexte('/abonnes/export', { query: { ...parametres } })
   },
 }

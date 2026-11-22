@@ -77,6 +77,8 @@ export function ChampFormulaire({
                 valeur={(field.value as string | null) ?? null}
                 surChange={field.onChange}
                 erreur={erreur}
+                requis={Boolean(champ.obligatoire)}
+                emplacementParDefaut={champ.emplacementDefaut}
               />
             )
           case 'pdf':
@@ -155,6 +157,7 @@ export function ChampFormulaire({
                 valeur={String(field.value ?? '')}
                 surChange={field.onChange}
                 erreur={erreur}
+                existant={existant}
               />
             )
           case 'createur':
@@ -273,6 +276,9 @@ export function ChampFormulaire({
                 valeur={(field.value as string[] | undefined) ?? []}
                 surChange={field.onChange}
                 desactive={desactive}
+                libelle={champ.libelle}
+                aide={champ.aide}
+                id={champ.cle}
               />
             )
           case 'texte':

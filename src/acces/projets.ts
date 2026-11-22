@@ -16,6 +16,7 @@ import {
   versArchive,
   versDestinations,
   versEpisode,
+  versPartenaire,
   versProjet,
   versVille,
   type ArchivePublique,
@@ -23,9 +24,11 @@ import {
   type CheminsContenus,
   type DestinationPublique,
   type EpisodePublic,
+  type PartenairePublic,
   type ProjetPublic,
   type VillePublic,
 } from './adaptateurs'
+import type { Partenaire } from '@/data/collaborations'
 import { lireGenere, SOURCE_API } from './source'
 
 export { FILTRES_PROJETS } from '@/data/projets'
@@ -57,10 +60,27 @@ function chemins(): CheminsContenus {
 
 export const EPISODES: Episode[] = SOURCE_API ? EPISODES_API.map(versEpisode) : EPISODES_DEPART
 
+/** Id du projet X'PLORE Côte d'Ivoire (chez le client) : /xplore n'indexe que ses épisodes. */
+export const EPISODES_XPLORE: Episode[] = (() => {
+  if (!SOURCE_API) return EPISODES
+  const xplore = lireGenere<ProjetPublic[]>('projets').find((p) => p.slug === 'xplore-cote-divoire')
+  return xplore ? EPISODES.filter((e) => e.projetId === xplore.id) : []
+})()
+
+/** Tous les épisodes d'un projet, dans l'ordre de la série. */
+export function episodesDuProjet(projetId: string | null | undefined): Episode[] {
+  if (!projetId) return []
+  return EPISODES.filter((e) => e.projetId === projetId)
+    .slice()
+    .sort((a, b) => a.numero.localeCompare(b.numero, 'fr'))
+}
+
 export const PROJETS: Projet[] = SOURCE_API
   ? (() => {
       const liens = chemins()
-      return lireGenere<ProjetPublic[]>('projets').map((p) => versProjet(p, liens))
+      return lireGenere<ProjetPublic[]>('projets').map((p) =>
+        versProjet(p, liens, { routeParDefaut: `/projets/${p.slug}` }),
+      )
     })()
   : PROJETS_DEPART
 
@@ -75,3 +95,51 @@ export const TRAVEL_CITIES: TravelCity[] = SOURCE_API
 export const ARCHIVE: EntreeArchive[] = SOURCE_API
   ? lireGenere<ArchivePublique[]>('archive').map(versArchive)
   : ARCHIVE_DEPART
+
+/** Page publique d'un projet (contrat 1.15.0 § 32.4) : un appel, tous ses contenus déjà filtrés. */
+export interface PageProjet {
+  projet: Projet
+  episodes: Episode[]
+  destinations: Destination[]
+  villes: TravelCity[]
+  entrees: EntreeArchive[]
+  partenaires: Partenaire[]
+}
+
+interface PageProjetPublique {
+  projet: ProjetPublic
+  episodes: EpisodePublic[]
+  destinations: DestinationPublique[]
+  villes: VillePublic[]
+  entrees: ArchivePublique[]
+  partenaires: PartenairePublic[]
+}
+
+/**
+ * Une page de projet n'existe qu'en mode API : les données de départ n'ont pas de page assemblée.
+ * Le JSON est celui qu'a écrit le chargeur depuis `GET /projets/{slug}/page`.
+ */
+export function pageProjet(slug: string): PageProjet | null {
+  if (!SOURCE_API) return null
+  try {
+    const pages = lireGenere<Record<string, PageProjetPublique>>('pages-projets')
+    const page = pages[slug]
+    if (!page) return null
+    const liens = chemins()
+    return {
+      projet: versProjet(page.projet, liens, { routeParDefaut: `/projets/${slug}` }),
+      // L'API trie par modification ; l'album d'une série se lit par numéro (E01, E02…).
+      episodes: page.episodes
+        .map(versEpisode)
+        .slice()
+        .sort((a, b) => a.numero.localeCompare(b.numero, 'fr')),
+      destinations: versDestinations(page.destinations, SLUGS_EPISODES),
+      villes: page.villes.map(versVille),
+      entrees: page.entrees.map(versArchive),
+      partenaires: page.partenaires.map(versPartenaire),
+    }
+  } catch {
+    // Un build de démonstration peut précéder le chargement des pages : la route répond 404.
+    return null
+  }
+}

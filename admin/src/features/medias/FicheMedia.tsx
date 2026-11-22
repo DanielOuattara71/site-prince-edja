@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FileText } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { Introuvable } from '@/app/pages-erreur'
 import { cles } from '@/api/cles'
 import { medias } from '@/api/endpoints/contenus'
 import { aLeCode, estErreurApi, usagesDe } from '@/api/erreurs'
 import type { Langue } from '@/api/schemas/communs'
-import type { Media } from '@/api/schemas/medias'
+import { TYPES_MEDIA_ACCEPTES, type Media } from '@/api/schemas/medias'
 import { useSession } from '@/auth/contexte-session'
 import { peut } from '@/auth/permissions'
 import { AvertissementSortie } from '@/components/formulaire/AvertissementSortie'
@@ -30,8 +30,8 @@ import { messageErreur } from '@/lib/message-erreur'
 /**
  * Fiche d'un média (section 9) : texte alternatif et légende en FR et EN, crédit, image
  * décorative, déclinaisons, usages. La suppression d'un média utilisé est refusée (RG-08) et
- * remplacée par la liste de ses usages ; le fichier ne se remplace pas (on envoie un nouveau
- * média, contrat § 11.2). Le recadrage n'existe pas dans cette version (contrat § 11.3).
+ * remplacée par la liste de ses usages ; le fichier se remplace en place (contrat 1.19.0 § 36).
+ * Le recadrage n'existe pas dans cette version (contrat § 11.3).
  */
 export default function FicheMedia() {
   const { id = '' } = useParams()
@@ -49,6 +49,7 @@ interface Saisie {
   legende: Record<Langue, string>
   credit: string
   decoratif: boolean
+  emplacement: string
 }
 
 const depuis = (media: Media): Saisie => ({
@@ -56,6 +57,7 @@ const depuis = (media: Media): Saisie => ({
   legende: { fr: media.traductions.fr?.legende ?? '', en: media.traductions.en?.legende ?? '' },
   credit: media.credit ?? '',
   decoratif: media.decoratif,
+  emplacement: media.emplacement ?? '',
 })
 
 const LIBELLES = { texteAlt: 'Texte alternatif', credit: 'Crédit' }
@@ -67,6 +69,7 @@ function Fiche({ media }: { media: Media }) {
   const notifier = useNotifications()
   const [saisie, setSaisie] = useState<Saisie>(() => depuis(media))
   const [confirmer, setConfirmer] = useState(false)
+  const fichierRemplacement = useRef<HTMLInputElement>(null)
   const modifie = JSON.stringify(saisie) !== JSON.stringify(depuis(media))
   const titre = media.traductions.fr?.texteAlt || t('media.sansAlt')
   const usages = useQuery({
@@ -80,6 +83,7 @@ function Fiche({ media }: { media: Media }) {
         version: media.version,
         decoratif: saisie.decoratif,
         credit: saisie.credit.trim() || null,
+        emplacement: saisie.emplacement.trim() || null,
         traductions: Object.fromEntries(
           (['fr', 'en'] as const).map((langue) => [
             langue,
@@ -96,6 +100,21 @@ function Fiche({ media }: { media: Media }) {
       client.setQueryData(cles.media(suivant.id), suivant)
       void client.invalidateQueries({ queryKey: ['medias', 'liste'] })
       notifier.succes(t('formulaire.enregistre'))
+    },
+    onError: (erreur) => {
+      notifier.erreur(
+        aLeCode(erreur, 'VERSION_PERIMEE') ? t('formulaire.versionPerimee') : messageErreur(erreur),
+        estErreurApi(erreur) ? erreur.requeteId : undefined,
+      )
+    },
+  })
+
+  const remplacement = useMutation({
+    mutationFn: (fichier: File) => medias.remplacer(media.id, fichier, media.version),
+    onSuccess: (suivant) => {
+      client.setQueryData(cles.media(suivant.id), suivant)
+      void client.invalidateQueries({ queryKey: ['medias'] })
+      notifier.succes(t('mediatheque.remplace'))
     },
     onError: (erreur) => {
       notifier.erreur(
@@ -179,6 +198,13 @@ function Fiche({ media }: { media: Media }) {
               value={saisie.credit}
               onChange={(evenement) => setSaisie({ ...saisie, credit: evenement.target.value })}
             />
+            <Champ
+              libelle={`${t('media.emplacement')} (${t('media.emplacementFacultatif')})`}
+              aide={t('mediatheque.emplacementAide')}
+              maxLength={120}
+              value={saisie.emplacement}
+              onChange={(evenement) => setSaisie({ ...saisie, emplacement: evenement.target.value })}
+            />
           </fieldset>
           {modifiable ? (
             <div className="flex flex-wrap gap-2">
@@ -240,6 +266,29 @@ function Fiche({ media }: { media: Media }) {
           </dl>
           {usages.data ? (
             <PanneauUsages objet={t('mediatheque.ceMedia')} usages={usages.data} />
+          ) : null}
+          {modifiable ? (
+            <>
+              <input
+                ref={fichierRemplacement}
+                type="file"
+                accept={TYPES_MEDIA_ACCEPTES.join(',')}
+                className="hidden"
+                aria-label={t('mediatheque.remplacerFichier')}
+                onChange={(evenement) => {
+                  const fichier = evenement.target.files?.[0]
+                  if (fichier) remplacement.mutate(fichier)
+                  evenement.target.value = ''
+                }}
+              />
+              <Bouton
+                variante="discret"
+                disabled={remplacement.isPending}
+                onClick={() => fichierRemplacement.current?.click()}
+              >
+                {t('mediatheque.remplacerFichier')}
+              </Bouton>
+            </>
           ) : null}
           {peut(moi?.compte, 'supprimer', 'medias') ? (
             <Bouton variante="danger" onClick={() => setConfirmer(true)}>

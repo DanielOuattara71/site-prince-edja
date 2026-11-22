@@ -20,13 +20,16 @@ export function PanneauImage({
   erreur,
   libelle = t('article.image'),
   id = 'imageId',
+  requis = false,
 }: {
   valeur: string | null
   surChange: (id: string | null) => void
   erreur?: string | undefined
   libelle?: string
-  /** Chemin du champ : le résumé d'erreurs et les manques y mènent (D-44). */
   id?: string
+  requis?: boolean
+  /** Emplacement suggéré avant l'upload (conservé si vide : pas d'obligation, RG-08). */
+  emplacementParDefaut?: string | undefined
 }) {
   const [ouvert, setOuvert] = useState(false)
   const media = useQuery({
@@ -37,7 +40,10 @@ export function PanneauImage({
 
   return (
     <fieldset className="space-y-3">
-      <legend className="text-body font-semibold text-ink-900">{libelle}</legend>
+      <legend className="text-body font-semibold text-ink-900">
+        {libelle}
+        {requis ? <span aria-hidden className="ml-1 text-clay-700">*</span> : null}
+      </legend>
       {valeur && media.data ? (
         <figure className="space-y-2">
           <img
@@ -72,6 +78,7 @@ export function PanneauImage({
           setOuvert(false)
           surChange(choisi.id)
         }}
+        emplacementParDefaut="Article de presse"
       />
     </fieldset>
   )

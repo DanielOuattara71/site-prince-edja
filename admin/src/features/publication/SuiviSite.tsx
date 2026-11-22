@@ -5,6 +5,7 @@ import { EtatErreur } from '@/components/ui/Etats'
 import { Squelette } from '@/components/ui/Squelette'
 import { TitrePage } from '@/components/layout/TitrePage'
 import { SuiviPublication } from '@/features/gabarits/SuiviPublication'
+import { HistoriquePublications } from './HistoriquePublications'
 import { lireTableauDeBord, site } from '@/api/endpoints/contenus'
 import { t } from '@/i18n/fr'
 
@@ -25,7 +26,7 @@ export default function SuiviSite() {
   })
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-6">
       <div className="space-y-2">
         <TitrePage titre={t('menu.publication')}>{t('menu.publication')}</TitrePage>
         {requete.isPending ? <Squelette lignes={3} /> : null}
@@ -35,7 +36,10 @@ export default function SuiviSite() {
         <EtatErreur erreur={requete.error} surReessai={() => void requete.refetch()} />
       ) : requete.data ? (
         requete.data.derniereReconstruction ? (
-          <SuiviPublication publicationId={requete.data.derniereReconstruction.id} />
+          <SuiviPublication
+            publicationId={requete.data.derniereReconstruction.id}
+            surRelance={() => reconstituer.mutate()}
+          />
         ) : (
           <Alerte ton="info">{t('accueil.aucuneReconstruction')}</Alerte>
         )
@@ -46,6 +50,8 @@ export default function SuiviSite() {
           {reconstituer.isPending ? t('publication.reconstruireEnCours') : t('suivi.relancer')}
         </Bouton>
       </div>
+
+      <HistoriquePublications />
     </section>
   )
 }

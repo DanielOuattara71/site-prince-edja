@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { cles } from '@/api/cles'
 import { categories } from '@/api/endpoints/boutique'
 import { aLeCode, estErreurApi } from '@/api/erreurs'
-import { FAMILLES_CATEGORIE, type Categorie, type FamilleCategorie } from '@/api/schemas/boutique'
+import { type Categorie, type FamilleCategorie } from '@/api/schemas/boutique'
 import { useSession } from '@/auth/contexte-session'
 import { peut } from '@/auth/permissions'
 import { FilAriane } from '@/components/layout/FilAriane'
@@ -25,28 +25,68 @@ import { messageErreur } from '@/lib/message-erreur'
 import { slugifier } from '@/lib/slug'
 
 /**
- * Catégories (ECRANS § 4.4, SCHEMAS § 3) : un seul écran, **trois sections empilées** —
- * Articles, Projets, Produits. Chacune est ordonnable (glisser-déposer ou clavier), avec son
- * nombre d'éléments, un interrupteur « Visible », « Ajouter » et, par ligne, « Modifier » et
- * « Supprimer ». Une catégorie utilisée ne se supprime pas (RG-31, « Utilisée par N éléments »).
- * La section Articles a l'ancre `#categories-article` (lien depuis le Journal).
+ * Chaque module de l'admin gère ses propres catégories, dans son propre onglet : la Boutique ne
+ * garde que les catégories de produits (`/categories`), Projets gère les catégories de projets
+ * (`/projets/categories`) et Journal les catégories d'articles (`/articles/categories`). Chacune est
+ * ordonnable (glisser-déposer ou clavier), avec son nombre d'éléments, un interrupteur « Visible »,
+ * « Ajouter » et, par ligne, « Modifier » et « Supprimer ». Une catégorie utilisée ne se supprime
+ * pas (RG-31/RG-09 côté serveur, « utilisée par N éléments » dans le dialogue).
  */
-export default function Categories() {
+/** Fil d'Ariane et titre par famille : chaque module gère sa propre page de catégories. */
+const PAR_FAMILLE: Record<
+  FamilleCategorie,
+  { cle: CleTraduction; parent: { libelle: CleTraduction; chemin?: string } | null }
+> = {
+  article: {
+    cle: 'menu.categoriesArticles',
+    parent: { libelle: 'menu.journal', chemin: '/articles' },
+  },
+  projet: {
+    cle: 'menu.categoriesProjets',
+    parent: { libelle: 'menu.projets', chemin: '/projets' },
+  },
+  produit: {
+    cle: 'menu.categoriesProduits',
+    parent: { libelle: 'menu.boutique' },
+  },
+}
+
+export function PageCategories({ famille }: { famille: FamilleCategorie }) {
   const { moi } = useSession()
   const admin = peut(moi?.compte, 'modifier', 'categories')
+  const config = PAR_FAMILLE[famille]
+  const fil: { libelle: string; chemin?: string }[] = config.parent
+    ? [
+        { libelle: t(config.parent.libelle), ...(config.parent.chemin ? { chemin: config.parent.chemin } : {}) },
+        { libelle: t(config.cle) },
+      ]
+    : [{ libelle: t(config.cle) }]
   return (
-    <section className="space-y-10">
+    <section className="space-y-6">
       <div>
-        <FilAriane elements={[{ libelle: t('menu.categories') }]} />
-        <TitrePage titre={t('categorie.titre')}>{t('categorie.titre')}</TitrePage>
+        <FilAriane elements={fil} />
+        <TitrePage titre={t(config.cle)}>{t(config.cle)}</TitrePage>
         <p className="mt-2 max-w-3xl text-body text-ink-700">{t('categorie.intro')}</p>
       </div>
       {!admin ? <Alerte>{t('categorie.lectureSeule')}</Alerte> : null}
-      {FAMILLES_CATEGORIE.map((famille) => (
-        <SectionCategories key={famille} famille={famille} admin={admin} />
-      ))}
+      <SectionCategories key={famille} famille={famille} admin={admin} />
     </section>
   )
+}
+
+/** Journal : catégories d'articles (section « Catégories d'articles »). */
+export function CategoriesArticles() {
+  return <PageCategories famille="article" />
+}
+
+/** Projets : catégories de projets (section « Catégories de projets »). */
+export function CategoriesProjets() {
+  return <PageCategories famille="projet" />
+}
+
+/** Boutique : catégories des produits uniquement (bijoux et livres). */
+export default function Categories() {
+  return <PageCategories famille="produit" />
 }
 
 function SectionCategories({ famille, admin }: { famille: FamilleCategorie; admin: boolean }) {

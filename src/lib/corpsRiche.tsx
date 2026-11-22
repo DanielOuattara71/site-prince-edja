@@ -24,6 +24,9 @@ export interface CorpsDocument {
   content?: CorpsNoeud[]
 }
 
+/** Forme renvoyée par l'API : soit un tableau de nœuds, soit un document { type: 'doc', content: [] }. */
+export type CorpsPublie = unknown
+
 const TAG_MARQUES: Record<string, string> = {
   bold: 'strong',
   em: 'em',
@@ -117,6 +120,8 @@ function rendreNoeud(node: CorpsNoeud, i: number): ReactNode {
       )
     case 'hardBreak':
       return <br key={i} />
+    case 'horizontalRule':
+      return <hr key={i} className="my-2 border-sand-300" />
     case 'text':
       return node.text != null ? avecMarques(node, node.text) : null
     default:
@@ -129,7 +134,18 @@ function rendreContenu(noeuds: CorpsNoeud[] | undefined, iParent: number): React
   return noeuds.map((n, i) => rendreNoeud(n, iParent * 1000 + i))
 }
 
-export function CorpsRiche({ corps }: { corps: CorpsDocument | null | undefined }) {
-  if (!corps || corps.type !== 'doc' || !Array.isArray(corps.content)) return null
-  return <div className="space-y-4">{rendreContenu(corps.content, 0)}</div>
+/** Normalise le corps riche : l'API renvoie directement un tableau de nœuds, ou un doc `{type:'doc', content:[...]}`. */
+function normaliserCorps(corps: unknown): CorpsNoeud[] | null {
+  if (Array.isArray(corps)) return corps as CorpsNoeud[]
+  if (corps && typeof corps === 'object' && (corps as { type?: string }).type === 'doc') {
+    const contenu = (corps as { content?: CorpsNoeud[] }).content
+    return Array.isArray(contenu) ? contenu : null
+  }
+  return null
+}
+
+export function CorpsRiche({ corps }: { corps: unknown }) {
+  const noeuds = normaliserCorps(corps)
+  if (!noeuds || noeuds.length === 0) return null
+  return <div className="space-y-4">{rendreContenu(noeuds, 0)}</div>
 }

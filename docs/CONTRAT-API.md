@@ -1,9 +1,9 @@
 # CONTRAT-API — Prince EDJA
 
-> **Version 1.5.0 · 07/11/2026 · ARRÊTÉE.**
+> **Version 1.21.0 · 22/11/2026 · ARRÊTÉE.**
 > Contrat de la face d'administration (`/admin/api/v1`) entre l'interface d'admin (`admin/`) et
-> le back end (`prince-edja-api`). La face publique figure en annexe (§ 18), à titre de
-> référence pour le back end et le site.
+> le back end (`prince-edja-api`). Depuis la 1.13.0, la **face publique (§ 18) est normative** pour
+> le site comme pour le back end : elle n'est plus une annexe de référence.
 >
 > Ce document **fait foi** devant `docs/PROMPT-ADMIN-PRINCE-EDJA.md` et
 > `docs/PROMPT-BACKEND-PRINCE-EDJA.md`. Chaque écart à ces prompts est listé au § 1.3.
@@ -450,7 +450,7 @@ Les **articles liés** (RG-07) sont calculés par la face publique ; ils ne se s
 
 | Nœuds | Marques |
 |---|---|
-| `doc`, `paragraph`, `text`, `heading` (`level` 2, 3 ou 4), `bulletList`, `orderedList`, `listItem`, `blockquote`, `hardBreak`, `image` | `bold`, `italic`, `link` |
+| `doc`, `paragraph`, `text`, `heading` (`level` 2, 3 ou 4), `bulletList`, `orderedList`, `listItem`, `blockquote`, `hardBreak`, `image`, `horizontalRule` | `bold`, `italic`, `link` |
 
 - **`image`** : attributs `{ mediaId: string }` uniquement. L'URL est résolue à la lecture, et `GET /medias/:id/usages` retrouve l'image dans le corps.
 - **`link`** : attributs `{ href: string }`. Seuls `https:`, `http:` et `mailto:`, ou une adresse relative commençant par `/`, sont acceptés.
@@ -461,6 +461,7 @@ Les **articles liés** (RG-07) sont calculés par la face publique ; ils ne se s
 |---|---|---|
 | `numero` | `string` (ex. `"01"`) | P, U |
 | `imageId` | `string \| null` | P |
+| `illustrationIds` | `string[]` (max 12, ordre conservé) | O ; **1.6.0** — plusieurs images complémentaires, médias de la médiathèque |
 | `guideMediaId` | `string \| null` | O ; un média PDF |
 | `destinationId` | `string \| null` | O |
 | `trailerUrl` | `string \| null` | O ; `https:` |
@@ -511,7 +512,8 @@ Tris : `ordre`, `titre`, `modifieLe` (v1.2.0).
 | `traductions[l].intention` | `string` (≤ 300) | P |
 
 Pas de slug : les villes ne sont pas des pages. Source : `TravelCity`. Tris : `ordre`, `titre`,
-`modifieLe` (v1.2.0).
+`modifieLe` (v1.2.0). Depuis la **1.15.0**, une ville appartient à un projet par `projet.escaleIds`
+(§ 32.2) : aucun champ n'est ajouté à la ville.
 
 ### 9.5 `destinations` — étapes de la carte X'PLORE
 | Champ | Type | Règle |
@@ -528,12 +530,14 @@ Pas de slug : les villes ne sont pas des pages. Source : `TravelCity`. Tris : `o
 
 Contrôle `COORDONNEES_HORS_PAYS` : si le tag pays est la Côte d'Ivoire (tag `pays` de code `cote-d-ivoire`, v1.2.0), la latitude doit être comprise
 entre 4,2 et 10,8 et la longitude entre −8,7 et −2,4. *Motif : l'erreur de signe passée sur Adiaké
-(actions § 7).*
+(actions § 7).* Depuis la **1.15.0**, une destination appartient à un projet via son épisode
+(`episodeId` → `episodes.projetId`, § 32.2) : aucun champ n'est ajouté à la destination.
 
 ### 9.6 `archive` — Archive d'Afrique
 | Champ | Type | Règle |
 |---|---|---|
 | `categorie` | `string` (≤ 60) | P |
+| `projetId` | `uuid \| null` | O ; **1.15.0** — rattachement à un projet (§ 32.2) ; vide = entrée globale |
 | `fiabilite` | `'documentee' \| 'memoire_orale' \| 'interpretation' \| null` | P, C |
 | `epoque` | `string \| null` | C |
 | `imageId` | `string \| null` | O |
@@ -637,7 +641,7 @@ Les **clés de bloc** autorisées par page sont déclarées par les données de 
 Tant que l'inventaire n'est pas fourni, aucune clé n'est déclarée : `blocs` vaut `{}` (v1.3.0).
 
 ### 9.16 `pages-legales`
-Ensemble fermé : `mentions-legales`, `confidentialite`, `cookies`, `cgv`, `retours`.
+Ensemble fermé : `mentions-legales`, `confidentialite`, `cookies`, `cgv`, `retours`, `cgu` (1.7.0).
 
 Champs :
 - `cle` (lecture seule) ;
@@ -803,6 +807,7 @@ interface Media {
   poids: number                                 // octets
   credit: string | null                         // C
   decoratif: boolean                            // vrai = texte alternatif vide autorisé
+  emplacement: string | null                    // 1.6.0 — nom de l'endroit sur le site (« Galerie — hommes ») ; NULL tant que non renseigné
   createurId: string                            // défaut : créateur principal
   usages: number                                // lecture seule
   declinaisons: { largeur: number; url: string }[]   // lecture seule ; WebP 480, 960, 1600, 2400
@@ -826,10 +831,11 @@ interface Usage {
 
 | Méthode et route | Notes |
 |---|---|
-| `POST /medias` | `multipart/form-data`, **un** fichier (champ `fichier`) et des champs facultatifs : `texteAltFr`, `texteAltEn`, `credit`, `decoratif`, `createurId`. → `201 Media`. Type réel contrôlé par le contenu : JPEG, PNG, WebP, AVIF, GIF, SVG nettoyé, PDF. Limites par défaut : 10 Mo pour une image, 25 Mo pour un PDF, paramétrables côté serveur. → `422 FICHIER_REFUSE`. Le nom d'origine du fichier n'est jamais utilisé. |
-| `GET /medias` | Filtres : `q` (texte alternatif, légende, crédit), `mime` (`image` ou `pdf`), `createur`, `aFournir`, `nonUtilise=true`. Tri : `-creeLe` par défaut. Items : `Media`. |
+| `POST /medias` | `multipart/form-data`, **un** fichier (champ `fichier`) et des champs facultatifs : `texteAltFr`, `texteAltEn`, `credit`, `decoratif`, **`emplacement` (1.6.0)**, `createurId`. → `201 Media`. Type réel contrôlé par le contenu : JPEG, PNG, WebP, AVIF, GIF, SVG nettoyé, PDF. Limites par défaut : 10 Mo pour une image, 25 Mo pour un PDF, paramétrables côté serveur. → `422 FICHIER_REFUSE`. Le nom d'origine du fichier n'est jamais utilisé. |
+| `GET /medias` | Filtres : `q` (texte alternatif, légende, crédit), **`emplacement` (1.6.0, sous-chaîne insensible à la casse)**, `mime` (`image` ou `pdf`), `createur`, `aFournir`, `nonUtilise=true`. Tri : `-creeLe` par défaut. Items : `Media`. |
 | `GET /medias/:id` | — |
-| `PATCH /medias/:id` | `traductions`, `credit`, `decoratif`, `createurId`, avec `version`. Le fichier ne se remplace pas : on envoie un nouveau média. |
+| `PATCH /medias/:id` | `traductions`, `credit`, `decoratif`, **`emplacement` (1.6.0)**, `createurId`, avec `version`. Le fichier se remplace avec la route dédiée ci-dessous (1.19.0). |
+| `POST /medias/:id/remplacer` | **1.19.0, § 36.** `multipart/form-data` : un fichier (champ `fichier`) et `version` (entier). Même `id`, mêmes textes/crédit/emplacement/décoratif/créateur ; nouveau binaire et nouvelles déclinaisons, `version + 1`. → `200 Media`. `404` si introuvable, `409 VERSION_PERIMEE`, `422 FICHIER_REFUSE`. |
 | `GET /medias/:id/usages` | `200 Usage[]`. Couvre les images principales, galeries, corps riches (`mediaId`), photo de créateur, avatar de presse, guides PDF, logos. |
 | `DELETE /medias/:id?version=N` | `204` ; utilisé → `422 RG-08` avec `details.usages`. Fichiers retirés du stockage après un délai de grâce de 24 h. |
 
@@ -1130,11 +1136,13 @@ existe déjà ou non.
 | `GET /newsletter/desinscription?jeton=` | — | Abonné `desabonne` |
 | `POST /demandes` | `{ varianteIds: string[] (1 à 20), nom, email, message?, langue, siteWeb }` | Demande `nouvelle` ; une variante inconnue, non publiée ou indisponible → `404` |
 | `GET /contenus/{type}?langue=` et `/contenus/{type}/{slug}?langue=` | — | Contenus `publie` avec `publieLe ≤ maintenant` ; jamais un brouillon, une relecture, un archivé, ni un prix dont `prixConfirme` est faux |
+| `GET /contenus/{type}?projetId=` (**1.15.0**) | — | Pour `episodes`, `villes`, `destinations`, `archive` : seuls les contenus du projet (§ 32.2) ; liste vide si le projet est inconnu |
+| `GET /projets/{slug}/page?langue=` (**1.15.0**) | — | Page complète d'un projet publié : `{ projet, episodes, destinations, villes, entrees, partenaires }`, listes déjà filtrées et images résolues (§ 32.4) |
 | `GET /categories?famille=&langue=` | — | Catégories visibles et non vides de la famille (`article`, `projet`, `produit`), avec leur effectif publié |
 | `GET /site` | — | Identité, navigation, textes d'interface, pages légales publiées, réglages publics (`languesActives`) |
 | `GET /sitemap` | — | Adresses publiables par langue, avec date de modification |
 
-### 18.1 Vue publique des contenus (1.5.0)
+### 18.1 Vue publique des contenus (1.5.0, étendue en 1.6.0)
 
 Ce que renvoient `GET /contenus/{type}` et `GET /contenus/{type}/{slug}` (`type` : `articles`,
 `episodes`, `projets`, `villes`, `destinations`, `archive`, `distinctions`, `presse`, `galerie`,
@@ -1153,7 +1161,10 @@ Ce que renvoient `GET /contenus/{type}` et `GET /contenus/{type}/{slug}` (`type`
 - **la liste porte des objets complets**, comme la fiche, plus `slug` et `titre` dans la langue : une
   ressource sans slug (distinctions, presse, villes, univers, jalons, offres, partenaires, galerie)
   n'a pas de fiche publique, tout doit venir de sa liste ;
-- un projet porte aussi `categorie: { slug, nom } | null` ; un épisode, `projetSlug`.
+- un projet porte aussi `categorie: { slug, nom } | null` ; un épisode porte `projetId: string | null`
+  (cible de liaison, non encore résolue en slug) et, depuis la **1.6.0**, `illustrations:
+  ImagePublique[]` — les images complémentaires de la fiche, dans leur ordre (vide si aucune).
+  Depuis la **1.15.0**, une entrée d'`archive` porte aussi `projetId: string | null` (§ 32.2).
 
 ```ts
 interface ImagePublique {
@@ -1169,10 +1180,7 @@ interface ImagePublique {
 aLaUne, dureeLecture, tagIds, publieLe, modifieLe }` dans la langue, les plus récents d'abord ; la
 fiche donne l'article complet (corps compris).
 
-Routes publiques servies en 1.5.0, en plus du tableau ci-dessus : `GET /categories?famille=&langue=`
-(1.4.0), `GET /boutique/produits` et `/boutique/produits/{slug}` (SCHEMAS § 12.2), `GET /photos-fixes`
-(§ 22.4), `GET /reglages` (`boutiqueEnLigne`, `multiVendeurs`, `languesActives`). **Pas encore servies** :
-`GET /site`, `GET /sitemap`, galeries par emplacement, créateurs, étiquettes.
+Routes publiques servies depuis la 1.4.0 : `GET /categories?famille=&langue=` ; `GET /boutique/produits` et `/boutique/produits/{slug}` (SCHEMAS § 12.2) ; `GET /photos-fixes` (§ 22.4) et `GET /reglages` (`boutiqueEnLigne`, `multiVendeurs`, `languesActives`). Depuis la **1.6.0**, `GET /episodes` porte aussi `illustrations` ; depuis la **1.16.0**, `GET /galeries?emplacement=` sert les galeries de l'accueil et de la boutique (§ 33) ; depuis la **1.20.0**, `GET /site` (identité, § 37.2) et `GET /etiquettes` (§ 37.3). **Pas encore servies** : `GET /sitemap`, créateurs.
 
 ---
 
@@ -1219,6 +1227,22 @@ développement : la valeur par défaut est sûre et modifiable sans rupture.
 | 1.3.0 | 01/11/2026 | Relevé en écrivant le lot 3 (B-48, D-67) : `distinctions.annee`, `presse.datePublication`, `presse.lien` et `univers.cible` acceptent `null` en brouillon, toujours exigés à la publication ; les pages n'ont aucune clé de bloc tant que l'inventaire n'est pas fourni. Mineure : des valeurs ajoutées en lecture. | Responsable technique |
 | 1.4.0 | 05/11/2026 | Annexe publique : `GET /categories?famille=&langue=` (catégories visibles et non vides d'une famille). Mineure. | Responsable technique |
 | 1.5.0 | 07/11/2026 | § 22 (proposée par l'admin le 06/11) **arrêtée** avec les amendements du § 22.9, écrits en l'implémentant dans le back end (B-61 à B-65) ; § 18.1 : vue publique des contenus (images résolues, aucun champ interne, une langue) et lecture publique des articles. Vérifié par le test de contrat de l'admin contre l'API réelle (39 sur 39). Mineure : ajouts compatibles. | Responsable technique (admin et back end) |
+| 1.6.0 | 11/11/2026 | § 23 (demandée par le client le 11/11) **arrêtée** : médias `emplacement` (nom de l'endroit) côté admin ; épisodes `illustrations` (jusqu'à 12 images complémentaires, ordre conservé) exposées dans le payload public et la phase d'admin ; publication d'un épisode liée à un projet. Mineure : ajouts compatibles, aucun champ supprimé, aucun renommage. | Responsable technique (admin et back end) |
+| 1.7.0 | 11/11/2026 | § 24 (demandée par le client le 11/11) **arrêtée** : nœud `horizontalRule` accepté par la liste blanche du corps riche (§ 9.1) ; `pages-legales` en 1.6.0 porte `cgu` — l'ensemble fermé passe de cinq à six pages. Mineure : ajouts compatibles, aucun champ supprimé, aucun renommage. | Responsable technique (admin et back end) |
+| 1.8.0 | 11/11/2026 | § 25 (demandée par le client le 11/11) **arrêtée** : les résumés de liste d'articles et de projets sont **étendus** — `extrait` (article), `accroche` et `creeLe` (projets). Additifs uniquement, aucun champ renommé ou supprimé ; aucun changement de payload public. | Responsable technique (admin et back end) |
+| 1.9.0 | 12/11/2026 | § 26 (demandée par le client le 12/11) **arrêtée** : un projet garde toujours son affiche — `imageId` exigé dès la création, et à toute modification qui laisserait un projet sans affiche. Mineure : aucune route ni payload modifié, lecture publique inchangée. | Responsable technique (admin et back end) |
+| 1.10.0 | 14/11/2026 | § 27 (demandée par le client le 14/11) **arrêtée** : les payloads produits publiques (`GET /public/api/v1/boutique/produits` et sa fiche) exposent les UUID des variantes — `varianteIds: z.array(z.uuid())` (≥ 1) en liste et `variantes[].id: z.uuid()` en fiche. Additives uniquement, aucun champ renommé ni supprimé ; raison : permettre au site public d'envoyer les `varianteIds` attendus par `POST /public/api/v1/demandes` (§ 18). | Responsable technique (admin et back end) |
+| 1.11.0 | 19/11/2026 | § 28 (demandé par le client le 19/11) **arrêtée** : compteur de visites maison — deux tables (`statistiques_vue`, `statistiques_chemin`), route publique `POST /public/api/v1/analytics/vue`, extension additive du tableau de bord (`visitesTotales`, `visitesAujourdhui`, `visitesCeMois`, `topVues`). Aucun service externe, aucune donnée personnelle. | Responsable technique (admin et back end) |
+| 1.12.0 | 19/11/2026 | § 29 (demandé par le client le 19/11) **arrêtée** : l'article ajoute `pdfId` (réf. `media` de type `application/pdf`) ; la publication d'un article exige `imageId` + (corps **ou** PDF) ; vue publique expose `pdf` (forme `imagePublique`, `declinaisons` vide, `largeur`/`hauteur` = `null`). | Responsable technique (admin et back end) |
+| 1.13.0 | 19/11/2026 | § 30 (demandé par le client le 19/11) **arrêtée** : la face publique devient normative ; zéro build sur changement de contenu en production ; la page d'un contenu nouvellement publié est servie immédiatement, y compris une URL absente du dernier déploiement ; cache à durée maîtrisée et revalidation, sans invalidation ciblée ni Redis ; le contrat ne couvre pas encore les transactions (version ultérieure). | Responsable technique (admin et back end) |
+| 1.14.0 | 20/11/2026 | § 31 (demandé par le client le 20/11) **arrêtée** : parcours d’achat et paiement Wave — commandes, variantes, stock réservé, total calculé serveur, session `POST /v1/checkout/sessions`, webhook signé `checkout.session.completed`, idempotence par identifiant d’événement, remboursement, simulation en dev. Multi-vendeur, comptes clients et livraison restent hors périmètre. | Responsable technique (admin et back end) |
+| 1.15.0 | 20/11/2026 | § 32 (demandé par le client le 20/11) **arrêtée** : un projet devient le conteneur de ses contenus — filtrage public par `projetId` pour villes, destinations, épisodes et entrées d’archive ; `archive.projetId` ajouté (facultatif) ; route publique `GET /public/api/v1/projets/{slug}/page` assemblée selon le `template` ; le site rend une page par projet. Aucun champ supprimé ni renommé ; les contenus sans projet restent globaux. | Responsable technique (admin et back end) |
+| 1.16.0 | 21/11/2026 | § 33 (demandé par le client le 21/11) **arrêtée** : la galerie de la boutique devient administrable et lisible par l'API publique — `GET /public/api/v1/galeries?emplacement=boutique&langue=` ; le lookbook d'Edja Shop ne dépend plus d'un tableau codé en dur. Aucun champ supprimé ni renommé ; la galerie de l'accueil garde sa route et son comportement. | Responsable technique (admin et back end) |
+| 1.17.0 | 21/11/2026 | § 34 (demandé par le client le 21/11) **arrêtée** : la liste des emplacements de photos fixes est réduite aux cinq emplacements que le site rend réellement. `apropos.bandeau`, `contact.bandeau` et `partage.og` sont retirés — aucune page ne les affiche. Routes, champs et droits inchangés (migration 0019). | Responsable technique (admin et back end) |
+| 1.18.0 | 21/11/2026 | § 35 (demandé par le client le 21/11) **arrêtée** : l'emplacement du héros est nommé d'après la page qu'il pilote — `journal.bandeau` devient `histoires.bandeau`, libellé « Histoires — bandeau ». Le visuel assigné est conservé (migration 0020). Aucune route ni forme modifiée. | Responsable technique (admin et back end) |
+| 1.19.0 | 21/11/2026 | § 36 (demandé par le client le 21/11) **arrêtée** : un média peut voir son **fichier remplacé** sans changer d'identifiant — `POST /medias/:id/remplacer` (multipart `fichier` + `version`). Textes, crédit, emplacement et usages conservés ; nouvelles clés de stockage et déclinaisons, version incrémentée. Lève l'interdiction du § 11.2 et comble l'écart avec ECRANS § 5.1. | Responsable technique (admin et back end) |
+| 1.20.0 | 21/11/2026 | § 37 (demandé par le client le 21/11) **arrêtée** : le site public lit enfin l'identité, les étiquettes et les réglages depuis l'API — `GET /public/api/v1/site`, `GET /public/api/v1/etiquettes` et consommation de `/reglages`. L'écran admin `/identite` est ouvert, les écrans `/navigation` et `/textes-interface` réintégrés. Aucune route existante modifiée. | Responsable technique (admin et back end) |
+| 1.21.0 | 22/11/2026 | § 38 (demandé par le client le 22/11) **arrêtée** : l'envoi d'un média admin n'exige plus d'`emplacement` — l'absence de champ vaut `null` (« emplacement non précisé »). Règle de la 1.6.0 § 23.1 levée ; filtre, lecture et `PATCH` inchangés. Minior : champ passé facultatif. | Responsable technique (admin et back end) |
 
 ---
 
@@ -1307,10 +1331,759 @@ moins une escale (`escaleIds`). Catégories de projets de départ : Film, Touris
 | 22.2 | — | Un projet qui a des épisodes ne se supprime pas : `422 RG-32` (`details.nombre`). Toute référence que la base refuse de rompre → `422 VALIDATION`, jamais `500`. |
 | 22.3 | Variantes d'un livre : tableau entier **ou** routes dédiées | **Les deux.** `PATCH /livres/:id` accepte `variantes` (au moins une) : avec `id` → modifiée, sans `id` → créée, absente → supprimée (sauf si une demande la cite : `422 RG-11`) ; `reference: null` = générée. Les routes `/livres/:id/variantes` restent. |
 | 22.3 | `categorieId` facultatif | **Obligatoire dès la création** (colonne non nulle, comme les bijoux). Un résumé ou un libellé de variante non saisi vaut `null`. |
-| 22.4 | — | Conforme. Les huit emplacements sont semés ; un média assigné ne se supprime pas (`422 RG-08`, usage `emplacements-photos`). |
+| 22.4 | — | Conforme. Les cinq emplacements sont semés (1.18.0, §§ 34-35) ; un média assigné ne se supprime pas (`422 RG-08`, usage `emplacements-photos`). |
 | 22.5 | `programmes` | Servi : cinq prochains contenus publiés à date future, toutes ressources. |
 | 22.8 | `template` absent = celui du format | Le serveur **écrit** le template du format quand il n'est pas fourni (migration 0009 : les projets existants l'ont reçu) ; la lecture le donne toujours. |
 | — | Galerie : `mediaId` P | Facultatif en brouillon, exigé à la publication (migration 0010). |
 | — | Audience : `dateValidation: DatePartielle` | Colonne passée en texte (migration 0011). |
 | — | Pages légales | Ensemble fermé : la création est refusée à tous les rôles (`403`). |
 | — | Ressources sans étiquettes (galerie, études de cas, partenaires, pages légales) | `tagIds` accepté seulement vide. |
+
+---
+
+## 23. Version 1.6.0 — extensions demandées par le client (ARRÊTÉE)
+
+> Statut : **arrêtée le 11/11/2026**. Demandée par le client le même jour ; écrites ensemble dans
+> les deux dépôts (site `docs/CONTRAT-API.md` et copie `prince-edja-api/docs/contrat/CONTRAT-API.md`,
+> identiques octet pour octet). **§ 23.4 est la clause de non-retour** : aucune donnée existante
+> supprimée, aucun schéma public cassé.
+
+### 23.1 Médias — `emplacement` (admin uniquement)
+
+- Nouveau champ sur la ressource média : `emplacement: string | null` — le **nom de l'endroit** où le
+  média est destiné à apparaître sur le site public (« Galerie — hommes », « À propos — bandeau »,
+  « Boutique — hero »…). Texte libre ; la liste proposée par l'admin n'est qu'une aide de saisie.
+- **Obligatoire à l'envoi** (`multipart` de création). Facultatif sur la fiche d'un média existant :
+  les médias antérieurs à la 1.6.0 portent `null` et ne se « migrent » pas — la valeur s'écrit à la
+  première édition, sans inventer d'affectation.
+- `GET /medias` filtre `?emplacement=<sous-chaîne>` (insensible à la casse).
+- **Jamais exposée dans l'API publique** (`GET /photos-fixes`, `GET /contenus/*`) : aucun changement
+  pour le site tant qu'il ne la lit pas.
+
+### 23.2 Épisodes — `illustrations` (plusieurs images complémentaires)
+
+- Un épisode garde **une** affiche principale (`imageId`, inchangée) et gagne **plusieurs images
+  d'illustration** : `illustrationIds: string[]` (max 12, ordre conservé), liées par la table
+  d'association `episode_media(episode_id, media_id, ordre)` (clé primaire composite, FK
+  `→ media(id) ON DELETE RESTRICT`).
+- La fiche épisode les présente dans l'ordre et les retire **sans supprimer le média** de la
+  médiathèque : seule la relation disparaît.
+- L'emport de nouvelles illustrations réutilise le même flux que les autres médias (picker et upload
+  : mêmes routes, même contrainte `media_declinaisons`).
+- **Payload public** (`GET /contenus/episodes` et `/`{slug}) : `illustrations: ImagePublique[]`,
+  dans l'ordre d'insertion, `[]` par défaut. Aucun autre champ public n'est ajouté ou modifié.
+
+### 23.3 Épisodes — publication liée à un projet
+
+- Un épisode appartient à zéro ou un projet (`projet_id`, FK `→ projet(id) ON DELETE RESTRICT` —
+  inchangé, RG-32) ; **à partir de la 1.6.0, aucune publication sans `projetId`** : la publication
+  constate `422 RG-03` avec `details.manquants` incluant `{ champ: 'projet', message:
+  « Un épisode appartient à un projet : choisissez-le avant la publication. » }`.
+- Cette exigence s'applique aux nouvelles publications et re-publications ; les brouillons sans
+  projet restent éditables. La migration E1 n'ayant jamais renseigné de projet pour les six épisodes
+  publiés, la reprise éditoriale (ou une migration dédiée, validée par le client, qui les relie au
+  projet X'PLORE Côte d'Ivoire) précède toute re-publication.
+- La création d'une illustration n'est pas soumise à cette exigence ; elle n'est qu'appliquée à la
+  publication.
+
+### 23.4 Ce qui ne change pas (clause de non-retour)
+
+- Les payloads publics de toutes les ressources restent en lecture **au chargement seulement**
+  (LIAISON § C.2) : rien ne change côté déclenchement ; seules les clés du payload changent.
+- Aucune suppression de données ; les médias existants restent sans `emplacement` ; les épisodes
+  existants n'ont pas d'illustrations tant que l'équipe ne les renseigne pas.
+- La galerie (accueil, boutique) et les photos fixes restent telles quelles ; aucune route publique
+  nouvelle n'est fournie par la 1.6.0.
+
+---
+
+## 24. Version 1.7.0 — ajouts du chantier pages légales (ARRÊTÉE)
+
+> Statut : **arrêtée le 11/11/2026**. Demandée par le client le même jour ; écrites ensemble dans
+> les deux dépôts (site `docs/CONTRAT-API.md` et copie `prince-edja-api/docs/contrat/CONTRAT-API.md`,
+> identiques octet pour octet). **§ 24.3 est la clause de compatibilité** : aucun changement de
+> comportement des endpoints d'édition, aucune donnée modifiée ou perdue.
+
+### 24.1 Corps riche — nœud `horizontalRule`
+
+- La liste blanche du `CorpsRiche` (§ 9.1) accepte désormais `horizontalRule` (`<hr>` côté rendu) :
+  l'admin édite un séparateur dans l'éditeur (bouton « Séparateur »), le rendu admin (`RenduCorps`)
+  et le rendu site (`CorpsRiche`) l'affichent, le serveur l'accepte à l'écriture.
+- Le rendu même n'a **ni attributs ni contenu** : `attrs` et `content` refusés pour ce nœud, comme
+  pour tous les nœuds (§ 9.1). Aucune donnée existante n'est migrée.
+
+### 24.2 Pages légales — sixième page `cgu`
+
+- L'ensemble fermé des pages légales (§ 9.16) passe de cinq à six : `cgu` est ajoutée après les
+  cinq déjà servies. Intitulée « Conditions générales d'utilisation » (FR) ; « Terms of use » (EN).
+- La reprise dans les deux séries seed : **données de départ** (`src/db/seed/donnees/site.json`,
+  `CLES_PAGE_LEGALE`) et **base existante** : migration `0013_page-cgu` insère la ligne
+  `page_legale('cgu')` avec le squelette FR/EN (aucun texte juridique, comme les cinq autres). La
+  maison remplit le corps et publie : même procédure (« Réglages → Pages légales »).
+- Footer et routes du site : `/cgu` ajoutée (lien « CGU » dans le pied, page générique existante
+  `LegalPage`), prérendue comme les cinq autres, samediscanoniques dans le sitemap.
+- L'API publique (`GET /contenus/pages-legales`, § 18.1) reste la seule voie : aucun changement de
+  contrat pour la publication, aucune donnée écrasée.
+
+### 24.3 Ce qui ne change pas
+
+- La structure et les titres des cinq pages existantes restent identiques ; aucune traduction
+  inventée n'est ajoutée. Le contrat étend la liste blanche **sans en retirer** : tout corps déjà
+  enregistré reste valide.
+- Les deux copies du contrat restent identiques octet pour octet ; la somme SHA-256 est figée par
+  `tests/unitaires/contrat.test.ts` (mise à jour par ce commit).
+
+---
+
+## 25. Version 1.8.0 — résumés de liste étendus (ARRÊTÉE)
+
+> Statut : **arrêtée le 11/11/2026**. Demandée par le client le même jour ; les deux dépôts
+> portent la même copie de ce contrat (`prince-edja-api/docs/contrat/CONTRAT-API.md`,
+> identique octet pour octet) ; la limite de compatibilité du § 25.3 s'applique.
+
+### 25.1 Articles — résumé de liste `extrait`
+
+- Le résumé de liste des **articles** expose désormais `extrait` : le texte de `traductions[fr].extrait`,
+  à défaut `traductions[en].extrait`, `null` dans les deux, jamais une valeur inventée. Le champ
+  est additif : un client qui ne le lisait pas ne remarque rien.
+- Le champ reste utilisé pour **l'aperçu** dans le Journal (titre, image, résumé, catégorie,
+  statut, date), demandé par le client.
+
+### 25.2 Projets — résumé de liste `accroche` et `creeLe`
+
+- Le résumé de liste des **projets** ajoute :
+  - `accroche` : `traductions[fr].accroche`, à défaut `traductions[en].accroche`, `null` dans les
+    deux — le résumé court saisi pour le corps public (`↔ traduction.accroche`) ;
+  - `creeLe` : `horodatage` ISO, date de création du projet — la liste de l'admin peut afficher la
+    fiche « Date de création », ce que le tableau actuel n'affichait pas.
+- Les deux champs sont additifs (aucune suppression, aucun renommage) ; le payload public
+  (`GET /contenus/projets`) est **inchangé**.
+
+### 25.3 Ce qui ne change pas
+
+- Aucun endpoint d'écriture, aucune validation ; aucun payload public modifié ; aucune donnée
+  existante migrée. Les résumés restent ce qu'ils sont côté aide et MSW (additifs).
+- Les onglets transverses ne se définissent pas ici ; le reste de ce contrat est stable.
+
+---
+
+## 26. Version 1.9.0 — un projet garde toujours son affiche (ARRÊTÉE)
+
+> Statut : **arrêtée le 12/11/2026**. Demandée par le client le même jour (« si pas affiche pas de
+> création ») ; les deux dépôts portent la même copie de ce contrat (`prince-edja-api/docs/contrat/
+> CONTRAT-API.md`, identique octet pour octet) ; la limite de compatibilité du § 26.4 s'applique.
+
+### 26.1 Règle
+
+- Un **projet** est refusé à la **création** tant que `imageId` n'est pas fourni — quel que soit
+  l'avancement (« En préparation » compris) et quel que soit le template. Le refus est
+  `422 VALIDATION`, `champ: "imageId"`, avec un message français explicite pour l'interface.
+- La même règle s'applique à toute **modification** : un enregistrement qui laisserait un projet
+  sans affiche est refusé (même code et même champ). Un projet existant sans affiche (état
+  antérieur à cette version) redevient enregistrable dès que son affiche est choisie — c'est le
+  « remplissage progressif » prévu pour les anciens projets, jamais une suppression.
+- Le message renvoyé nomme le champ pour que l'interface y mène (le formulaire de projet porte
+  déjà « Photo d'affiche du projet » en exigence directe à l'enregistrement).
+
+### 26.2 Règles inchangées
+
+- La règle RG-03 à la **publication** reste en l'état, dont l'exception « En préparation » (§ 7 de
+  cette version reste sur ce seul point, devenu théorique pour les projets nés à partir de 1.9.0).
+- Aucune autre ressource n'est concernée : articles, épisodes, villes, destinations, archive,
+  galerie, distinctions, presse, conventions… inchangés.
+
+### 26.3 Ce qui ne change pas
+
+- Aucun endpoint d'écriture, aucune route, aucun payload **modifié** ; la lecture publique
+  (`GET /contenus/projets`) est inchangée ; aucun champ renommé ni supprimé ; aucune donnée
+  existante migrée (les projets sans affiche restent lisibles et listables, simplement
+  indisponibles à l'enregistrement tant que l'affiche n'est pas choisie).
+
+### 26.4 Compatibilité
+
+- Un client qui enregistrait déjà une affiche à la création (comportement de l'interface entre
+  1.8.0 et 1.9.0) ne voit aucun changement. Un client qui créait sans affiche doit désormais la
+  fournir, comme l'exige l'interface.
+
+---
+
+## 27. Version 1.10.0 — la fiche produit publique expose les ids de variantes (ARRÊTÉE)
+
+> Statut : **arrêtée le 14/11/2026**. Demandée par le client le même jour ; les deux dépôts
+> portent la même copie de ce contrat (`prince-edja-api/docs/contrat/CONTRAT-API.md`,
+> identique octet pour octet) ; la limite de compatibilité du § 27.3 s'applique.
+
+### 27.1 Liste publique des produits (`GET /public/api/v1/boutique/produits`)
+
+- Chaque élément (`produitPublieSchema`) ajoute `varianteIds: z.array(z.uuid().min(1))` :
+  les UUID des variantes du produit, **dans l'ordre** dans lequel la fiche les expose
+  (ordre croissant `ordre`, puis prix croissant — § 12.2). Mêmes UUID en fiche qu'en liste.
+- Toute variante saisie dans l'outil public est donc identifiable côté client ; le client
+  peut donc appeler `POST /public/api/v1/demandes` avec ces UUID sans aucune seconde requête.
+
+### 27.2 Fiche publique (detail, `GET /public/api/v1/boutique/produits/:slug`)
+
+- `variantes[]` ajoute `id: z.uuid()` : l'identifiant de chaque variante — identique
+  à celle émise en liste (`varianteIds[i]` pour `variantes[i]`).
+
+### 27.3 Ce qui ne change pas · Compatibilité
+
+- Aucun endpoint révoqué, aucune route retirée ; aucune validation touchée côté écriture ;
+  aucune donnée migrée.
+- Le contrat passe en mineure : additifs seulement.
+- Indexation automatique en `(famille, slug)` ; rebuild du site public à chaque publication
+  reste le même — le contrat lit la même forme, plus `varianteIds`.
+
+---
+
+## 28. Version 1.11.0 — compteur de visites maison (ARRÊTÉE)
+
+> Statut : **arrêtée le 19/11/2026**. Demandée par le client le même jour (« compteur maison
+> dans l'API ») ; aucune donnée personnelle n'est collectée, aucun service externe n'est
+> interpellé. Demandé et accepté par le client avant toute implémentation.
+
+### 28.1 Modèle de données (montée via la migration `0014_statistiques-visites`)
+
+Deux tables nouvelles, uniquement écrite et lue par l'API (rôle `edja_api`) ; aucune autre table,
+aucune colonne n'est modifiée ; aucun index fonctionnel public pour l'instant.
+
+```sql
+CREATE TABLE statistiques_vue (
+  jour   date PRIMARY KEY,
+  total  integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE statistiques_chemin (
+  chemin text PRIMARY KEY,
+  total  integer NOT NULL DEFAULT 0
+);
+
+GRANT SELECT, INSERT, UPDATE ON statistiques_vue, statistiques_chemin TO edja_api;
+```
+
+La redescente (`bas.sql`) supprime les deux tables et la mémoire de leurs lignes (aucune restitution possible : c'est voulu).
+
+### 28.2 Route publique `POST /public/api/v1/analytics/vue`
+
+- Corps : `{ chemin?: string }` — `chemin` commence par `/`, au plus 300 caractères ; absent = `/`.
+- Effet : incrémente `statistiques_vue(jour = today)` et `statistiques_chemin(chemin)` dans une
+  seule transaction. **204** sur succès ; aucune information n'est renvoyée.
+- Limitation de débit : 20 requêtes / minute / adresse IP (même régime que la limite des formulaires).
+- **Aucune donnée personnelle** n'est conservée : ni adresse IP, ni agent utilisateur, ni identifiant
+  de session. Le compteur ne mesure pas des personnes — il compte des **affichages de pages**
+  (page views) : une session qui affiche 10 pages compte 10, une personne unique est invisible.
+- La route est appelée par le site public au chargement de chaque page et à chaque changement
+  de route ; sans `PUBLIC_API_URL` configurée pour le build, le site n'appelle rien (repli comme
+  pour les formulaires).
+
+### 28.3 Extension du `GET /admin/api/v1/tableau-de-bord`
+
+Additif seulement. Les champs existants restent inchangés. Quatre champs en plus :
+
+```ts
+interface TableauDeBord {
+  // ... existant (§ 16), inchangé ...
+  visitesTotales: number             // somme totale, toutes pages confondues
+  visitesAujourdhui: number           // vues comptées aujourd'hui
+  visitesCeMois: number               // vues comptées ce mois-ci (calendrier local)
+  topVues: { chemin: string; total: number }[]  // 5 pages les plus vues (chemin relatif)
+}
+```
+
+Aucune autre donnée de ces deux tables n'est exposée (pas de séries journalières, pas de
+détail par jour) : le tableau montre trois chiffres et les cinq pages dominantes, rien d'autre.
+
+### 28.4 Ce qui ne change pas · Compatibilité
+
+- Aucun endpoint retiré, aucune route, aucune validation touchée ; aucun changement de comportement
+  pour les clients qui ne consomment pas `visites*`.
+- Aucune des tables existantes n'est modifiée. RLS : la lecture/écriture des deux tables passe par
+  le rôle `edja_api`, comme les autres tables applicatives.
+- Version mineure : extension pure. Le site se reconstruit avec les données courantes ; le flux
+  de publication n'est pas impacté.
+
+---
+
+## 29. Version 1.12.0 — un article peut porter un PDF natif (ARRÊTÉE)
+
+> Statut : **arrêtée le 19/11/2026**. Demandée par le client le même jour, avec la
+> validation des trois points ouveres : (a) PDF OU corps écrit suffit pour publier ;
+> (b) page publique allégée + soin du PDF (c) upload direct dans l'article.
+
+### 29.1 Schéma
+
+`articles` ajoute `pdfId` : `uuid nullable`, référence vers `media.id` (même famille que
+`imageId`), limitée aux médias de type `application/pdf`. Une clé `ON DELETE RESTRICT`
+ajoute une dépendance d'intégrité (l'article ne peut pas être en Changelog sans PDF).
+
+### 29.2 Exigences de publication (RG-03, articles)
+
+Pour chaque langue active : le **corps** est exigé **sauf si l'article porte un PDF** :
+
+- `imageId` : toujours exigé (inchangé).
+- `corps` non vide, OU `pdfId` non nul : au moins l'un des deux.
+- Les exigences restantes (extrait, titre, catégorie, tag format) ne changent pas.
+
+### 29.3 Vue publique de l'article (contrat 1.5.0 § 18.1)
+
+`ArticlePublic` (extended `ContenuPublic`) ajoute `pdf: z.object({ url, alt, largeur, hauteur, declinaisons }) | null`
+— la forme exacte d'`ImagePublique` (images), mais pour un `application/pdf` : `url`
+(URL publique directe), `alt` = texte alternatif du média, `largeur`/`hauteur` = `null`,
+`declinaisons: []`.
+
+Le site public, quand `pdf !== null`, offre un bouton « Télécharger le PDF » en plus du contenu
+(il peut afficher soit la fiche allégée avec le bouton, soit le contenu complet si `corps`
+non vide, soit les deux).
+
+### 29.4 Compatibilité
+
+Additive : aucun endpoint, aucune validation, aucun champ renommé ou supprimé ; les articles
+créés sans PDF continuent d'être lu/lus et publiés exactement comme avant. La réassignation
+`ON DELETE RESTRICT` empêche toute suppression d'un média PDF cité par un article — la règle
+des photos fixes et des logos d'épisode suit la même logique (RG-08).
+
+---
+
+## 30. Version 1.13.0 — face publique normative et indépendance du build (ARRÊTÉE)
+
+> Statut : **arrêtée le 19/11/2026**. Décision du client : *« le fait qu'on déclenche un build à chaque changement est mon problème »*. Version arrêtée avant tout code, conformément au § 0.
+
+### 30.1 Ce qui change
+
+La face publique décrite au § 18 cesse d'être une annexe « à titre de référence ». Elle devient **normative pour le site public et pour le back end** : la source de vérité des données lues par un visiteur est l'API publique, pas un instantané généré au build.
+
+Conséquence directe : **aucune modification de contenu ne déclenche de reconstruction du site en production.** Le cycle de vie du code (déploiements maîtrisés), celui du contenu (publication dans l'admin) et celui des transactions (commandes) sont indépendants.
+
+### 30.2 Périmètre de la version
+
+Sont **dans** le périmètre : les contenus publics (Journal, projets, épisodes, destinations, guides, univers, jalons, offres, presse, distinctions, archive, galerie, pages légales), la navigation et les réglages publics, les catégories, les images et métadonnées de rendu (§ 18.1), les états de publication et les erreurs de lecture, les données nécessaires au référencement (titre, description, `publieLe`, `modifieLe`), et les routes déjà servies (`GET /contenus/{type}`, `GET /contenus/{type}/{slug}`, `GET /categories`, `GET /site`, `GET /sitemap`, `GET /boutique/produits`, `GET /boutique/produits/{slug}`, `GET /photos-fixes`, `GET /reglages`).
+
+Sont **hors** périmètre et relégués à une version ultérieure : le panier, les commandes, le paiement, la réservation de stock, les remboursements, les comptes clients et le multi-vendeur (qui reste `false`, § 5). Le site continue d'utiliser `POST /public/api/v1/demandes` pour les demandes de renseignement ; aucun parcours d'achat transactionnel n'est décrit ici.
+
+### 30.3 Règles de lecture publique
+
+1. **Fraîcheur** : un contenu publié est lisible immédiatement après sa transition, sans attendre un déploiement. Un contenu dépublié ou archivé cesse d'être servi (§ 18).
+2. **Nouvelle adresse** : l'URL d'un contenu publié doit être servie dès la première visite, **même si cette URL n'existait pas lors du dernier déploiement du frontend**. Le rendu est donc produit à partir des données de l'API, non d'une liste de routes figée au build.
+3. **HTML exploitable** : la première réponse d'une page publique contient le contenu et ses métadonnées (titre, description, image, `og:*`) dans le HTML — pas une coquille vide attendant le JavaScript.
+4. **Cache** : les réponses publiques peuvent être mises en cache avec une **durée de validité maîtrisée**, puis revalidées. Aucune invalidation ciblée par contenu n'est exigée dans cette version ; aucun service de cache externe n'est imposé.
+5. **Dégradation** : si l'API est momentanément indisponible, une version en cache dont la fraîcheur reste acceptable peut être servie pour le contenu éditorial. Les données commerciales déjà publiées (prix, disponibilité) doivent être revalidées avant une action critique — action qui reste hors du périmètre de cette version.
+6. **Médias** : toutes les URLs d'images sont produites par le back end (`MEDIA_PUBLIC_BASE_URL` / Cloudinary, § 18.1) ou résolues par le site depuis `PUBLIC_IMAGES_BASE_URL` ; aucune URL d'environnement de développement n'est écrite dans un contenu publié. Le stockage de production est Cloudinary pour tous les visuels ; le disque local est réservé au développement.
+
+### 30.4 Démonstration et production
+
+Deux circuits distincts sont autorisés et ne doivent pas être confondus :
+
+- **Démonstration** (GitHub Pages) : instantané figé, build volontaire, données de départ ou JSON générés ; aucun backend en direct n'est requis pour présenter le site.
+- **Production** (hébergeur à arrêter séparément) : contenu vivant lu depuis l'API, cache et revalidation, indépendance complète vis-à-vis des builds de code.
+
+Les deux circuits partagent les composants, les styles et les règles de présentation ; seules les sources de données diffèrent.
+
+### 30.5 Compatibilité
+
+Additive : aucune route supprimée, aucun champ retiré ou renommé, aucune nouvelle exigence sur les payloads existants (§ 18.1). Les versions 1.5.0 à 1.12.0 restent valides. Le site peut continuer à consommer les JSON générés en mode démonstration ; la production doit consommer l'API publique. Ce changement concerne la **source de données du site**, pas les règles métier du back end : publication, droits, RG-03 et RG-08 restent inchangés.
+
+### 30.6 Décisions encore à arrêter (hors de cette version)
+
+- Hébergeur de production et modèle de rendu exact (serveur complet ou génération à la demande avec cache).
+- Sécurité des tâches internes du backend en cas de plusieurs instances (exécution unique garantie).
+- Périmètre contractuel des transactions (version ultérieure).
+- Stratégie d'agrégation du compteur de visites : **résolue** — agrégation en mémoire, vidage toutes les 60 s et à l'arrêt propre (appliquée le 20/11).
+- Activation éventuelle du multi-vendeur (décision métier séparée).
+
+---
+
+## 31. Version 1.14.0 — parcours d'achat et paiement Wave (ARRÊTÉE)
+
+> Statut : **arrêtée le 20/11/2026**. Demandée par le client le 20/11 (« on peut faire un vrai achat »). Version arrêtée avant tout code, conformément au § 0. Le multi-vendeur reste hors périmètre (§ 5).
+
+### 31.1 Principes généraux
+
+1. **Le back end est le seul à parler à Wave.** La clé API Wave (`wave_sn_prod_…`) et le secret de signature restent côté serveur, dans l'environnement — jamais dans le navigateur, jamais dans le dépôt.
+2. **Le prix n'est jamais cru côté client.** Le montant d'une commande est calculé par l'API depuis la base (variante, prix, quantité) au moment de la création de la session. Un `prix` envoyé par le site est ignoré ou refusé.
+3. **Le stock est vérifié au moment de la commande**, pas au moment de l'affichage du catalogue. La création de session réserve le stock dans la même transaction ; l'expiration ou l'échec le libère.
+4. **La confirmation de paiement vient du webhook Wave**, pas du retour navigateur (`success_url`). Les URL de retour sont indicatives ; seul l'événement signé `checkout.session.completed` fait passer la commande en `payée`.
+5. **Idempotence** : Wave peut envoyer un événement plusieurs fois, dans le désordre. Chaque événement est identifié par son `id` ; un événement déjà traité est reconnu et ignore sans effet de bord.
+6. **Dev = simulation, production = Wave.** En development, un prestataire fictif (`simulation`) permet de tester tout le cycle sans compte Wave ni réseau ; en production, le prestataire est `wave`. Le choix vient de la configuration, pas du navigateur.
+
+### 31.2 Fournisseur Wave (référence contractuelle)
+
+- Base URL : `https://api.wave.com`.
+- Authentification : `Authorization: Bearer <clé API>` ; signature optionnelle mais **recommandée** : en-tête `Wave-Signature: t=<unix>,v1=<hmac>`, HMAC-SHA256 de `timestamp + corps brut` avec le secret de signature. Le timestamp est rejeté s'il a plus de 5 min ou est dans le futur de plus de 30 s.
+- Création : `POST /v1/checkout/sessions` avec `{ amount: "<entier>", currency: "XOF", success_url, error_url, client_reference }`. `amount` est une **chaîne**, XOF **sans décimales**. `client_reference` (≤ 255) porte l'identifiant de notre commande.
+- Réponse : objet *Checkout Session* — `id` (`cos-…`), `checkout_status` (`open` | `complete` | `expired`), `payment_status` (`processing` | `cancelled` | `succeeded`), `wave_launch_url` (à ouvrir par le navigateur, jamais en WebView), `transaction_id`, `when_created`, `when_expires`, `when_completed`.
+- Vérification côté serveur : `GET /v1/checkout/sessions/:id` ou `GET /v1/checkout/sessions?transaction_id=…`.
+- Remboursement : `POST /v1/checkout/sessions/:id/refund` — idempotent (un second appel répond 200 sans nouveau mouvement).
+- Webhook : `POST` signé, événements `checkout.session.completed` et `checkout.session.payment_failed`, corps `{ id, type, data: { …Checkout Session… } }`. La signature se vérifie sur le **corps brut** ( jamais un corps JSON reparsé ), avec le secret du webhook (distinct de la clé API). Un événement dupliqué, manquant ou hors ordre doit être sans conséquence.
+- Aucune dépendance npm ajoutée : `fetch` et `node:crypto` suffisent.
+
+### 31.3 Modèle de données (ajouts)
+
+| Table | Champs essentiels |
+|---|---|
+| `commande` | `id`, `numero` (lisible), `etat`, `total`, `devise` (`XOF`), `client_nom`, `client_email`, `session_wave_id`, `transaction_wave_id`, `fournisseur`, `cree_le`, `payee_le`, `version` |
+| `ligne_commande` | `id`, `commande_id`, `variante_id`, `quantite`, `prix_unitaire`, `nom_produit` (figé à la commande) |
+| `evenement_wave` | `id` (identifiant de l'événement Wave, clé primaire — idempotence), `type`, `recu_le`, `traite_le` |
+
+États d'une commande : `en_attente` → `payee` ; `en_attente` → `expiree` | `echouee` ; `payee` → `rembourse`. Une transition est journalisée ; aucune suppression d'une commande payée.
+
+### 31.4 Routes de la face publique (ajouts)
+
+| Route | Corps / réponse | Règle |
+|---|---|---|
+| `POST /public/api/v1/commandes` | `{ lignes: [{ varianteId, quantite }], client: { nom, email }, langue }` → `{ commande, wave_launch_url }` | Le total est calculé serveur ; chaque variante doit être publiée et disponible ; le stock est réservé ; session Wave créée |
+| `GET /public/api/v1/commandes/:numero` | État de la commande, sans donnée sensible | Lecture par numéro + e-mail de la commande (ou jeton) — jamais un numéro seul |
+| `POST /public/api/v1/webhooks/wave` | Corps brut signé → `200` rapide | Vérification `Wave-Signature` sur le corps brut ; événement stocké puis traité de façon asynchrone |
+| `POST /public/api/v1/commandes/:numero/annuler` | — | Libère le stock d'une commande encore `en_attente` ; expire la session Wave |
+
+Limitation de débit sur ces routes. Aucune donnée de carte bancaire ne transite par le site : Wave gère le moyen de paiement.
+
+### 31.5 Administration (ajouts)
+
+- Écran « Commandes » : liste filtrable par état, détail d'une commande (lignes, montant, identifiants Wave, horodatages), action « Rembourser » (confirmation ; idempotente).
+- Le tableau de bord expose `commandesEnAttente`, `commandesPayees`, `chiffreAffaires` (somme des commandes `payees`, en FCFA via `formatFCFA` sur le site).
+- Aucun `admin` ne peut modifier le montant d'une commande. Aucune suppression de commande.
+
+### 31.6 Compatibilité et périmètre
+
+Additive : aucune route ni champ existant supprimé ; les familles `article`, `projet`, `produit` et les demandes de devis (`POST /demandes`) restent inchangées. Le compteur de visites (§ 28) reste tel qu'agrégé.
+
+Hors périmètre de cette version, à arrêter séparément : **multi-vendeur** (rôles, commissions, responsabilités, livraison, remboursements partagés), **comptes clients** (historique, fidélité), **livraison** (adresses, frais, suivi), **paiements récurrents**, et tout autre prestataire que Wave. Le choix du prestataire (`wave` / `simulation`) est une variable d'environnement — aucun comportement public ne change entre les deux hors le fait que la simulation ne déplace pas d'argent.
+
+---
+
+## 32. Version 1.15.0 — un projet contient ses villes, destinations et entrées (ARRÊTÉE)
+
+> Statut : **arrêtée le 20/11/2026**. Demandée par le client le 20/11 : deux projets du même
+> template doivent pouvoir avoir chacun leurs villes, leurs destinations et leurs entrées
+> d'archive, avec une page publique propre. Version arrêtée avant tout code (§ 0).
+
+### 32.1 Principe
+
+Un projet est le **conteneur de ses contenus**. Les familles `episodes`, `destinations`, `villes`
+et `archive` peuvent être rattachées à un projet ; le site rend **une page publique par projet**,
+dont les blocs sont choisis par le `template` du projet (§ 22.8). Deux projets du même template ne
+partagent plus leurs contenus.
+
+Aucun contenu n'est dupliqué : les relations du § 32.2 sont les seules sources de vérité. Un contenu
+non rattaché reste **global** : il continue d'apparaître dans les listes sans filtre et sur les pages
+historiques, sans qu'aucune donnée existante soit modifiée.
+
+### 32.2 Relations contenu → projet
+
+| Famille | Relation | Origine |
+|---|---|---|
+| `episodes` | `episodes.projetId` (uuid nullable) | champ existant (1.6.0, § 23.3) |
+| `destinations` | `destinations.episodeId` → `episodes.projetId` | relation existante, non modifiée |
+| `villes` | `projet.escaleIds[]` contient `villes.id` | champ existant (§ 22.8), non modifié |
+| `archive` | `archive.projetId` (uuid nullable) | **ajout de la 1.15.0** |
+
+`archive.projetId` est facultatif en écriture et vaut `null` en lecture pour une entrée existante.
+Un identifiant de projet inconnu est refusé à l'écriture : `422 VALIDATION` sur `projetId`, comme
+pour `episodes.projetId` (§ 22.2). Les villes et les destinations n'ajoutent aucun champ : leur
+rattachement est déjà porté par `escaleIds` et par l'épisode.
+
+### 32.3 Administration
+
+- Les listes de ces quatre familles acceptent le filtre `?projetId=<uuid>` — déjà le cas des
+  épisodes, ajouté pour `villes`, `destinations` et `archive`.
+- Le formulaire d'`archive` gagne le sélecteur `projetId`, pré-rempli quand l'entrée est créée
+  depuis la fiche d'un projet. Les villes restent rattachées via `escaleIds` sur la fiche projet ;
+  les destinations via leur épisode.
+- Une ville ajoutée à un projet entre dans `escaleIds`, dans l'ordre choisi ; l'ordre des villes
+  rendues sur la page publique suit celui de `escaleIds`, pas le `ordre` global de la famille.
+- Le rattachement se modifie comme un champ ordinaire, sous réserve du cycle de vie (§ 7) et des
+  droits (§ 5). Aucun administrateur ne peut modifier le montant d'une commande (§ 31.5), et aucune
+  règle de la 1.15.0 ne touche à la boutique.
+
+### 32.4 Face publique
+
+Deux ajouts à la face publique (§ 18), tous additifs :
+
+1. `GET /public/api/v1/contenus/{type}?langue=&projetId=<uuid>` pour `episodes`, `villes`,
+   `destinations` et `archive`. Sans `projetId`, le comportement est inchangé (tous les contenus
+   publiés). Avec `projetId`, seuls les contenus rattachés au projet sont renvoyés, selon les
+   relations du § 32.2 ; un projet inconnu donne une **liste vide**, jamais une erreur. Les objets
+   gardent la forme du § 18.1 ; `archive` expose en plus `projetId` (`uuid | null`).
+2. `GET /public/api/v1/projets/{slug}/page?langue=` renvoie la page complète d'un projet publié :
+   `{ projet, episodes, destinations, villes, entrees, partenaires }`. `projet` est l'objet public
+   du § 18.1 (avec `template`, `bandeau`, `blocsMasques`, `citation`, `saison`, `programme`,
+   `festivals`). Les listes sont **déjà filtrées** par le projet et dans la forme du § 18.1 (images
+   résolues, une seule langue). Un projet inexistant ou non publié répond `404`. Une famille sans
+   contenu est un **tableau vide**, jamais `null`.
+
+### 32.5 Rendu par template (site public)
+
+Le site rend une page par projet à `/projets/{slug}` à partir de la réponse du § 32.4. Les blocs
+suivent le `template` (§ 22.8) et sont masqués s'ils figurent dans `blocsMasques` :
+
+| Template | Blocs | Données |
+|---|---|---|
+| `film` | héros, carte, album, épisode à la une, guides | `projet`, `destinations` (coordonnées), `episodes` |
+| `programme` | héros, escales, programme, partenaires | `projet`, `villes` (ordre de `escaleIds`), `partenaires` |
+| `bibliotheque` | héros, entrées, rigueur éditoriale | `projet`, `entrees` (sources + fiabilité) |
+
+Le héros lit le titre, l'accroche, la citation et le bandeau du **projet** : aucune de ces valeurs
+n'est figée dans le composant. Un bloc sans données n'est pas rendu — aucun texte ni visuel n'est
+inventé pour le remplacer. Les trois pages historiques (`/xplore`, `/taste-and-travel`,
+`/archive-afrique`) restent servies telles quelles en démonstration ; la production utilise la route
+générique, conformément à la 1.13.0.
+
+### 32.6 Compatibilité et périmètre
+
+Additive : aucun champ supprimé ni renommé, aucune route existante modifiée, aucune nouvelle
+exigence sur une famille sans projet. Les projets, villes, destinations, épisodes et entrées sans
+rattachement gardent leur comportement actuel. Le mode démonstration (JSON générés) continue de
+fonctionner ; la production consomme l'API publique (1.13.0).
+
+Hors périmètre de la 1.15.0 : la production de contenu éditorial pour remplir une page vide (les
+champs manquants restent signalés par `champsAFournir`, § 9.3), la traduction anglaise des contenus
+(question 39), l'hébergement de production (§ 30.6) et le vrai prestataire Wave (§ 31).
+
+---
+
+## 33. Version 1.16.0 — galerie publique par emplacement (ARRÊTÉE)
+
+> Statut : **arrêtée le 21/11/2026**. Demandée par le client le 21/11 après constat d'une
+> incohérence : l'admin « Médiathèque › Sur le site › Galerie Boutique » annonce « aucune photo »
+> (zéro contenu `galerie` avec `emplacement = 'boutique'`), alors qu'Edja Shop affiche un lookbook.
+> Ce lookbook vient d'un tableau codé en dur dans le site (`src/data/shop.ts`), pas de l'admin.
+
+### 33.1 Principe
+
+Les deux galeries éditoriales — accueil et boutique — sont lues depuis la même famille
+`galerie` (§ 9.9), filtrée par `emplacement`. Le site **ne garde aucun lookbook codé en dur** :
+`GALERIE_SHOP` est remplacé par les données de l'API. L'admin et le site affichent ainsi
+exactement la même liste, dans le même ordre (`ordre`, puis `creeLe`, puis `id`).
+
+Aucun contenu n'est inventé : si la galerie Boutique est vide dans l'admin, Edja Shop n'affiche
+**aucun** lookbook. Les cartes de la collection et les fiches produits ne sont pas concernées —
+leurs visuels restent portés par `imageId` et `galerieMediaIds`.
+
+### 33.2 Route publique
+
+| Route | Réponse | Règle |
+|---|---|---|
+| `GET /public/api/v1/galeries?emplacement=&langue=` | `{ items, page, pageSize, total }` | `emplacement` (`'accueil' \| 'boutique'`) obligatoire ; contenus `publie` avec `publieLe ≤ maintenant`, triés par `ordre` ; mêmes champs que `GET /contenus/galerie` (vue publique § 18.1 : `image` résolue, `traduction` unique, `mediasCorps` si besoin). Un emplacement sans photo donne `total: 0`, jamais une erreur. |
+
+Cette route remplace, pour les galeries, la mention « pas encore servies : galeries par
+emplacement » du § 18. Les autres familles restent inchangées. La pagination suit `page` /
+`pageSize` (défaut 100 pour cette route : une galerie tient en une page).
+
+### 33.3 Administration
+
+Aucun changement de schéma : la famille `galerie` porte déjà `emplacement`, `ordre`, `ratio`,
+`parallaxe`, `cible`, `lienExterne` et les traductions `etiquette` / `titre` / `legende`.
+Le bloc « Galerie Boutique » de l'écran « Sur le site » continue de créer, ordonner et supprimer
+les photos exactement comme le bloc « Galerie Accueil ». Le titre FR reste obligatoire en
+`emplacement = 'boutique'`.
+
+Lors de la migration, les visuels du lookbook codé en dur sont **à recréer dans l'admin** par la
+maison (l'image, le titre, la légende et le ratio de chaque entrée) : le contrat n'autorise pas
+l'agent à transformer un tableau de code en contenu publié sans validation. Tant que ces entrées
+n'existent pas, le lookbook reste vide — c'est le comportement attendu et honnête.
+
+### 33.4 Compatibilité
+
+Additive : aucune route ni champ supprimé, aucun changement de forme pour `GET /contenus/galerie`
+ni pour les autres familles. En mode démonstration (JSON générés), le chargeur écrit
+`galerie-accueil.json` et `galerie-boutique.json` depuis la nouvelle route ; le site s'en sert
+à la construction. En production, la face publique les sert directement (1.13.0). Le champ
+`emplacement` reste un enum fermé à deux valeurs.
+
+Hors périmètre de cette version : l'exposition publique des motifs de contact, des créateurs et
+des étiquettes, le sitemap et `GET /site`, qui restent à arrêter séparément.
+
+---
+
+## 34. Version 1.17.0 — emplacements de photos fixes réduits (ARRÊTÉE)
+
+### 34.1 Liste semée à la 1.17.0
+
+La liste semée passe de huit à **cinq** emplacements, tous réellement rendus par le site :
+
+| Clé | Libellé | Consommateur |
+|---|---|---|
+| `accueil.heros` | Accueil — héros | `src/acces/site.ts` (héros de l'accueil) |
+| `accueil.portrait` | Accueil — portrait | réservé au portrait de l'accueil |
+| `apropos.portrait` | À propos — portrait | `src/pages/AboutPage.tsx` |
+| `boutique.bandeau` | Boutique — bandeau | `src/lib/visuels.ts` |
+| `journal.bandeau` | Journal — bandeau | **Renommé en 1.18.0** : voir § 35 — `histoires.bandeau` |
+
+Sont **retirés** : `apropos.bandeau` (la page À propos n'affiche volontairement aucun bandeau),
+`contact.bandeau` (`/contact` n'a pas de bandeau) et `partage.og` (le `og:image` reste un actif
+statique du dépôt). Leur suppression est effective dans la migration 0019 et dans l'amorçage :
+les cartes correspondantes disparaissent de l'écran « Sur le site », et une requête
+`PUT /emplacements-photos/{cle}` sur une clé retirée répond `404`, comme pour toute clé inconnue.
+
+### 34.2 Compatibilité
+
+Aucune route, aucun champ, aucun droit ne change : `GET /emplacements-photos`,
+`PUT /emplacements-photos/:cle` et `GET /public/api/v1/photos-fixes` gardent exactement la même
+forme (§ 22.4). Le contrat ne définit pas la liste comme extensible par l'admin : les
+emplacements sont semés par le back end (C6), l'admin n'en crée ni n'en supprime. La liste est
+donc une donnée de migration, pas une table ouverte — c'est pourquoi elle est arrêtée ici.
+
+Le site retire en même temps le bloc conditionnel qui rendait `apropos.bandeau` : la page À
+propos ouvre directement sur son en-tête, sans bannière. Aucun autre consommateur n'est touché.
+
+---
+
+## 35. Version 1.18.0 — héros Histoires (ARRÊTÉE)
+
+### 35.1 Renommage
+
+L'emplacement qui pilote le héros de `/histoires` est nommé d'après la page qu'il alimente, et
+non d'après `/journal` (qui n'a pas de bandeau) :
+
+| Avant (1.17.0) | Depuis la 1.18.0 | Libellé |
+|---|---|---|
+| `journal.bandeau` | `histoires.bandeau` | Histoires — bandeau |
+
+Les quatre autres emplacements (`accueil.heros`, `accueil.portrait`, `apropos.portrait`,
+`boutique.bandeau`) et les trois emplacements retirés en 1.17.0 ne changent pas. La migration
+0020 renomme la clé **sur place** : le visuel déjà assigné, son texte alternatif, l'audit et la
+date de mise à jour sont conservés. L'ancienne clé répond `404`, comme toute clé inconnue.
+
+### 35.2 Compatibilité
+
+Aucune route, aucun champ, aucun droit ne change ; seule la valeur de `cle` (et son `libelle`)
+évolue dans les réponses de `GET /emplacements-photos` et `GET /public/api/v1/photos-fixes`.
+Le site lit `histoires.bandeau` dans `src/pages/HistoiresPage.tsx` ; le libellé affiché dans
+l'admin devient « Histoires — bandeau ». Aucun contenu n'est inventé ni déplacé.
+
+---
+
+## 36. Version 1.19.0 — remplacement d'un fichier (ARRÊTÉE)
+
+### 36.1 Décision
+
+Le § 11.2 interdisait jusqu'ici de remplacer le binaire d'un média (« on envoie un nouveau
+média »), alors que l'écran « Fiche d'un média » (ECRANS § 5.1) prévoit un bouton **Remplacer le
+fichier**. Le client demande le 21/11/2026 que ce parcours existe : l'interdiction est levée.
+Le remplacement est une **modification en place**, pas une création : il conserve l'identifiant
+du média, donc toutes les références (contenus, galeries, photos fixes, corps riches) restent
+valides sans réécriture.
+
+### 36.2 Route et sémantique
+
+`POST /admin/api/v1/medias/:id/remplacer` — `multipart/form-data`, exactement un fichier dans le
+champ `fichier`, et un champ texte `version` (entier positif, la version lue sur la fiche).
+
+- Le fichier passe par le même traitement qu'à l'envoi : type réel contrôlé par le contenu,
+  rotation EXIF, nettoyage SVG, limites 10 Mo / 25 Mo, déclinaisons WebP 480/960/1600/2400.
+- De **nouvelles clés de stockage** sont générées (original + déclinaisons) ; les anciens
+  fichiers sont retirés après validation de la transaction. Aucun `overwrite` Cloudinary, aucun
+  trou de disponibilité : le média reste lisible jusqu'au succès.
+- La ligne `media` garde son `id`, son créateur, son texte alternatif, sa légende, son crédit,
+  son emplacement et son caractère décoratif. Elle reçoit le nouveau `cle_stockage`, le nouveau
+  `mime`, les nouvelles dimensions et le nouveau poids, et `version + 1`.
+- Les anciennes déclinaisons sont remplacées par les nouvelles (même `mediaId`).
+- L'action est journalisée sur `medias` avec `avant` et `apres`, comme un `PATCH`.
+- En cas d'échec (fichier refusé, version périmée, erreur de stockage ou de base), aucun nouveau
+  fichier n'est laissé orphelin et le média reste inchangé.
+
+### 36.3 Erreurs et concurrence
+
+`404` si le média n'existe pas ou est supprimé ; `409 VERSION_PERIMEE` avec
+`details.versionCourante` si la version envoyée est périmée ; `422 FICHIER_REFUSE` pour un type
+ou une taille refusés. Le droit requis est `modifier` sur `medias` (comme `PATCH`) — pas
+`supprimer`. Un média déjà utilisé se remplace **sans** lever `RG-08` : c'est précisément le but
+de la route (RG-08 ne protège que la suppression).
+
+### 36.4 Compatibilité
+
+Aucune route ni forme existante ne change ; `POST /medias`, `PATCH`, `GET`, `DELETE` et la vue
+publique (§ 18.1) restent identiques. Le site public ne voit qu'une nouvelle URL d'image pour le
+même média : il la lit depuis l'API à la construction (ou via le serveur dynamique, § 30), sans
+réécriture d'hôte. Le bouton « Remplacer le fichier » de l'écran 5.1 devient opérationnel.
+
+---
+
+## 37. Version 1.20.0 — identité, étiquettes et réglages sur le site (ARRÊTÉE)
+
+### 37.1 Périmètre
+
+Le contrat décrivait déjà `GET /identite` et `PATCH /identite` (§ 13.1) et les étiquettes (§ 9.17),
+sans que le back end les servent ni que le site les consomme. Cette version ouvre les écritures
+déjà prévues et ajoute deux routes publiques. Les écrans `/navigation` et `/textes-interface`,
+codés mais retirés du menu en attendant la décision C9, sont réintégrés sans changement de contrat.
+
+### 37.2 `GET /public/api/v1/site` — identité
+
+Vue publique du document `identite` (§ 13.1). Aucun champ interne, aucune URL relative :
+
+```
+{
+  nom, email, linkedin: string | null, linkedinLabel: string | null, localisation: string | null,
+  role, signature, manifeste, devise: string | null, mission: string | null,
+  tagline: string[], bio: string[],
+  stats: [{ cle, libelle, valeur: number | null, suffixe: string | null,
+            dateValidation: string | null, source: string | null, ordre }],
+  heroImage: ImagePublique | null
+}
+```
+
+`statut` des champs : une valeur `null` reste vide et le site retombe sur son actif historique —
+aucune donnée n'est inventée pour combler un champ non renseigné. Les libellés des stats suivent
+la langue demandée (`?langue=`), avec repli sur le français.
+
+### 37.3 `GET /public/api/v1/etiquettes` — étiquettes
+
+`?type=&langue=` → `{ items: { id, code, type, libelle }[], total }`. Filtre `type` parmi les six
+valeurs fermées du § 9.17. Les usages (`usages`) restent internes à l'admin et ne sont pas exposés.
+Une liste vide est une réponse valide (`total: 0`).
+
+### 37.4 Consommation par le site
+
+Le chargeur écrit `site.json` et `etiquettes.json` dans `src/data/generated/` (contrat § 18.1),
+aux côtés de `reglages.json`. La couche d'accès les lit à la construction (LIAISON § C.2) :
+
+- `src/acces/site.ts` fusionne l'identité de l'API avec les valeurs de départ du dépôt, champ par
+  champ, en laissant vide ce que l'API ne fournit pas ;
+- `languesActives` de `reglages.json` pilote l'affichage du sélecteur de langue (le français reste
+  toujours disponible) ;
+- le vocabulaire des étiquettes remplace les listes codées en dur dans `src/data/content.ts` pour
+  les filtres et la recherche. Si la liste API est vide, les listes de départ restent utilisées.
+
+### 37.5 Compatibilité
+
+Aucune route ni forme existante ne change. Les valeurs de départ du dépôt restent le repli en mode
+démonstration (`PUBLIC_DATA_SOURCE` absent). En production, la face publique (§ 18) fait foi et
+les JSON générés ne contiennent aucune URL relative au poste de développement.
+
+---
+
+## 38. Version 1.21.0 — l’emplacement des médias est facultatif à l’envoi (ARRÊTÉE)
+
+> Statut : **arrêtée le 22/11/2026**. Demandée par le client le même jour ; écrites ensemble dans
+> les deux dépôts (site `docs/CONTRAT-API.md` et copie `prince-edja-api/docs/contrat/CONTRAT-API.md`,
+> identiques octet pour octet). **§ 38.4 est la clause de non-retour** : aucune donnée existante
+> supprimée, aucun schéma public cassé.
+
+### 38.1 Médias — `emplacement` (admin uniquement)
+
+- Le champ reste `emplacement: string | null` sur la ressource média : le nom de l’endroit où le
+  média est destiné à apparaître sur le site public (texte libre, max 120, « Galerie — hommes »,
+  « À propos — bandeau », « Boutique — hero »…). La liste proposée par l’admin n’est qu’une aide de
+  saisie.
+- **Levée par cette version : l’exigence d’`emplacement` à l’envoi** (`multipart` de création) —
+  règle introduite par la 1.6.0 (§ 23.1) et maintenue par les versions suivantes. Une absence de
+  champ à l’envoi vaut `null` : le média est enregistré « sans emplacement » (état par défaut,
+  « non précisé »), et peut l’attribuer ensuite par `PATCH /medias/:id` (facultatif / `null`).
+- `GET /medias` filtre toujours `?emplacement=<sous-chaîne>` (insensible à la casse) ; l’API publique
+  (`GET /photos-fixes`, `GET /contenus/*`) n’expose jamais l’emplacement.
+
+### 38.2 Compatibilité
+
+Aucune route, payload public ni donnée existante ne change. La seule transformation : un envoi
+multipart **sans** `emplacement` est accepté et persiste `null`. Les médias déjà créés conservent
+leur `emplacement` ; l’effacement par `PATCH` (`emplacement: null`) est inchangé.
+
+### 38.3 Ce qui ne change pas
+
+Filtres, droits, usages, journalisation : inchangés.
+
+### 38.4 Clause de non-retour
+
+Aucune suppression de données ; aucun champ public cassé ; le champ `emplacement` demeure optionnel
+à l’écriture et lisible comme `string | null` à la lecture.

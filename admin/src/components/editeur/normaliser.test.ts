@@ -46,7 +46,7 @@ describe('corps riche', () => {
     for (const interdit of ['alert', 'color', 'Word', 'ailleurs'])
       expect(texte).not.toContain(interdit)
     // Le texte reste ; les marques et nœuds interdits disparaissent.
-    for (const type of ['underline', 'strike', 'code', 'codeBlock', 'horizontalRule']) {
+    for (const type of ['underline', 'strike', 'code', 'codeBlock']) {
       expect(texte).not.toContain(`"type":"${type}"`)
     }
     expect(corps?.content[0]?.type).toBe('paragraph')

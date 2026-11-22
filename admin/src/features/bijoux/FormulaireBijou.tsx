@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useWatch } from 'react-hook-form'
 import { cles } from '@/api/cles'
@@ -109,69 +110,74 @@ function EditeurBijou({ contenu: initial, surCree }: ProprietesEditeur<Bijou>) {
     <form
       noValidate
       onSubmit={(evenement) => void editeur.soumettre(evenement)}
-      className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
+      className="contents"
     >
-      <div className="min-w-0 space-y-8">
-        <fieldset disabled={!modifiable} className="space-y-6">
+      <div className="order-1 min-w-0 space-y-5 lg:order-none lg:col-start-1 lg:row-start-1">
+        <fieldset disabled={!modifiable} className="space-y-5">
           <legend className="sr-only">{t('article.contenu')}</legend>
-          <Champ
-            id="numero"
-            libelle={t('bijou.numero')}
-            aide={t('bijou.numeroAide')}
-            required
-            maxLength={10}
-            erreur={formState.errors.numero?.message}
-            {...register('numero')}
-          />
-          <ChampTraduit
-            nom="nom"
-            libelle={t('bijou.nom')}
-            requis
-            maxLength={200}
-            valeurs={valeurTraduite('nom')}
-            erreurs={erreurDe('nom')}
-            surChange={(langue, valeur) => {
-              ecrire('nom')(langue, valeur)
-              if (!slugManuel[langue]) ecrire('slug')(langue, slugifier(valeur))
-            }}
-          />
-          <ChampTraduit
-            nom="culture"
-            libelle={t('bijou.culture')}
-            requis
-            maxLength={200}
-            valeurs={valeurTraduite('culture')}
-            erreurs={erreurDe('culture')}
-            surChange={ecrire('culture')}
-          />
-          <ChampTraduit
-            nom="histoire"
-            libelle={t('bijou.histoire')}
-            requis
-            multiligne
-            maxLength={600}
-            valeurs={valeurTraduite('histoire')}
-            erreurs={erreurDe('histoire')}
-            surChange={ecrire('histoire')}
-          />
-          <SectionAvancee
-            ouverte={Boolean(adresseProposee) || LANGUES.some((l) => erreurDe('slug')[l])}
-          >
-            <ChampAdresse
-              valeurs={valeurTraduite('slug')}
-              erreurs={erreurDe('slug')}
+          <fieldset className="space-y-4 rounded-md border border-sand-200 p-4">
+            <legend className="px-1 text-body font-semibold text-ink-900">
+              {t('bijou.identite')}
+            </legend>
+            <Champ
+              id="numero"
+              libelle={t('bijou.numero')}
+              aide={t('bijou.numeroAide')}
+              required
+              maxLength={10}
+              erreur={formState.errors.numero?.message}
+              {...register('numero')}
+            />
+            <ChampTraduit
+              nom="nom"
+              libelle={t('bijou.nom')}
+              requis
+              maxLength={200}
+              valeurs={valeurTraduite('nom')}
+              erreurs={erreurDe('nom')}
               surChange={(langue, valeur) => {
-                setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
-                ecrire('slug')(langue, valeur)
-              }}
-              suggestion={adresseProposee}
-              surSuggestion={(langue, valeur) => {
-                ecrire('slug')(langue, valeur)
-                setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
-                editeur.effacerSuggestion()
+                ecrire('nom')(langue, valeur)
+                if (!slugManuel[langue]) ecrire('slug')(langue, slugifier(valeur))
               }}
             />
-          </SectionAvancee>
+            <ChampTraduit
+              nom="culture"
+              libelle={t('bijou.culture')}
+              requis
+              maxLength={200}
+              valeurs={valeurTraduite('culture')}
+              erreurs={erreurDe('culture')}
+              surChange={ecrire('culture')}
+            />
+            <ChampTraduit
+              nom="histoire"
+              libelle={t('bijou.histoire')}
+              requis
+              multiligne
+              maxLength={600}
+              valeurs={valeurTraduite('histoire')}
+              erreurs={erreurDe('histoire')}
+              surChange={ecrire('histoire')}
+            />
+            <SectionAvancee
+              ouverte={Boolean(adresseProposee) || LANGUES.some((l) => erreurDe('slug')[l])}
+            >
+              <ChampAdresse
+                valeurs={valeurTraduite('slug')}
+                erreurs={erreurDe('slug')}
+                surChange={(langue, valeur) => {
+                  setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
+                  ecrire('slug')(langue, valeur)
+                }}
+                suggestion={adresseProposee}
+                surSuggestion={(langue, valeur) => {
+                  ecrire('slug')(langue, valeur)
+                  setSlugManuel((actuel) => ({ ...actuel, [langue]: true }))
+                  editeur.effacerSuggestion()
+                }}
+              />
+            </SectionAvancee>
+          </fieldset>
           <fieldset className="grid gap-4 rounded-md border border-sand-200 p-4 sm:grid-cols-2">
             <legend className="px-1 text-body font-semibold text-ink-900">
               {t('bijou.caracteristiques')}
@@ -203,7 +209,7 @@ function EditeurBijou({ contenu: initial, surCree }: ProprietesEditeur<Bijou>) {
         </fieldset>
       </div>
 
-      <aside className="space-y-6">
+      <aside className="order-3 space-y-5 lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1">
         <fieldset disabled={!modifiable} className="space-y-6">
           <legend className="sr-only">{t('bijou.reglages')}</legend>
           <Select
@@ -252,13 +258,31 @@ function EditeurBijou({ contenu: initial, surCree }: ProprietesEditeur<Bijou>) {
               />
             )}
           />
-          <Controller
-            control={control}
-            name="tagIds"
-            render={({ field }) => (
-              <SelecteurTags contexte="bijou" valeur={field.value} surChange={field.onChange} />
-            )}
-          />
+          {/* Une vingtaine de cases ouvertes en permanence étirait toute la fiche. Le
+              sélecteur se replie ; les valeurs restent dans le formulaire. */}
+          <details className="group rounded-md border border-sand-200 bg-sand-50">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-md px-3 text-body font-semibold text-ink-900 hover:bg-sand-100">
+              {t('tags.titre')}
+              <span className="flex items-center gap-2">
+                <span className="label-caps rounded-full bg-sand-200 px-2 py-0.5 text-ink-700">
+                  {valeurs.tagIds?.length ?? 0}
+                </span>
+                <ChevronDown
+                  aria-hidden
+                  className="size-4 text-ink-500 transition-transform duration-(--d-fast) group-open:rotate-180"
+                />
+              </span>
+            </summary>
+            <div className="border-t border-sand-200 p-3">
+              <Controller
+                control={control}
+                name="tagIds"
+                render={({ field }) => (
+                  <SelecteurTags contexte="bijou" valeur={field.value} surChange={field.onChange} />
+                )}
+              />
+            </div>
+          </details>
           <Controller
             control={control}
             name="visible"
@@ -285,14 +309,18 @@ function EditeurBijou({ contenu: initial, surCree }: ProprietesEditeur<Bijou>) {
             )}
           />
         </fieldset>
-        <ActionsLaterales editeur={editeur} libelles={libelles} />
+        {/* Un seul enregistrement : la barre de statut collante en haut le porte déjà. */}
+        <ActionsLaterales editeur={editeur} libelles={libelles} sansEnregistrement />
       </aside>
     </form>
   )
+  // Le `<form>` du bijou et le bloc des variantes (qui a son propre `<form>`) restent des
+  // frères dans le DOM. La grille place les variantes juste sous « Caractéristiques », dans
+  // la colonne principale, sans jamais imbriquer deux formulaires.
   const contenu = (
-    <div className="space-y-8">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-6">
       {formulaireBijou}
-      {variantes}
+      <div className="order-2 min-w-0 lg:order-none lg:col-start-1 lg:row-start-2">{variantes}</div>
     </div>
   )
 
@@ -349,7 +377,7 @@ function ApercuBijou({ valeurs, bijou }: { valeurs: ValeursBijou; bijou: Bijou |
                 <img
                   src={image.data.url}
                   alt={image.data.decoratif ? '' : (image.data.traductions[langue]?.texteAlt ?? '')}
-                  className="aspect-square w-full max-w-md rounded-xl bg-sand-200 object-cover"
+                  className="aspect-[4/5] w-full max-w-xs bg-sand-200 object-cover"
                 />
               ) : null}
               <p className="text-heading-sm font-semibold text-ink-900">

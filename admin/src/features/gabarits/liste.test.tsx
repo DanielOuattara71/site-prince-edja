@@ -50,47 +50,45 @@ describe('liste : recherche et filtres', () => {
     await waitFor(() => expect(window.location.search).toBe('?q=pirogue'), { timeout: 2000 })
   })
 
-  it('trois filtres en vue au plus ; les autres sont repliés sous « Plus de filtres »', async () => {
+  it('tous les filtres sont en vue, sans « Plus de filtres » à chercher', async () => {
     await ouvrir('/articles')
-    const plus = screen.getByText('Plus de filtres').closest('details') as HTMLDetailsElement
-    expect(plus.open).toBe(false)
-    // Statut et langues (la catégorie s'ajoute en E1) : hors du repli.
-    for (const nom of [/^Statut/, /^Langues/]) {
-      const champ = screen.getByRole('combobox', { name: nom })
-      expect(plus.contains(champ)).toBe(false)
-    }
-    expect(plus.contains(screen.getByLabelText(/^Étiquette/))).toBe(true)
+    expect(screen.getByRole('combobox', { name: /^Statut/ })).toBeTruthy()
+    expect(screen.getByRole('combobox', { name: /^Catégorie/ })).toBeTruthy()
+    expect(screen.getByRole('combobox', { name: /^Tri/ })).toBeTruthy()
+    expect(screen.queryByText('Plus de filtres')).toBeNull()
   })
 
   it('un changement de filtre ramène à la page 1 et garde la taille ; « Effacer les filtres »', async () => {
-    await ouvrir('/articles?page=2&taille=50')
+    await ouvrir('/articles?page=2&taille=16')
     fireEvent.change(screen.getByLabelText(/^Statut/), { target: { value: 'brouillon' } })
-    await waitFor(() => expect(window.location.search).toBe('?taille=50&statut=brouillon'))
+    await waitFor(() => expect(window.location.search).toContain('statut=brouillon'))
+    expect(window.location.search).not.toContain('page=')
     fireEvent.click(
       screen.getAllByRole('button', { name: 'Effacer les filtres' })[0] as HTMLElement,
     )
-    await waitFor(() => expect(window.location.search).toBe('?taille=50'))
+    await waitFor(() => expect(window.location.search).toBe('?taille=16'))
   })
 })
 
 describe('liste : pagination', () => {
-  it('« 1–20 sur N », Précédent / Suivant, 20 / 50 / 100 par page dans l’adresse', async () => {
-    remplir(25)
+  it('« 1–N sur total », Précédent / Suivant, 8 / 12 / 16 / 24 par page dans l’adresse', async () => {
+    remplir(21)
     await ouvrir('/articles')
     const total = magasin.articles.length
     const pagination = await screen.findByRole('navigation', { name: /^Pagination/ })
-    expect(within(pagination).getByText(`1–20 sur ${total}`)).toBeTruthy()
+    expect(within(pagination).getByText(new RegExp(`^1–12 sur ${total}`))).toBeTruthy()
     fireEvent.click(within(pagination).getByRole('button', { name: /Suivant/ }))
     await waitFor(() => expect(window.location.search).toBe('?page=2'))
-    expect(await within(pagination).findByText(`21–${total} sur ${total}`)).toBeTruthy()
+    expect(await within(pagination).findByText(new RegExp(`^13–${total} sur ${total}`))).toBeTruthy()
     fireEvent.click(within(pagination).getByRole('button', { name: /Précédent/ }))
-    // La page 1 n'est pas écrite dans l'adresse.
     await waitFor(() => expect(window.location.search).toBe(''))
     act(() => {
-      fireEvent.change(within(pagination).getByLabelText('Par page'), { target: { value: '50' } })
+      fireEvent.change(within(pagination).getByLabelText('Articles par page'), {
+        target: { value: '24' },
+      })
     })
-    await waitFor(() => expect(window.location.search).toBe('?taille=50'))
-    expect(await screen.findByText(`1–${total} sur ${total}`)).toBeTruthy()
+    await waitFor(() => expect(window.location.search).toBe('?taille=24'))
+    expect(await screen.findByText(new RegExp(`^1–${total} sur ${total}`))).toBeTruthy()
   })
 })
 

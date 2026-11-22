@@ -30,6 +30,7 @@ function catalogue(
         reference: '',
         prix,
         prixConfirme: prix !== null,
+        varianteIds: [],
         matieres: [],
         tailles: [],
         edition: null,
@@ -135,12 +136,10 @@ describe('obtenirProduits : tris et filtres', () => {
     ])
   })
 
-  it('le catalogue réel réunit bijoux et livres', () => {
+  it('le catalogue réel réunit bijoux (les livres viendront via l’admin)', () => {
+    // Repli statique de production : 10 pièces réelles, aucun livre maquette.
     expect(CATALOGUE.some((p) => p.type === 'bijou')).toBe(true)
-    expect(CATALOGUE.some((p) => p.type === 'livre')).toBe(true)
-    expect(obtenirProduits({ type: 'livre' }).categories.map((c) => c.slug)).toContain(
-      'livres-photographie',
-    )
+    expect(obtenirProduits({ type: 'bijou' }).total).toBe(CATALOGUE.length)
   })
 })
 

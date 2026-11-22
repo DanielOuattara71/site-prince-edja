@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
-import { useLocation } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
 import { X } from 'lucide-react'
 import { PROMESSE_NEWSLETTER } from '@/acces/site'
@@ -21,10 +20,11 @@ import { DUR, EASE_EXPO } from '@/lib/motion'
 /**
  * Fenêtre d'inscription à la lettre du Griot.
  *
- * Déclenchée une fois, après environ 20 s de navigation, sur les pages de
- * contenu. Le verrou de fermeture est posé en localStorage (30 j) : le visiteur
- * qui ferme ne la revoira pas avant. Un marqueur d'inscription existant ferme le
- * cycle : jamais de seconde sollicitation après acceptation.
+ * Seul point de collecte de la lettre : les blocs intégrés aux pages ont été retirés.
+ * Déclenchée une fois par session de navigation, après environ 20 s, sur toutes les pages.
+ * Le marqueur de session vit dans `sessionStorage` : fermer la fenêtre l'épuise pour l'onglet
+ * en cours, mais rouvrir le site dans un nouvel onglet relance une sollicitation. Un marqueur
+ * d'inscription existant reste définitif : jamais de seconde sollicitation après acceptation.
  *
  * Accessibilité et ergonomie : fermeture Échap / bouton / clic extérieur, focus
  * amarré à l'ouverture puis rendu à la fermeture, bloque le scroll pendant
@@ -32,28 +32,13 @@ import { DUR, EASE_EXPO } from '@/lib/motion'
  * échelle maison).
  */
 
-const CLE_MODAL_VERROU = 'pe_newsletter_modal_verrou'
+const CLE_MODALE_SESSION = 'pe_newsletter_modale_session'
 const DUR_MODALE_PRESENCE = 20
-const DUR_MODALE_FERME = 30 * 24 * 60 * 60 * 1000
-
-/** Pages de lecture où une fenêtre d'inscription est pertinente : lecture
- *  longue, engagement fort. Les autres (accueil, boutique, contact, légales,
- *  admin, formulaire) portent déjà leur propre point de collecte actif. */
-function pageDeLecture(pathname: string): boolean {
-  return (
-    pathname.startsWith('/journal') ||
-    pathname.startsWith('/histoires') ||
-    pathname.startsWith('/xplore') ||
-    pathname.startsWith('/taste-and-travel') ||
-    pathname.startsWith('/destinations')
-  )
-}
 
 type Statut = 'idle' | 'erreur' | 'invalide' | 'existe' | 'succes' | 'consentement'
 
 export function FenetreNewsletter() {
   const { t, langue } = useLangue()
-  const { pathname } = useLocation()
   const [ouverte, setOuverte] = useState(false)
   const [email, setEmail] = useState('')
   const [prenom, setPrenom] = useState('')
@@ -66,37 +51,31 @@ export function FenetreNewsletter() {
   const fermer = useCallback(() => {
     setOuverte(false)
     try {
-      window.localStorage.setItem(CLE_MODAL_VERROU, String(Date.now() + DUR_MODALE_FERME))
+      // Une seule sollicitation par onglet : le marqueur meurt avec la session.
+      window.sessionStorage.setItem(CLE_MODALE_SESSION, '1')
     } catch {
-      /* Stockage indisponible : la modale ne se re-fermera pas avant expiration. */
+      /* Stockage indisponible : la modale pourra se réouvrir dans cet onglet. */
     }
   }, [])
 
-  // Une fois, après ~20 s, hors des fenêtres déjà couvertes par un point de
-  // collecte actif (abonné connu, verrou de fermeture, autre fenêtre ouverte).
-  // Le minuteur repart à zéro à chaque changement de route : une page de lecture
-  // repousse l'échéance, une autre ne la relance pas.
+  // Une sollicitation par session de navigation : après 20 s, sauf abonné connu ou
+  // fenêtre déjà fermée dans cet onglet. Plus de liste de pages ni de bloc concurrent
+  // à surveiller — la modale est le seul formulaire d'inscription du site.
   useEffect(() => {
-    if (!pageDeLecture(pathname)) return
-    let verrou: number = 0
+    let dejaFermee: string | null = null
     let marque: string | null = null
     try {
-      verrou = Number(window.localStorage.getItem(CLE_MODAL_VERROU) ?? 0)
+      dejaFermee = window.sessionStorage.getItem(CLE_MODALE_SESSION)
       marque = window.localStorage.getItem('pe_newsletter_abonnes')
+      // Ancien verrou de 30 jours : obsolète depuis le passage à la session.
+      window.localStorage.removeItem('pe_newsletter_modal_verrou')
     } catch {
-      /* Stockage indisponible : pas de verrou lisible, on retombe sur une fenêtre possible. */
+      /* Stockage indisponible : on retombe sur une fenêtre possible. */
     }
-    const autorise = !verrou || Date.now() > verrou + DUR_MODALE_FERME
-    if (!autorise || marque) return
-
-    // Vérifié à l'échéance, page rendue : une page qui porte déjà un bloc d'inscription
-    // plein (`data-bloc-newsletter`) ne reçoit pas une troisième sollicitation.
-    const minute = window.setTimeout(() => {
-      if (document.querySelector('[data-bloc-newsletter]')) return
-      setOuverte(true)
-    }, DUR_MODALE_PRESENCE * 1000)
+    if (dejaFermee || marque) return
+    const minute = window.setTimeout(() => setOuverte(true), DUR_MODALE_PRESENCE * 1000)
     return () => window.clearTimeout(minute)
-  }, [pathname])
+  }, [])
 
   // Fermeture au clavier. Le verrou de focus et le verrou de scroll sont posés par
   // les hooks dédiés ; celui-ci ne fait que l'Échap.
@@ -125,10 +104,11 @@ export function FenetreNewsletter() {
       setStatut('consentement')
       return
     }
+    const source = typeof window === 'undefined' ? 'modale' : window.location.pathname
     const consentementAccepte = {
       date: new Date().toISOString(),
       version: VERSION_CONSENTEMENT,
-      source: pathname,
+      source,
     }
     const intention = { email, prenom, pays, consentement: consentementAccepte }
     if (adresseApi() === null) {
@@ -138,7 +118,7 @@ export function FenetreNewsletter() {
       setStatut('succes')
       return
     }
-    const ok = await envoyerNewsletter(intention, t('newsletter.consentement'), pathname, langue)
+    const ok = await envoyerNewsletter(intention, t('newsletter.consentement'), source, langue)
     if (ok) {
       // La maison écrit et confirme par e-mail ; le marqueur local évite toute re-sollicitation.
       marquerInscrit(intention)

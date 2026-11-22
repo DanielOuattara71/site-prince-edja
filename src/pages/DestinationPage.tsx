@@ -9,7 +9,6 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { LazyImage } from '@/components/media/LazyImage'
-import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 /** Ce que la page destination doit porter et que les données n'ont pas encore. */
 export default function DestinationPage() {
@@ -119,7 +118,6 @@ export default function DestinationPage() {
         </Section>
       )}
 
-      <BlocNewsletter />
     </>
   )
 }

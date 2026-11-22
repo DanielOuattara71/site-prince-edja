@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router'
 import { useLangue } from '@/i18n/contexteLangue'
+import { img } from '@/lib/images'
 
 /**
  * Symbole Gye Nyame servant de curseur.
@@ -8,7 +9,7 @@ import { useLangue } from '@/i18n/contexteLangue'
  * Le fichier vit dans `public/images/gyenyame.png`. Il n'est ni recoloré ni déformé :
  * `object-fit: contain` et aucune teinte appliquée.
  */
-const SYMBOLE = `${import.meta.env.BASE_URL}images/gyenyame.png`
+const SYMBOLE = img(`images/gyenyame.png`)
 
 /**
  * Rotation des couleurs de la traînée.

@@ -38,6 +38,14 @@ export { ETAPES_CAS } from '@/data/offres'
 export type { Offre } from '@/data/offres'
 export { GALLERY_QUOTE } from '@/data/gallery'
 
+// Liens profonds de la galerie (« /xplore/<slug> ») : mêmes chemins que pour les projets.
+const SLUGS_EPISODES = new Map(
+  (SOURCE_API ? lireGenere<{ id: string; slug?: string | null }[]>('episodes') : []).flatMap(
+    (episode) => (episode.slug ? [[episode.id, `/xplore/${episode.slug}`] as const] : []),
+  ),
+)
+const CHEMINS = { episodes: SLUGS_EPISODES }
+
 export const PRESS: PressItem[] = SOURCE_API
   ? lireGenere<PressePublique[]>('presse').map(versPresse)
   : PRESSE_DEPART
@@ -62,5 +70,5 @@ export const GALLERY: GalleryItem[] = SOURCE_API
   ? lireGenere<GaleriePublique[]>('galerie')
       .filter((g) => g.emplacement === 'accueil')
       .sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0))
-      .map((g) => versGalerie(g))
+      .map((g) => versGalerie(g, CHEMINS))
   : GALLERY_DEPART

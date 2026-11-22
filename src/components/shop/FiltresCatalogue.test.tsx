@@ -37,26 +37,22 @@ const total = CATALOGUE.length
 const pages = Math.ceil(total / 12)
 
 describe('catalogue paginé', () => {
-  it('12 produits en page 1, compteur et « Page 1 sur N »', () => {
+  it('10 produits en page 1 : compteur présent, une seule page', () => {
     rendre()
+    expect(total).toBe(10)
+    expect(pages).toBe(1)
     expect(
       screen.getByRole('heading', { level: 3, name: new RegExp(`${total} produits`) }),
     ).toBeTruthy()
-    expect(screen.getAllByText(`Page 1 sur ${pages}`).length).toBeGreaterThan(0)
-    const nav = screen.getByRole('navigation', { name: 'Pagination' })
-    expect(within(nav).getByRole('link', { name: 'Page 1' }).getAttribute('aria-current')).toBe(
-      'page',
-    )
-    expect(within(nav).getByRole('link', { name: 'Page 2' }).getAttribute('href')).toBe(
-      '/boutique?page=2',
-    )
+    // Une seule page : pas de navigation pages.
+    expect(screen.queryByRole('navigation', { name: 'Pagination' })).toBeNull()
     expect(adresse).toBe('')
   })
 
-  it('page hors limite : ramenée à la dernière, sans nouvelle entrée d’historique', async () => {
+  it('page hors limite : ramenée à la dernière', async () => {
     rendre('?page=99')
-    await waitFor(() => expect(adresse).toBe(`?page=${pages}`))
-    expect(screen.getAllByText(`Page ${pages} sur ${pages}`).length).toBeGreaterThan(0)
+    await waitFor(() => expect(adresse).toBe(''))
+    expect(screen.getByRole('heading', { level: 3, name: new RegExp(`${total} produits`) })).toBeTruthy()
   })
 
   it('valeur invalide ou page=1 : page 1, et l’adresse est nettoyée', async () => {
@@ -67,14 +63,11 @@ describe('catalogue paginé', () => {
     await waitFor(() => expect(adresse).toBe('?type=bijou'))
   })
 
-  it('un changement de filtre revient à la page 1 et reste dans l’adresse', async () => {
-    rendre('?page=2')
-    fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'livre' } })
-    await waitFor(() => expect(adresse).toBe('?type=livre'))
-    const livres = CATALOGUE.filter((p) => p.type === 'livre').length
-    expect(
-      screen.getByRole('heading', { level: 3, name: new RegExp(`${livres} produits`) }),
-    ).toBeTruthy()
+  it('un changement de filtre reste dans l’adresse', async () => {
+    rendre('?tri=nom')
+    fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'bijou' } })
+    await waitFor(() => expect(adresse).toBe('?tri=nom&type=bijou'))
+    expect(screen.getByRole('heading', { level: 3, name: /10 produits/ })).toBeTruthy()
   })
 
   it('un changement de tri revient aussi à la page 1', async () => {
@@ -93,17 +86,15 @@ describe('catalogue paginé', () => {
     await waitFor(() => expect(adresse).toBe(''))
   })
 
-  it('au changement de page : focus sur le titre de la liste et annonce « Page 2 sur N »', async () => {
-    rendre()
-    fireEvent.click(screen.getByRole('link', { name: /Suivant/ }))
-    await waitFor(() => expect(adresse).toBe('?page=2'))
-    const titre = screen.getByRole('heading', { level: 3, name: /produits/ })
-    await waitFor(() => expect(document.activeElement).toBe(titre))
-    expect(document.querySelector('[aria-live="polite"]')?.textContent).toBe(`Page 2 sur ${pages}`)
+  it('une seule page : pas de pagination, et « ?page=2 » retombe sur la page 1', async () => {
+    rendre('?page=2')
+    await waitFor(() => expect(adresse).toBe(''))
+    expect(screen.queryByRole('navigation', { name: 'Pagination' })).toBeNull()
+    expect(screen.getByRole('heading', { level: 3, name: /10 produits/ })).toBeTruthy()
   })
 
-  it('effectifs par catégorie sur le catalogue complet, même filtré', () => {
-    rendre('?type=livre')
+  it('effectifs par catégorie sur le catalogue complet', () => {
+    rendre()
     const options = within(screen.getByLabelText('Catégorie'))
       .getAllByRole('option')
       .map((o) => o.textContent)

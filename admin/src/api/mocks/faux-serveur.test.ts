@@ -172,10 +172,12 @@ describe('faux serveur — médias et tags', () => {
   it('un média s’envoie sans texte alternatif et apparaît « à fournir » (E-05)', async () => {
     await connecter('editeur')
     const fichier = new File([new Uint8Array(1024)], 'nom-ignore.jpg', { type: 'image/jpeg' })
-    const media = await medias.envoyer(fichier)
+    const media = await medias.envoyer(fichier, { emplacement: 'Test — sanity' })
     expect(media.champsAFournir).toEqual(['traductions.fr.texteAlt', 'credit'])
     const refuse = await echec(
-      medias.envoyer(new File(['x'], 'a.exe', { type: 'application/x-msdownload' })),
+      medias.envoyer(new File(['x'], 'a.exe', { type: 'application/x-msdownload' }), {
+        emplacement: 'Test — sanity',
+      }),
     )
     expect(refuse?.code).toBe('FICHIER_REFUSE')
   })

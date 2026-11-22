@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router'
 import { useSeo, useJsonLd } from '@/hooks/useSeo'
 import { descriptionEpisode } from '@/lib/descriptions'
 import { EPISODES } from '@/acces/projets'
+import { libelleTag } from '@/acces/tags'
 import { useLangue } from '@/i18n/contexteLangue'
 import { Section } from '@/components/layout/Section'
 import { Container } from '@/components/layout/Container'
@@ -9,8 +10,8 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Button } from '@/components/ui/Button'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { ParallaxImage } from '@/components/media/ParallaxImage'
+import { LazyImage } from '@/components/media/LazyImage'
 import { Reveal } from '@/components/motion/Reveal'
-import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 /*
  * Sections du gabarit que les données ne portent pas encore : trailer, synopsis long, note
@@ -87,12 +88,45 @@ export default function EpisodeDetailPage() {
           <h1 className="font-display uppercase text-display-lg text-cream-100">{episode.titre}</h1>
           <p className="max-w-2xl text-body-lg text-cream-100/80">{episode.pitch}</p>
           <p className="label-caps text-cream-100/60">
-            {['Documentaire', episode.tags.annee, episode.tags.pays?.[0]]
+            {['Documentaire', episode.tags.annee, libelleTag(episode.tags.pays?.[0])]
               .filter(Boolean)
               .join(' · ')}
           </p>
         </Container>
       </Section>
+
+      {/* Photos d'illustration (1.6.0 § 23.2) : la fiche ne s'affiche qu'avec des images. */}
+      {episode.illustrations && episode.illustrations.length > 0 ? (
+        <Section tone="light">
+          <Container className="space-y-6">
+            <div className="space-y-2">
+              <Eyebrow>Regards</Eyebrow>
+              <h2 className="font-display uppercase text-heading-md">
+                Images du tournage<span aria-hidden className="text-clay-500">.</span>
+              </h2>
+            </div>
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {episode.illustrations.map((illustration, index) => (
+                <li key={`${illustration.url}-${index}`}>
+                  <LazyImage
+                    src={illustration.url}
+                    srcSet={
+                      illustration.declinaisons.length > 0
+                        ? illustration.declinaisons
+                            .map((d) => `${d.url} ${d.largeur}w`)
+                            .join(', ')
+                        : undefined
+                    }
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    alt={illustration.alt}
+                    ratio="4/3"
+                  />
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </Section>
+      ) : null}
 
       {/* Territoire : la carte dit où le film a été tourné. */}
       <Section tone="light">
@@ -162,7 +196,6 @@ export default function EpisodeDetailPage() {
         </Container>
       </Section>
 
-      <BlocNewsletter />
 
       {episode.guide && (
         <p className="sr-only">

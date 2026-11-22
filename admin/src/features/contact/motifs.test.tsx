@@ -20,8 +20,8 @@ async function ouvrir(role: RoleEssai, chemin: string) {
 }
 
 describe('lot 4 — motifs de contact', () => {
-  // Écran retiré du menu et des routes (C2) : test conservé, décision en C9 (docs/ELEMENTS-RETIRES.md).
-  it.skip('admin : les trois motifs du site sont listés, un nouveau motif se crée', async () => {
+  // Écran rétabli le 16/11/2026, à la demande du client (décision C2 levée pour cette famille).
+  it('admin : les trois motifs du site sont listés, un nouveau motif se crée', async () => {
     const { container } = await ouvrir('admin', '/motifs-contact')
     expect(await screen.findByText('Partenariats')).toBeTruthy()
     expect((await screen.findAllByText('Médias')).length).toBeGreaterThan(0)

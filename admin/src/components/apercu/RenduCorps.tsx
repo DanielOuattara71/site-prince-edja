@@ -65,6 +65,8 @@ function rendreNoeud(noeud: NoeudRiche, langue: Langue): ReactNode {
       )
     case 'hardBreak':
       return <br />
+    case 'horizontalRule':
+      return <hr className="my-2 border-sand-300" />
     case 'image': {
       const mediaId = noeud.attrs?.['mediaId']
       return typeof mediaId === 'string' ? <ImageCorps mediaId={mediaId} langue={langue} /> : null

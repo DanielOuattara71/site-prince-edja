@@ -1,7 +1,8 @@
 import { Children, type ReactNode } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import {motion} from 'motion/react'
 import { itemUp, STAGGER_STEP } from '@/lib/motion'
 import { cn } from '@/lib/cn'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface StaggerProps {
   children: ReactNode

@@ -507,6 +507,12 @@ body.curseur-on .perle {
 */
 .cadre-carte {
   height: clamp(360px, 62svh, 720px);
+  /* Leaflet pose ses panneaux à z-index 200–800 et ses contrôles jusqu'à 1000. Sans
+     contexte d'empilement propre, ils dépassent la barre fixe (z-50) et le menu (z-40)
+     quand on défile la carte sous l'en-tête. z-index 0 confine toute la carte au-dessous :
+     l'échelle du site reste respectée, les contrôles restent au-dessus de la carte. */
+  position: relative;
+  z-index: 0;
 }
 
 /* Les frontières sont dessinées en vecteur : la mer et le pays doivent se lire comme

@@ -58,18 +58,16 @@ export function CarteLivre({ livre }: { livre: Bijou }) {
 export function SectionLivres() {
   const { l } = useLangue()
 
+  // Aucun livre maquette : une section vide est pire que pas de section du tout (V2-03).
+  if (LIVRES.length === 0) return null
+
   return (
     <section
       aria-label={l({ fr: 'Livres', en: 'Books' })}
       className="relative bg-sand-100 pt-[52px]"
     >
-      {/* 1 — le mot géant. Le clamp passe par un style en ligne : les valeurs
-          arbitraires à virgules ne sont jamais générées par Tailwind. */}
       <div className="px-4 sm:px-6">
-        <h2
-          style={{ fontSize: 'clamp(2rem, 11vw, 10rem)', lineHeight: 0.9 }}
-          className="select-none font-display uppercase tracking-tight text-ink-900"
-        >
+        <h2 className="select-none font-display uppercase text-display-lg tracking-tight text-ink-900">
           {l({ fr: 'Livres', en: 'Books' })}
         </h2>
 

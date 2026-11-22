@@ -4,6 +4,8 @@ import { pageSchema, type Page } from '@/api/schemas/communs'
 import {
   chiffreAudienceSchema,
   entreeChiffreSchema,
+  identiteSchema,
+  modificationIdentiteSchema,
   entreeMotifSchema,
   modificationChiffreSchema,
   modificationMotifSchema,
@@ -107,6 +109,19 @@ export const motifsContact = {
 }
 
 // --- singletons : lecture puis remplacement (§ 13.1 à 13.5) ---
+
+export const identite = {
+  lire(signal?: AbortSignal) {
+    return requete('/identite', { schema: identiteSchema, ...(signal ? { signal } : {}) })
+  },
+  modifier(modification: z.infer<typeof modificationIdentiteSchema>) {
+    return requete('/identite', {
+      methode: 'PATCH',
+      corps: modificationIdentiteSchema.parse(modification),
+      schema: identiteSchema,
+    })
+  },
+}
 
 export const parametres = {
   lire(signal?: AbortSignal): Promise<Parametres> {

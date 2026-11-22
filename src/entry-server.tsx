@@ -13,7 +13,8 @@ import { prerender } from 'react-dom/static'
 import { FournisseurLangue } from '@/i18n/FournisseurLangue'
 import { ARTICLES } from '@/acces/journal'
 import { BIJOUX, LIVRES } from '@/acces/boutique'
-import { DESTINATIONS, EPISODES } from '@/acces/projets'
+import { DESTINATIONS, EPISODES, PROJETS } from '@/acces/projets'
+import { SOURCE_API } from '@/acces/source'
 import { PAGES_LEGALES } from '@/acces/site'
 import App from '@/App'
 import { balisesPreRendues, preparerBalisesPreRendues } from '@/hooks/useSeo'
@@ -42,6 +43,9 @@ export function routesPubliques(): string[] {
     ...DESTINATIONS.map((destination) => `/destinations/${destination.slug}`),
     ...BIJOUX.map((bijou) => `/boutique/${bijou.slug}`),
     ...LIVRES.map((livre) => `/boutique/${livre.slug}`),
+    // Les pages de projet ne existent qu'en mode API (contrat 1.15.0 § 32.5) : la page
+    // assemblée est chargée depuis `GET /projets/{slug}/page`.
+    ...(SOURCE_API ? PROJETS.map((projet) => `/projets/${projet.slug}`) : []),
   ]
 }
 

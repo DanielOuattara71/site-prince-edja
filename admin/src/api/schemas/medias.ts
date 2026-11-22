@@ -35,6 +35,7 @@ export const mediaSchema = z.object({
   poids: z.number().int().positive(),
   credit: z.string().nullable(),
   decoratif: z.boolean(),
+  emplacement: z.string().nullable(),
   createurId: idSchema,
   usages: z.number().int().min(0),
   declinaisons: z.array(z.object({ largeur: z.number().int().positive(), url: z.string() })),
@@ -55,6 +56,7 @@ export const modificationMediaSchema = z.strictObject({
   traductions: traductionsEcriture(traductionMediaEcriture).optional(),
   credit: z.string().max(200).nullable().optional(),
   decoratif: z.boolean().optional(),
+  emplacement: z.string().max(120).nullable().optional(),
   createurId: idSchema.optional(),
   version: versionSchema,
 })
@@ -66,6 +68,8 @@ export const envoiMediaSchema = z.strictObject({
   texteAltEn: z.string().max(300).optional(),
   credit: z.string().max(200).optional(),
   decoratif: z.boolean().optional(),
+  /** Facultatif à l'envoi (contrat 1.21.0 § 38) — absent ou vide = « emplacement non précisé ». */
+  emplacement: z.string().trim().max(120).nullable().optional(),
   createurId: idSchema.optional(),
 })
 export type EnvoiMedia = z.infer<typeof envoiMediaSchema>

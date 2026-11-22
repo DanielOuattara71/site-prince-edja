@@ -2,6 +2,7 @@ import { useSeo } from '@/hooks/useSeo'
 import { SITE } from '@/acces/site'
 import { Hero } from '@/components/sections/home/Hero'
 import { Preuves } from '@/components/sections/home/Preuves'
+import { MentionsDistinctions } from '@/components/sections/home/MentionsDistinctions'
 import { ALaUne } from '@/components/sections/home/ALaUne'
 import { Collaborations } from '@/components/sections/home/Collaborations'
 import { IntroBio } from '@/components/sections/home/IntroBio'
@@ -13,8 +14,6 @@ import { JournalTeaser } from '@/components/sections/home/JournalTeaser'
 import { NameBanner } from '@/components/sections/home/NameBanner'
 import { FeaturedGallery } from '@/components/sections/home/FeaturedGallery'
 import { MascotteSection } from '@/components/sections/home/MascotteSection'
-import { AfricanPatternRibbon } from '@/components/motifs/AfricanPatternRibbon'
-import { BlocNewsletter } from '@/components/newsletter/BlocNewsletter'
 
 export default function HomePage() {
   useSeo({
@@ -27,10 +26,8 @@ export default function HomePage() {
     <>
       <Hero />
       <Preuves />
+      <MentionsDistinctions />
       <NameBanner />
-      {/* Le ruban fait la couture entre le bandeau nuit et l’entrée en matière :
-          il donne au nom une bordure tissée, sans ajouter un bloc. */}
-      <AfricanPatternRibbon />
       <IntroBio />
       <FeaturedGallery />
       <MascotteSection />
@@ -41,7 +38,6 @@ export default function HomePage() {
       <PressMarquee />
       <JournalTeaser />
       <Collaborations />
-      <BlocNewsletter />
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { TRAVEL_CITIES, TRAVEL_PARTNERS, TRAVEL_PROGRAMME } from '@/acces/projets'
+import { PROJETS, TRAVEL_CITIES, TRAVEL_PARTNERS, TRAVEL_PROGRAMME } from '@/acces/projets'
 import { SITE } from '@/acces/site'
 import { useSeo } from '@/hooks/useSeo'
 import { Section } from '@/components/layout/Section'
@@ -12,6 +12,9 @@ import { ArrowLink } from '@/components/ui/ArrowLink'
 import { Button } from '@/components/ui/Button'
 import { CityCard } from '@/components/cards/CityCard'
 import { AfricanPattern } from '@/components/motifs/AfricanPattern'
+import { couvertureProjet } from '@/lib/visuels'
+
+const PROJET_TASTE = PROJETS.find((projet) => projet.slug === 'taste-and-travel')
 
 export default function TasteTravelPage() {
   useSeo({
@@ -61,11 +64,11 @@ export default function TasteTravelPage() {
 
         <div className="relative">
           <ParallaxImage
-            src={`${import.meta.env.BASE_URL}images/voyage/bandeau-littoral.jpg`}
-            alt="Littoral ouest-africain, escale Taste & Travel"
-            ratio="21/9"
+            src={couvertureProjet(PROJET_TASTE)}
+            alt={PROJET_TASTE?.titre ?? 'Taste & Travel'}
             range={8}
             priority
+            className="h-[70svh] lg:h-svh"
           />
           <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-night-900/90 to-transparent" />
           <div className="absolute bottom-5 left-5 z-10 flex flex-wrap items-center gap-3 lg:left-10 lg:bottom-8">

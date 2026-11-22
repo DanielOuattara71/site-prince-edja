@@ -56,7 +56,7 @@ export default function ListeJournal() {
   ]
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-6">
       <div className="space-y-2">
         <TitrePage titre={t('menu.activite')}>{t('menu.activite')}</TitrePage>
         {etat === 'chargement' ? <Squelette lignes={5} /> : null}

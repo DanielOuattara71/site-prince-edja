@@ -8,7 +8,10 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { AlbumScroll } from '@/components/sections/xplore/AlbumScroll'
 import { FeaturedFilm } from '@/components/sections/xplore/FeaturedFilm'
 import { GuidesGrid } from '@/components/sections/xplore/GuidesGrid'
-import { DESTINATIONS } from '@/acces/projets'
+import { DESTINATIONS, PROJETS } from '@/acces/projets'
+import { couvertureProjet } from '@/lib/visuels'
+
+const PROJET_XPLORE = PROJETS.find((projet) => projet.slug === 'xplore-cote-divoire')
 
 // Leaflet (~40 Ko + sa feuille de style) n'est chargé que sur cette page : la carte
 // n'existe nulle part ailleurs, le reste du site ne paie rien.
@@ -54,10 +57,13 @@ export default function XplorePage() {
 
         <div className="relative">
           <ParallaxImage
-            src={`${import.meta.env.BASE_URL}images/xplore/bandeau-foret.jpg`}
-            alt="La forêt de Taï, X'PLORE Côte d'Ivoire"
-            ratio="21/9"
-            range={8}
+            src={couvertureProjet(PROJET_XPLORE)}
+            alt={PROJET_XPLORE?.titre ?? "X'PLORE Côte d'Ivoire"}
+            range={0}
+            className="h-[70svh] lg:h-svh"
+            // L'affiche est un visuel graphique : on l'affiche en entier, sans zoom ni
+            // parallaxe, pour que son texte et son logo restent lisibles.
+            imgClassName="scale-100"
           />
           <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-night-900/90 to-transparent" />
           <span className="label-caps absolute bottom-5 left-5 z-10 flex items-center gap-2 rounded-full bg-night-900/85 px-4 py-2 text-cream-100 backdrop-blur-sm lg:bottom-8 lg:left-10">

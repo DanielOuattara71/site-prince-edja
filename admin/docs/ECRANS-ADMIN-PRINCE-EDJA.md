@@ -69,39 +69,20 @@ Articles liés : encadré en lecture seule « Articles liés calculés » (jamai
 
 ## 3. Projets (conforme à la photo)
 
-**Menu** : Projets → pas de barre d'onglets ; l'entrée ouvre le **hub**. Les listes sont atteintes par les cartes du hub et par un fil d'Ariane.
+**Menu** : Projets → pas de barre d'onglets ; l'entrée ouvre la **liste des projets** (`/projets`), comme le Journal pour les articles. Les deux cartes de création sont en tête de cette liste.
 
-### 3.1 Hub « Projets »
+### 3.1 Création depuis la liste
 
-Titre : **Projets**. Sous-titre : « Créez et organisez vos projets, épisodes et leur affichage public. »
+Deux cartes en haut de la **liste des projets**, côte à côte (une colonne sur mobile) :
 
-Deux grandes cartes en haut, côte à côte (une colonne sur mobile) :
+| Carte | Sous-titre exact | Action |
+|---|---|---|
+| **Créer un projet** | « Contenu, affiche, format, template » | ouvre l'édition d'un nouveau projet |
+| **Créer un épisode** | « Affiche, synopsis, vidéo, destination » | ouvre l'édition d'un nouvel épisode |
 
-| Carte | Titre | Sous-titre exact | Action |
-|---|---|---|---|
-| Gauche | **Créer un projet** | « Contenu, affiche, format, template » | ouvre l'édition d'un nouveau projet |
-| Droite | **Créer un épisode** | « Affiche, synopsis, vidéo, destination » | ouvre l'édition d'un nouvel épisode |
+L'ancien hub (`/projets/hub`) a été supprimé : ses blocs « Moteur de rendu public » et « Données partagées » n'existent plus. Le filtre **Template** de la liste (3.2) remplace les cartes de template ; Destinations, Guides PDF, Villes, Archive et Catégories de projets restent accessibles depuis le menu et la liste.
 
-Sous les cartes, bloc **Moteur de rendu public**, légende : « Chaque projet choisit un template selon son format ; tous les épisodes partagent un template unique. »
-Quatre cartes de template, cliquables, chacune avec le **nombre de projets** du format :
-
-| Carte | Étiquette |
-|---|---|
-| **Template Série** | X'PLORE |
-| **Template Documentaire** | Production indépendante |
-| **Template Émission** | Programme |
-| **Template Archive** | Patrimoine audiovisuel |
-
-Une cinquième carte, pleine largeur : **Épisode** — « Template unique d'épisode » · « Utilisé par tous les projets » · nombre d'épisodes.
-Clic sur une carte de template : ouvre la **liste des projets de ce format** (3.2) ; clic sur la carte Épisode : ouvre la **liste des épisodes** (3.4). Les templates ne sont **pas éditables** dans l'admin : un petit texte le dit (« Les mises en page sont gérées dans le code du site »).
-
-Sous les templates, bloc **Données partagées**, légende : « Ressources réutilisées par plusieurs projets et épisodes. » Deux puces cliquables :
-- **Destinations** → liste des destinations (3.5)
-- **Guides PDF** → liste des guides (3.6)
-
-> Puces **Villes** (Taste & Travel) et **Archive** : **non présentes sur la photo**. Par défaut, elles sont **ajoutées** dans « Données partagées », sinon ces contenus n'auraient pas d'accès. À valider par Yann (voir §14, question E1). Si refusé, Villes passe sous Destinations (onglet) et Archive devient un format de projet.
-
-Chaque carte et puce porte un compteur discret. Aucune autre zone.
+**Le bloc complémentaire de la fiche projet suit le template (D-95)** : « Épisodes du projet » uniquement pour **Film** ; renvoi vers **Villes** pour **Programme** ; renvoi vers **Archive d'Afrique** pour **Bibliothèque**. Aucun épisode ne se crée depuis un projet Bibliothèque — ses unités sont des entrées documentées avec sources et fiabilité.
 
 ### 3.2 Liste des projets (d'un format ou tous)
 Fil d'Ariane : Projets › Template Série. Colonnes : affiche · titre · format · **catégorie** · avancement · nombre d'épisodes · statut · modifié le. Filtres : recherche, format, **catégorie**, avancement, statut. Bouton **Créer un projet** (le format est pré-rempli si on vient d'une carte de template).
@@ -227,7 +208,7 @@ Trois blocs :
 | Entrée | Routes conservées | Changement |
 |---|---|---|
 | Journal | `/articles` | + catégorie |
-| Projets | `/projets`, `/episodes`, `/destinations`, `/villes`, `/archive` | hub à la racine `/projets` ; les listes passent sous le fil d'Ariane |
+| Projets | `/projets`, `/destinations`, `/villes`, `/archive` | liste à la racine `/projets`, cartes de création en tête de liste ; épisodes créés depuis la fiche projet |
 | Boutique | `/bijoux`, `/categories`, `/createurs` | + `/livres` ; catégories à trois sections |
 | Médiathèque | `/medias`, `/galerie` | + onglet « Sur le site » |
 | Preuves et presse | `/audience`, `/distinctions`, `/presse`, `/partenaires` | regroupement |

@@ -54,6 +54,8 @@ export interface ConfigRessource<O extends ObjetEditorial> {
   controler?: (objet: O) => Response | null
   /** Règle propre avant une soumission ou une publication. */
   controlerPublication?: (objet: O) => Response | null
+  /** Règle propre avant une suppression (RG-32, côté projets). Le refus ferme la suppression. */
+  avantSuppression?: (objet: O) => Response | null
   tris: Record<string, (objet: O) => string | number>
   triParDefaut?: string
   ordonnable?: boolean
@@ -334,6 +336,8 @@ export function ressourceSimulee<O extends ObjetEditorial>(config: ConfigRessour
       if (perimee) return perimee
       const statut = refusSuppression(o)
       if (statut) return statut
+      const avant = config.avantSuppression?.(o)
+      if (avant) return avant
       config.remplacer(config.collection().filter((autre) => autre.id !== o.id))
       journaliser(garde.compte, 'suppression', config.nom, o.id, enrichir(o), null)
       return vide()

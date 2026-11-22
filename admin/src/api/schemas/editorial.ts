@@ -62,7 +62,8 @@ export const episodeSchema = z.object({
   numero: z.string(),
   imageId: idSchema.nullable(),
   guideMediaId: idSchema.nullable(),
-  /** Projet de l'épisode (SCHEMAS § 6, RG-32) ; absent tant que le back end ne le sert pas. */
+  /** Illustrations complémentaires (contrat 1.6.0 § 23.2) — l'affiche reste `imageId`. */
+  illustrationIds: z.array(idSchema).max(12).optional(),
   projetId: idSchema.nullable().optional(),
   destinationId: idSchema.nullable(),
   trailerUrl: z.string().nullable(),
@@ -88,6 +89,7 @@ const traductionEpisodeEcriture = z.strictObject({
 const champsEpisode = {
   numero: texte(10),
   imageId: idSchema.nullable().optional(),
+  illustrationIds: z.array(idSchema).max(12).optional(),
   guideMediaId: idSchema.nullable().optional(),
   projetId: idSchema.nullable().optional(),
   destinationId: idSchema.nullable().optional(),
@@ -274,6 +276,8 @@ export const sourceArchiveSchema = z.object({
 export const archiveSchema = z.object({
   ...contenuBaseShape,
   categorie: z.string(),
+  /** Contrat 1.15.0 § 32.2 : vide = entrée globale (facultatif pour les données antérieures). */
+  projetId: idSchema.nullable().optional(),
   fiabilite: z.enum(FIABILITES).nullable(),
   epoque: z.string().nullable(),
   imageId: idSchema.nullable(),
@@ -285,6 +289,7 @@ export const archiveSchema = z.object({
 })
 export const ecritureArchive = ecriture({
   categorie: z.string().trim().min(1).max(60),
+  projetId: idSchema.nullable().optional(),
   fiabilite: z.enum(FIABILITES).nullable().optional(),
   epoque: texteOuNull(120),
   imageId: idSchema.nullable().optional(),

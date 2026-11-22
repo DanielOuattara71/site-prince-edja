@@ -36,26 +36,19 @@ const ECRANS_LIVRES: Record<string, RouteObject[]> = {
     liste: () => import('@/features/articles/ListeArticles'),
     formulaire: () => import('@/features/articles/FormulaireArticle'),
   }),
-  '/episodes': ecransContenu({
-    liste: async () => ({ default: (await import('@/features/editorial/ecrans')).ListeEpisodes }),
-    formulaire: async () => ({
-      default: (await import('@/features/editorial/ecrans')).FormulaireEpisode,
-    }),
-  }),
-  // Projets : le hub à la racine (ECRANS § 3.1), la liste un niveau plus bas.
+  // Projets : la liste à la racine, comme le Journal pour les articles ; l'ancien hub a été
+  // supprimé. La liste et /projets/liste rendent la même vue (alias).
   '/projets': [
     {
       index: true,
-      lazy: async () => ({ Component: (await import('@/features/projets/HubProjets')).default }),
+      lazy: async () => ({ Component: (await import('@/features/projets/ListeProjets')).default }),
     },
     {
       path: 'liste',
-      lazy: async () => ({
-        Component: (await import('@/features/editorial/ecrans')).ListeProjets,
-      }),
+      lazy: async () => ({ Component: (await import('@/features/projets/ListeProjets')).default }),
     },
     ...ecransContenu({
-      liste: async () => ({ default: (await import('@/features/editorial/ecrans')).ListeProjets }),
+      liste: async () => ({ default: (await import('@/features/projets/ListeProjets')).default }),
       formulaire: async () => ({
         default: (await import('@/features/editorial/ecrans')).FormulaireProjet,
       }),
@@ -71,6 +64,13 @@ const ECRANS_LIVRES: Record<string, RouteObject[]> = {
     {
       index: true,
       lazy: async () => ({ Component: (await import('@/features/projets/GuidesPdf')).default }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  '/commandes': [
+    {
+      index: true,
+      lazy: async () => ({ Component: (await import('@/features/commandes/Commandes')).default }),
     },
     { path: '*', element: <Introuvable /> },
   ],
@@ -163,6 +163,25 @@ const ECRANS_LIVRES: Record<string, RouteObject[]> = {
       index: true,
       lazy: async () => ({
         Component: (await import('@/features/categories/Categories')).default,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  // Catégories par module (chantier catégories, 11/11/2026) : sections propres à Projets et Journal.
+  '/projets/categories': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/categories/Categories')).CategoriesProjets,
+      }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
+  '/articles/categories': [
+    {
+      index: true,
+      lazy: async () => ({
+        Component: (await import('@/features/categories/Categories')).CategoriesArticles,
       }),
     },
     { path: '*', element: <Introuvable /> },
@@ -282,6 +301,13 @@ const ECRANS_LIVRES: Record<string, RouteObject[]> = {
     },
     { path: '*', element: <Introuvable /> },
   ],
+  '/identite': [
+    {
+      index: true,
+      lazy: async () => ({ Component: (await import('@/features/reglages/Identite')).default }),
+    },
+    { path: '*', element: <Introuvable /> },
+  ],
   '/parametres': [
     {
       index: true,
@@ -385,6 +411,32 @@ const routes: RouteObject[] = [
                   children: ecrans ?? [{ path: '*', element: null }],
                 }
               }),
+              // Épisodes : la liste et l'onglet du menu sont retirés (D-96), mais les écrans de
+              // création et d'édition restent les cibles de la fiche projet. Ils ne dépendent
+              // donc pas de ROUTES_ONGLETS, sinon `/episodes/nouveau` disparaîtrait avec l'onglet.
+              {
+                path: '/episodes',
+                element: (
+                  <RouteAutorisee action="lire" ressource="episodes">
+                    <Outlet />
+                  </RouteAutorisee>
+                ),
+                children: [
+                  { index: true, element: <Introuvable /> },
+                  {
+                    path: 'nouveau',
+                    lazy: async () => ({
+                      Component: (await import('@/features/editorial/ecrans')).FormulaireEpisode,
+                    }),
+                  },
+                  {
+                    path: ':id',
+                    lazy: async () => ({
+                      Component: (await import('@/features/editorial/ecrans')).FormulaireEpisode,
+                    }),
+                  },
+                ],
+              },
               // Ancienne adresse du journal d'audit (PROMPT-CORRECTION § 5.5).
               { path: '/journal/*', element: <VersActivite /> },
               { path: '*', element: <Introuvable /> },

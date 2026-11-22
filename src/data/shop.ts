@@ -1,5 +1,6 @@
 import { BIJOUX } from './content'
 import type { Bijou, GalerieImage } from '@/types'
+import { img } from '@/lib/images'
 
 /**
  * Données commerciales de la collection TRIBE (CDC lot 02).
@@ -24,11 +25,31 @@ export const CATEGORIES_SHOP = [
 /** La collection actuelle ne compte que des bijoux : les sept autres catégories sont vides. */
 const CATEGORIE_PAR_DEFAUT = 'Bijoux & accessoires'
 
+/**
+ * Prix provisoires (FCFA), identiques à la base de dev ; l'admin peut les modifier.
+ * Indexés par référence TRIBE (`bijou.numero` = `variante.reference` sans le suffixe ‑1).
+ */
+const PRIX_PAR_SLUG: Record<string, number> = {
+  agadez: 250_000,
+  akuaba: 180_000,
+  deangle: 220_000,
+  oba: 350_000,
+  baoule: 200_000,
+  nka: 280_000,
+  baobabe: 150_000,
+  mambo: 220_000,
+  okoro: 140_000,
+  kowe: 170_000,
+}
+
 const BASE = {
   reference: '',
   prix: null,
   ancienPrix: null,
   prixConfirme: false,
+  // Les données de départ n'ont pas d'identifiants serveur : le bouton d'envoi
+  // retombe sur la messagerie tant qu'aucune pièce ne porte de variante réelle.
+  varianteIds: [],
   matieres: [],
   tailles: [],
   edition: null,
@@ -47,7 +68,12 @@ const BASE = {
 /** Pièces enrichies de leurs données commerciales. */
 export const PIECES: Bijou[] = BIJOUX.map((bijou) => ({
   ...bijou,
-  commerce: { ...BASE },
+  commerce: {
+    ...BASE,
+    // Prix provisoires : l'admin les modifie dans la fiche (le site reflète la base).
+    prix: PRIX_PAR_SLUG[bijou.slug] ?? null,
+    prixConfirme: PRIX_PAR_SLUG[bijou.slug] !== undefined,
+  },
 }))
 
 /** Pièces disponibles à la demande. */
@@ -67,25 +93,25 @@ export const FILTRES_SHOP = ['catégorie', 'prix', 'origine', 'créateur', 'disp
  */
 export const GALERIE_SHOP: GalerieImage[] = [
   {
-    src: `${import.meta.env.BASE_URL}images/journal/raconter-pour-exister.jpg`,
+    src: img(`images/journal/raconter-pour-exister.jpg`),
     alt: 'Prince Edja, mains couvertes de bagues dorées, dans une mise en scène de studio.',
     titre: 'Le geste',
     legende: 'La main comme récit',
   },
   {
-    src: `${import.meta.env.BASE_URL}images/journal/porter-un-symbole.jpg`,
+    src: img(`images/journal/porter-un-symbole.jpg`),
     alt: 'Masques traditionnels portés lors d’une cérémonie.',
     titre: 'Le symbole',
     legende: 'Ce que l’objet retient',
   },
   {
-    src: `${import.meta.env.BASE_URL}images/journal/afrique-multitude-de-mondes.jpg`,
+    src: img(`images/journal/afrique-multitude-de-mondes.jpg`),
     alt: 'Détail d’un masque traditionnel orné de cauris et de plumes.',
     titre: 'Le détail',
     legende: 'Ce que le regard choisit',
   },
   {
-    src: `${import.meta.env.BASE_URL}images/journal/griot-moderne.jpg`,
+    src: img(`images/journal/griot-moderne.jpg`),
     alt: 'Danseurs en tenue de cérémonie sous un ciel bleu.',
     titre: 'La transmission',
     legende: 'Le geste collectif',

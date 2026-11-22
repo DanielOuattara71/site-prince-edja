@@ -1,10 +1,10 @@
-import { EPISODES } from '@/acces/projets'
+import { EPISODES_XPLORE } from '@/acces/projets'
 import { Container } from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Reveal'
 import { PdfCard } from '@/components/ui/PdfCard'
 
 export function GuidesGrid() {
-  const guides = EPISODES.filter((episode) => episode.guide)
+  const guides = EPISODES_XPLORE.filter((episode) => episode.guide)
   // Les guides viennent de l'admin : sans aucun PDF livré, pas de titre au-dessus du vide.
   if (guides.length === 0) return null
 

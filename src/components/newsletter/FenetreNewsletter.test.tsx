@@ -16,7 +16,7 @@ function minuteur() {
 function renderFenetre() {
   return render(
     <FournisseurLangue>
-      <MemoryRouter basename="/site-prince-edja" initialEntries={['/site-prince-edja/journal']}>
+      <MemoryRouter basename="/site-prince-edja" initialEntries={['/site-prince-edja/']}>
         <FenetreNewsletter />
       </MemoryRouter>
     </FournisseurLangue>,
@@ -43,7 +43,7 @@ async function laisseSortir() {
 }
 
 describe('FenetreNewsletter', () => {
-  it('s’ouvre sur /journal avec un basename après le minuteur de présence', () => {
+  it('s’ouvre sur l’accueil avec un basename après le minuteur de présence', () => {
     minuteur()
     renderFenetre()
 
@@ -128,19 +128,32 @@ describe('FenetreNewsletter', () => {
     expect(window.localStorage.getItem('pe_newsletter_intentions')).toBeNull()
   })
 
-  it('ne s’ouvre pas sur une page qui porte déjà un bloc d’inscription plein', () => {
+  it('une fois fermée elle ne revient pas dans l’onglet, mais revient dans un nouvel onglet', async () => {
     minuteur()
-    render(
-      <FournisseurLangue>
-        <MemoryRouter basename="/site-prince-edja" initialEntries={['/site-prince-edja/journal']}>
-          <div data-bloc-newsletter />
-          <FenetreNewsletter />
-        </MemoryRouter>
-      </FournisseurLangue>,
-    )
+    renderFenetre()
+    act(() => {
+      vi.advanceTimersByTime(20_000)
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer la fenêtre' }))
+    await laisseSortir()
+
+    expect(window.sessionStorage.getItem('pe_newsletter_modale_session')).toBe('1')
+    cleanup()
+
+    // Même onglet : le marqueur de session persiste, la fenêtre reste fermée.
+    renderFenetre()
     act(() => {
       vi.advanceTimersByTime(20_000)
     })
     expect(screen.queryByRole('dialog')).toBeNull()
+    cleanup()
+
+    // Nouvel onglet : sessionStorage vierge, la fenêtre reparaît après 20 s.
+    window.sessionStorage.clear()
+    renderFenetre()
+    act(() => {
+      vi.advanceTimersByTime(20_000)
+    })
+    expect(screen.getByRole('dialog')).toBeTruthy()
   })
 })

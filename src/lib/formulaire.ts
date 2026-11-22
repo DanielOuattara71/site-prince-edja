@@ -91,6 +91,21 @@ export function envoyerNewsletter(
   return poster('newsletter', corpsNewsletter(entree, texteConsentement, source, langue))
 }
 
+/** Corps de `POST /demandes` (contrat § 18) : la sélection de pièces, nom, e-mail et
+ *  message facultatif. `varianteIds` vient des pièces choisies (publics depuis le
+ *  contrat 1.10.0), 1 à 20 au total. */
+export function corpsDemande(donnees: FormData, varianteIds: string[]) {
+  const message = texte(donnees, 'message')
+  return {
+    varianteIds,
+    nom: texte(donnees, 'nom'),
+    email: texte(donnees, 'email'),
+    ...(message ? { message } : {}),
+    langue: 'fr' as const,
+    siteWeb: texte(donnees, 'siteWeb'),
+  }
+}
+
 /** Corps de `POST /collaboration` (contrat § 18). */
 export function corpsCollaboration(donnees: FormData) {
   return {
@@ -147,6 +162,10 @@ export const estRobot = (formulaire: HTMLFormElement) =>
 
 export function envoyerContact(formulaire: HTMLFormElement): Promise<boolean> {
   return poster('contact', corpsContact(new FormData(formulaire)))
+}
+
+export function posterDemande(donnees: FormData, varianteIds: string[]): Promise<boolean> {
+  return poster('demandes', corpsDemande(donnees, varianteIds))
 }
 
 export function envoyerCollaboration(formulaire: HTMLFormElement): Promise<boolean> {

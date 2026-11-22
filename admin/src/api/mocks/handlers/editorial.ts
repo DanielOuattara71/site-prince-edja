@@ -229,6 +229,16 @@ export const handlersEditorial = [
     },
     credibilite: (o) => (o.annee ? [] : ['annee']),
     controler: (o) => {
+      // Contrat 1.9.0 § 26 : un projet garde toujours son affiche — à la création comme à
+      // l'enregistrement. Aucun gabarit, aucun avancement n'y fait exception.
+      if (!(typeof o.imageId === 'string' && o.imageId.trim())) {
+        return erreur(
+          422,
+          'VALIDATION',
+          'Un projet garde son affiche : choisissez « Photo d’affiche du projet » avant d’enregistrer.',
+          { champ: 'imageId' },
+        )
+      }
       if (contenuCible(o.cible) === undefined)
         return erreur(422, 'VALIDATION', 'Le contenu visé n’existe pas.', { champ: 'cible' })
       // RG-29 : une catégorie de la famille `projet` seulement.
@@ -239,7 +249,19 @@ export const handlersEditorial = [
         })
       return null
     },
-    // Format, avancement, catégorie et nombre d'épisodes lisibles dans la liste (ECRANS § 3.2).
+    // RG-32 : un projet garde ses épisodes ; on ne le supprime pas tant qu’ils existent.
+    avantSuppression: (o) => {
+      const nombre = magasin.episodes.filter((e) => e.projetId === o.id).length
+      return nombre > 0
+        ? erreur(
+            422,
+            'RG-32',
+            `Ce projet a ${nombre} épisode${nombre > 1 ? 's' : ''} : rattachez-les à un autre projet ou supprimez-les d’abord.`,
+            { details: { nombre } },
+          )
+        : null
+    },
+    // Format, avancement, catégorie, extrait et épisodes lisibles dans la liste (contrat 1.8.0 § 25.2).
     resume: (o) => ({
       format: o.format,
       template: templateDe(o),
@@ -247,6 +269,13 @@ export const handlersEditorial = [
       categorieId: o.categorieId ?? null,
       categorie:
         magasin.categories.find((c) => c.id === o.categorieId)?.traductions.fr?.nom ?? null,
+      accroche:
+        (typeof o.traductions.fr?.accroche === 'string' && o.traductions.fr.accroche.trim()
+          ? o.traductions.fr.accroche
+          : typeof o.traductions.en?.accroche === 'string' && o.traductions.en.accroche.trim()
+            ? o.traductions.en.accroche
+            : null) ?? null,
+      creeLe: o.creeLe,
       nombreEpisodes: magasin.episodes.filter((e) => e.projetId === o.id).length,
     }),
     filtrer: (o, params) => {
@@ -274,6 +303,14 @@ export const handlersEditorial = [
     modification: modificationVilleSchema,
     champTitre: 'nom',
     slugs: false,
+    // 1.15.0 § 32.2 : une ville appartient au projet dont `escaleIds` la contient.
+    filtrer: (o, p) => {
+      const projetId = p.get('projetId')
+      return (
+        !projetId ||
+        Boolean(magasin.projets.find((projet) => projet.id === projetId)?.escaleIds?.includes(o.id))
+      )
+    },
     ordonnable: true,
     traduction: (e) => ({ nom: e['nom'], intention: texteOuVide(e['intention']) }),
     champsInitiaux: (e) => ({
@@ -297,6 +334,16 @@ export const handlersEditorial = [
     modification: modificationDestinationSchema,
     champTitre: 'nom',
     slugs: true,
+    // 1.15.0 § 32.2 : une destination appartient au projet de son épisode.
+    filtrer: (o, p) => {
+      const projetId = p.get('projetId')
+      return (
+        !projetId ||
+        magasin.episodes.some(
+          (episode) => episode.id === o.episodeId && episode.projetId === projetId,
+        )
+      )
+    },
     traduction: (e) => ({ nom: e['nom'], texte: texteOuNull(e['texte']) }),
     champsInitiaux: (e) => ({
       latitude: (e['latitude'] as number | null | undefined) ?? null,
